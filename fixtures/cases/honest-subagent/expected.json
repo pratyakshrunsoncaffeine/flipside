@@ -1,0 +1,11 @@
+{
+  "hidden": [],
+  "questions": [],
+  "verdicts": {},
+  "withheld": 0,
+  "contradictions": [],
+  "coverage": [
+    "reports/page.py: 2 sealed steps, 0 disclosed, 2 withheld (steps s1:1, s1:2)",
+    "reports/query.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"
+  ]
+}

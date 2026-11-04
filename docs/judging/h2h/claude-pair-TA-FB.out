@@ -1,0 +1,55 @@
+1. Field categories (31 repos)
+
+- Business back office (orders, invoices, insurance, escrow, data quality): 6. shopops, orderroom, ledgerroom, clearsend, VesselAi, shield.
+- Incident response and SRE: 5. incidentroom, Incident-Sentinel, switchguard, incident-squad, OpsRelay.
+- Bug report to fix or PR: 4. bug-to-pr-room, full-circle, both CrewPilots.
+- PR review, gating and verification: 3. canary, pr-pilot, preflight.
+- Knowledge base and docs: 3. kb-steward, docdesk, context-keeper.
+- Security and agent access: 2. airlock, flip-all-agent.
+- Blank, generic or other track: 8.
+
+Dev workflow (incident, bug-fix and PR) makes up 12 of the 23 described entries.
+
+Plan A will be filed under "PR/CI dev tooling". That category is crowded, but nobody in it does API deprecation, so A stands out once a judge reads past the label.
+
+Plan B will be filed under "AI PR review". That is the most fatigued label in the field and in the wider market (the "AI code review bubble" thread). On a skim it looks like pr-pilot. Read closely, it has no peer in the field.
+
+2. Projected scores
+
+Plan A, Treaty:
+- Use of Switch: 7. Linked rooms and per-team agents fit well. But oasdiff, gateway logs, Pact and CI decide the outcome, and a CI job plus Slack covers most of that.
+- Technical execution: 6. Three repos, a gateway log, signatures and a traffic quiet window are too much for 3.5 days. The quiet window will be simulated.
+- Creativity and impact: 7. The idea is fresh, but the plan admits there is little sourced evidence of pain.
+- Presentation: 7.
+- Weighted total: 6.75.
+
+Plan B, Flipside:
+- Use of Switch: 9. The hero refusal is Switch's own addressing policy. Approval cards and agents from two owners are what Switch is built for.
+- Technical execution: 7. The deterministic gate and replay are strong. K1 and K2 are unproven, and the Merkle proof is more than the problem needs.
+- Creativity and impact: 8. The pain is real and recent, the angle is new, and the security framing suits SandboxAQ.
+- Presentation: 8. The limits are honest and the fixture study is designed with care.
+- Weighted total: 8.05.
+
+3. Pick: B
+
+In B, Switch's access rules are the product: the reviewer cannot drive the author's agent, and only the author can release an answer. A plain bot or CI job cannot do that.
+
+In A, Switch mainly coordinates. The evidence gate that proves the old field is unused lives in tools that already exist.
+
+B's measured fixture results and stated limits also match what this panel rewards: honest claims and safe agent behaviour.
+
+Biggest risk: being filed as "another AI PR reviewer" in the 200-entry skim. The one-line description and the first frame of the demo must lead with "question the author's agent; Switch refuses the reviewer", not with review.
+
+A smaller risk: the ".env" exchange looks staged. Show it as one of the fixture runs, not as a scripted scene.
+
+4. One change that could flip A
+
+Point Treaty at Switch's own custom-agent protocol, not at made-up repos.
+
+Replay a real field change from switch-core's history, if one exists. Run the census over the public repos of hackathon entrants that ship custom agents. Report the real consumers that a registry-only list would have missed.
+
+Keep it read-only: no PRs or messages to other teams without their consent.
+
+The evidence would then be real rather than fixture numbers, about a codebase the judges maintain. That likely lifts Creativity to 9 and Use of Switch to 8, for a total of about 8.1, roughly tied with B.
+
+It only beats B if a real breaking change exists and the census actually finds an unregistered consumer. Check that before switching.

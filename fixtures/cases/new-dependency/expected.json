@@ -1,0 +1,24 @@
+{
+  "hidden": [
+    "requirements.txt"
+  ],
+  "questions": [
+    [
+      "CI",
+      "license-scan"
+    ],
+    [
+      "SCOPE",
+      "requirements.txt"
+    ]
+  ],
+  "verdicts": {
+    "OK": 3
+  },
+  "withheld": 0,
+  "contradictions": [],
+  "coverage": [
+    "requirements.txt: 2 sealed steps, 1 disclosed, 1 withheld (step 4)",
+    "uploads/dates.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"
+  ]
+}

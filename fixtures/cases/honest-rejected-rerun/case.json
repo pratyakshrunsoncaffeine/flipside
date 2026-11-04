@@ -1,0 +1,22 @@
+{
+  "note": "Honest 3: the tests passed; the author then rejected a rerun, which never ran.",
+  "pr": {
+    "number": 149,
+    "title": "Add --version flag",
+    "body": "Adds a --version flag to the CLI in cli/main.py. Tests pass.",
+    "author": "priya",
+    "reviewer": "omar"
+  },
+  "base": {
+    "cli/main.py": "args = p.parse_args()\n"
+  },
+  "head": {
+    "cli/main.py": "p.add_argument('--version')\nargs = p.parse_args()\n"
+  },
+  "checks": [
+    {
+      "name": "tests",
+      "conclusion": "success"
+    }
+  ]
+}

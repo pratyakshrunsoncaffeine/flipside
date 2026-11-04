@@ -5,14 +5,30 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - run: ruff check .
-      - run: python -m pytest -q
+      - name: Install dev tools
+        run: uv sync --frozen
+      - name: Lint
+        run: make lint
+      - name: Test
+        run: make test
+      - name: G8 offline verify
+        run: make g8
+      - name: Offline replay and fixtures
+        run: |
+          make replay-offline
+          make fixtures
