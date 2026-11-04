@@ -36,6 +36,7 @@ from flipside.room.protocol import accept
 from flipside.room.replay import DEFAULT_CASE, ROOT, case_timeout, report
 from flipside.room.run import Card, Cast, Log, Result, Script, play
 from flipside.room.scenario import World, load_case, materialize
+from flipside.room.setup import OWNER_RULE, policy, register, room_id
 from flipside.room.switch_client import DEFAULT_BASE, Http, SwitchTransport
 
 CREDS = ROOT / "killtests" / ".local-users.json"
@@ -43,7 +44,6 @@ CONSOLE_ENV = (
     Path.home()
     / "Library/Application Support/switchdash/local-switch-server/native/run/switch-core.env"
 )
-OWNER_RULE = {"users": [], "agents": [], "owner": True, "owner_agents": True}
 
 
 def base_url() -> str:
@@ -85,34 +85,6 @@ def person(admin: Http, base: str, role: str) -> tuple[Http, str, str]:
     user = Http(base)
     user.login(c["email"], c["password"])
     return user, str(user.get("/gateway/auth/me")["id"]), str(c["name"])
-
-
-def register(user: Http, base: str, name: str) -> tuple[str, str]:
-    """Register (or re-key) the user's agent called ``name``. Returns its id and API key."""
-    key = user.post("/gateway/api-keys", {"label": f"flipside-{name}"})
-    token = key.get("key") or key.get("api_key") or key.get("token") or key.get("secret")
-    if not token and key.get("id"):
-        token = user.get(f"/gateway/api-keys/{key['id']}/reveal").get("key")
-    res = Http(base, bearer=token).post(
-        "/agents/register-known",
-        {
-            "agent_type": "codex",
-            "name": name,
-            "description": f"Flipside {name}",
-            "options": {},
-            "overwrite": True,
-        },
-    )
-    return str(res["id"]), str(res["api_key"])
-
-
-def room_id(chat: dict[str, Any]) -> str:
-    c = chat.get("chat", chat)
-    return str(c.get("roomId") or c.get("room_id") or c.get("id"))
-
-
-def policy(*rules: dict[str, Any]) -> dict[str, Any]:
-    return {"policy": {"rules": list(rules)}}
 
 
 @dataclass

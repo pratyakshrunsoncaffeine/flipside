@@ -5,13 +5,21 @@ from pathlib import Path
 
 import pytest
 
-from flipside.room.daemon import load_config, pr_data, reviewer_head, write_config
+from flipside.room.daemon import (
+    COMMON_KEYS,
+    ROLE_KEYS,
+    load_config,
+    pr_data,
+    reviewer_head,
+    write_config,
+)
 from flipside.room.rules import CheckRun
 
 
 def test_config_is_written_private_and_read_back(tmp_path: Path) -> None:
     path = tmp_path / "agent.json"
-    write_config(path, {"role": "author", "api_key": "synthetic"})
+    cfg = {k: "synthetic" for k in (*COMMON_KEYS, *ROLE_KEYS["author"])}
+    write_config(path, {**cfg, "role": "author", "pr_number": 1})
     assert os.stat(path).st_mode & 0o777 == 0o600
     assert load_config(path)["role"] == "author"
 

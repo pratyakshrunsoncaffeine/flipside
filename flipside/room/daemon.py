@@ -50,11 +50,48 @@ def log(msg: str) -> None:
     print(f"{dt.datetime.now().strftime('%H:%M:%S')} {msg}", flush=True)
 
 
+COMMON_KEYS = (
+    "role",
+    "base",
+    "agent_id",
+    "agent_name",
+    "api_key",
+    "owner_creds",
+    "owner_key",
+    "session_id",
+    "work",
+    "shared",
+    "repo",
+)
+ROLE_KEYS = {
+    "author": ("private", "reviewer_agent", "author_user", "author_name"),
+    "reviewer": ("author_agent", "author_agent_name", "pr_author", "reviewer_name"),
+}
+
+
+def check_config(cfg: dict[str, Any]) -> None:
+    """Raise ``ValueError`` naming every missing key, so a bad config fails at start."""
+    role = cfg.get("role")
+    if role not in ROLE_KEYS:
+        raise ValueError(f"config role must be author or reviewer, not {role!r}")
+    missing = [k for k in (*COMMON_KEYS, *ROLE_KEYS[role]) if k not in cfg]
+    if "pr" not in cfg and "pr_number" not in cfg:
+        missing.append("pr or pr_number")
+    if role == "reviewer" and "pr" not in cfg and "github" not in cfg:
+        missing.append("pr or github")
+    if missing:
+        raise ValueError(f"{role} config is missing: {', '.join(missing)}")
+
+
 def load_config(path: Path) -> dict[str, Any]:
     mode = stat.S_IMODE(path.stat().st_mode)
     if mode & 0o077:
         raise SystemExit(f"{path} must not be readable by others (mode {mode:o}); chmod 600")
     cfg: dict[str, Any] = json.loads(path.read_text())
+    try:
+        check_config(cfg)
+    except ValueError as e:
+        raise SystemExit(f"{path}: {e}") from None
     return cfg
 
 

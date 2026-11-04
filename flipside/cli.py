@@ -97,6 +97,8 @@ ROOM_COMMANDS = {
     "solo": ("flipside.room.solo", "M3: two owners on the local Switch server"),
     "replay": ("flipside.room.replay", "M2/M4: replay the CSV-export scenario"),
     "agent": ("flipside.room.daemon", "run author-agent or reviewer-agent as a process"),
+    "setup": ("flipside.room.setup", "connect a real PR's two owners and agents on Switch"),
+    "chat": ("flipside.room.chat", "post, read and answer approval cards without a chat app"),
 }
 
 
