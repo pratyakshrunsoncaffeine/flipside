@@ -160,9 +160,16 @@ def state_dir(repo: Path) -> Path:
 
 
 def _write_private(path: Path, data: bytes) -> None:
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    """Write ``data`` byte for byte to a file only its owner can read.
+
+    ``O_BINARY`` matters on Windows: without it the C runtime turns each LF byte of a
+    random key into CR LF, and ``load_key`` then refuses the key."""
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0)
+    fd = os.open(path, flags, 0o600)
     try:
-        os.write(fd, data)
+        view = memoryview(data)
+        while view:
+            view = view[os.write(fd, view) :]
     finally:
         os.close(fd)
     os.chmod(path, 0o600)

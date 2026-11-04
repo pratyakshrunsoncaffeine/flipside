@@ -3,8 +3,10 @@
 import hashlib
 import hmac
 import json
+import os
 import stat
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -189,3 +191,26 @@ def test_csv_session_has_ten_steps(pr: PR) -> None:
     steps = {(lf["session"], lf["step"]) for lf in res.sealed.leaves}
     assert len(steps) == 10
     assert [lf["role"] for lf in res.sealed.leaves][:3] == ["user", "assistant", "tool_result"]
+
+
+def test_private_write_is_binary_and_keeps_lf_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Windows: a key of LF bytes was stored as CR LF pairs (64 bytes) and load_key refused it.
+    from flipside.seal import seal as seal_mod
+
+    monkeypatch.setattr(os, "O_BINARY", 0x8000, raising=False)
+    real_open = os.open
+    seen: list[int] = []
+
+    def spy(path: Any, flags: int, mode: int = 0o777) -> int:
+        seen.append(flags)
+        return real_open(path, flags & ~0x8000, mode)
+
+    monkeypatch.setattr(os, "open", spy)
+    key = tmp_path / "k.key"
+    seal_mod._write_private(key, b"\n" * 32)
+    assert seen and seen[0] & 0x8000
+    assert seal_mod.load_key(key) == b"\n" * 32
+    if os.name == "posix":  # Windows has no owner-only mode bits
+        assert key.stat().st_mode & 0o777 == 0o600

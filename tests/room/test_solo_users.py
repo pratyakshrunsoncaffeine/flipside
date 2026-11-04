@@ -1,6 +1,7 @@
 """flip solo's local users: a second clone must not invent passwords for existing users."""
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -52,4 +53,5 @@ def test_new_user_is_created_with_a_private_creds_file(
         json.loads(creds.read_text(encoding="utf-8"))["reviewer"]["email"]
         == "reviewer@flipside.local"
     )
-    assert creds.stat().st_mode & 0o777 == 0o600
+    if os.name == "posix":  # Windows has no owner-only mode bits
+        assert creds.stat().st_mode & 0o777 == 0o600
