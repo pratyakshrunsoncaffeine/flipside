@@ -30,6 +30,8 @@ The second-machine run (M4 gate, the teammate's laptop) is not done yet.
 | All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
 | All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
 | M5: 9 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
+| Real session end to end: `claude -p` made the change in a synthetic sandbox repo, `flip seal`, `flip setup` (three steps), both `flip agent` processes, people via `flip chat`; 2 questions, 8 leaves OK, 0 contradictions | manual run | `evidence/real-session-20261104T224823.log` |
+| All 9 fixture cases live, twice, after one-card-per-leaf | `make solo-all` | `evidence/solo-all-20261104T225437.log` (9/9), `evidence/solo-all-20261104T230152.log` (9/9) |
 
 Two earlier `make solo` runs are kept as they ran:
 - `evidence/solo-csv-export-20261104T205555.log` failed: the duplicate check counted the scripted injection request as a repeat of the real request.
@@ -80,3 +82,5 @@ Not recorded yet; its SHA-256 goes here.
 `evidence/solo-all-20261104T221502.log` passed 9/9 but is not gate evidence.
 It started after the C14 fix and before C15 and the `PreToolUse:` prefix, and the fixtures were regenerated while it ran.
 The two runs above use the committed code.
+
+The first real-session run found three bugs, each fixed with a test (commit e8530d0): the default work directory did not exist, so state saves failed; two questions on one merged step gave the author a card per question for the same bytes; and "with tests" did not count as mentioning the test file.

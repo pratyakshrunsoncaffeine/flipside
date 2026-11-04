@@ -42,25 +42,32 @@ It writes `evidence/solo-*.log` with every Switch message id.
 
 ## Run it on a real PR
 
-The author seals their session into the PR branch, then runs their agent:
+Each side uses their own Switch login, kept in a creds file (`{"me": {"email": ..., "password": ...}}`, mode 0600).
+
+Author, on the PR branch:
 
 ```
-flip seal --base origin/main          # adds the empty seal commit; keys stay in .git/flipside/
-git push
-flip agent author --config author.json
+flip seal --base origin/main && git push       # empty seal commit; keys stay in .git/flipside/
+flip setup author --pr 142 --creds me.json --as me
+# send the printed flip-join line to the reviewer, get theirs back, then:
+flip setup author --join "<reviewer's line>"
+flip agent author --config author-agent.json
 ```
 
-The reviewer runs theirs against a local clone of the PR, reading the PR from GitHub:
+Reviewer, in a clone with the PR fetched (`git fetch origin pull/142/head`):
 
 ```
-git fetch origin pull/142/head:pr-142
-flip agent reviewer --config reviewer.json
+flip setup reviewer --join "<author's line>" --github acme/shop --pr 142 --creds me.json --as me
+flip agent reviewer --config reviewer-agent.json
 ```
 
-Each config file must be mode 0600, since it holds the agent's API key.
-Its keys are listed in `flipside/room/daemon.py`.
-The reviewer's config takes `"github": "owner/repo"` and `"pr_number"`, so the PR title, body, changed files and check runs come from `gh api` (`flipside/room/github.py`).
+The join lines carry ids only.
+Config files are written mode 0600, since they hold the agent's API key.
+The reviewer reads the PR title, body, changed files and check runs with `gh api`; `--pr-json FILE --head SHA` replaces GitHub.
 The page-rule timeout is `FLIP_ANSWER_TIMEOUT` seconds (default 1800).
+
+On a Switch server with no chat app, people use `flip chat --config <their agent's config>`:
+`read`, `say "Q1: ..."`, `cards`, `show <card>` (the exact text a card discloses) and `answer <card> approve|decline`.
 
 ## The four refusals
 
@@ -111,6 +118,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | 9 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
 | Live end to end on local Switch with the four refusals, each agent in its own process, both killed with SIGKILL and restarted without duplicate posts | `make solo` |
 | GitHub PR reader, on canned data and one public PR | `tests/room/test_github.py` |
+| A real Claude Code session, sealed, connected with `flip setup`, both agents as processes, people via `flip chat`: 2 questions, 8 leaves verified, brief | `evidence/real-session-20261104T224823.log` |
 
 ## Limits
 
@@ -121,6 +129,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 - A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was withheld.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
-- Not yet checked: Slack rendering of the approval card, two machines, CI on Ubuntu, the GitHub reader on a sealed PR end to end.
+- Not yet checked: Slack rendering of the approval card, two machines, CI on Ubuntu, the GitHub reader on a sealed PR end to end (the real-session run used a local git remote).
+- A leaf's text is the session verbatim, so tool inputs carry the author's absolute paths; the author sees and approves those exact bytes on each card.
 - The local server has no chat window for people without Docker (its bundled Mattermost needs Docker); `make solo` acts for both people through the gateway API.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.

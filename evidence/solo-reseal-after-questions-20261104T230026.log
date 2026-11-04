@@ -1,0 +1,52 @@
+23:00:27 case reseal-after-questions: PR #149 'Add CSV export to the reports page'; seal commit b43b8d05daf4c1b78df245d049b66f59ea8e4365
+23:00:27 Switch http://127.0.0.1:52370: author Author user a4690271-4320-44a1-984f-459e4765d85a, reviewer Reviewer user 54b7b256-242d-4154-b7de-838e15260380; author-agent 5557b586-915a-429c-9bb1-8d73cec90e33, reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60
+23:00:28 reviewer opened #pr-149 223e2312-be38-4f4a-b619-30d35c51dbe9 and added the author and author-agent; author opened #pr-149-author a0dcd9c8-2ab4-4373-9388-8a8fa67cda00; author-agent policy: owner, owner's agents, reviewer-agent in #pr-149 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-149
+23:00:28 author-agent process started (pid 55756)
+23:00:28 reviewer-agent process started (pid 55757)
+23:00:38 restart: reviewer-agent process killed with SIGKILL (pid 55757)
+23:00:38 reviewer-agent process started (pid 56413)
+23:00:38 author posted sw_9224baa31c0b4000ae5af1c9e1c56ef5: Q1: The auth team asked for a one-day TTL.
+23:00:38 script: the author rewrote the session and re-sealed: root 628dc2a, commit f93b19e
+23:00:38 script: author-agent posted a disclosure from the new seal sw_9f814fc1b1e74c80b6c05320b01ef0c5
+23:01:04 author-agent process exited with 0
+23:01:04 reviewer-agent process exited with 0
+23:01:04 [author-agent] 23:00:28 flipside-author-agent started (pid 55756)
+23:01:04 [author-agent] 23:00:36 author-agent posted seal sw_cb9532f17f684de5ab6266b6af7e1628
+23:01:04 [author-agent] 23:00:46 author-agent cannot rebuild leaf 5: SESSION_CHANGED: the sealed part of session.jsonl changed
+23:01:04 [author-agent] 23:00:46 author-agent posted withheld sw_2566bb19ff6c498ca78d80c09d7fc897 for Q1 leaf 5 (session_changed)
+23:01:04 [author-agent] 23:01:04 flipside-author-agent stopped
+23:01:04 [reviewer-agent] 23:00:28 flipside-reviewer-agent started (pid 55757)
+23:01:04 [reviewer-agent] 23:00:37 reviewer-agent posted questions sw_8a31333bba8e484288b6966288c37258: Q1 SCOPE auth/session.py
+23:01:04 [reviewer-agent] 23:00:37 reviewer-agent posted request sw_2db4fca279b04c4ba2970a34fad342d8 for Q1: leaves [5]
+23:01:04 [reviewer-agent] 23:00:39 flipside-reviewer-agent started (pid 56413)
+23:01:04 [reviewer-agent] 23:00:39 reviewer-agent posted verdict sw_0926140832184c9a85c35199e930df78: Q1 leaf 5 WRONG_COMMIT
+23:01:04 [reviewer-agent] 23:00:46 reviewer-agent posted brief sw_041994b8cd104edea96de5e92652da95: @Reviewer Brief for PR #149: 1 question, 1 answered, 0 leaves verified, 1 withheld, 1 refused, 0 contradictions
+23:01:04 [reviewer-agent] 23:00:46   coverage auth/session.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 5, 6)
+23:01:04 [reviewer-agent] 23:00:46   coverage reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)
+23:01:04 [reviewer-agent] 23:01:04 flipside-reviewer-agent stopped
+23:01:04 Switch message ids: sw_d84b79f9dac84c23856fd1ecb4c5c337, sw_5245a48b55634055a3f5a73a5cb1e4ee, sw_d88bcca3768748e699900288e5d4a840, sw_7db5230771bd49e6a6ec137c0e8372ef, sw_cb9532f17f684de5ab6266b6af7e1628, sw_8a31333bba8e484288b6966288c37258, sw_2db4fca279b04c4ba2970a34fad342d8, sw_9224baa31c0b4000ae5af1c9e1c56ef5, sw_9f814fc1b1e74c80b6c05320b01ef0c5, sw_0926140832184c9a85c35199e930df78, sw_2566bb19ff6c498ca78d80c09d7fc897, sw_041994b8cd104edea96de5e92652da95
+23:01:04 elapsed 38 s
+23:01:04 --- transcript
+23:01:04 sw_d84b79f9dac84c23856fd1ecb4c5c337 flipside-reviewer-agent: Hi! I'm flipside-reviewer-agent — how can I help?
+23:01:04 sw_5245a48b55634055a3f5a73a5cb1e4ee flipside-author-agent: Hi! I'm flipside-author-agent — how can I help?
+23:01:04 sw_d88bcca3768748e699900288e5d4a840 flipside-reviewer-agent: @flipside-author-agent I don't have a session connected to this room right now, but I do have other session(s) connected to **pr-145**. Either ask me in one of those rooms to come here, or start a new session connected to this room — my operator should run:
+23:01:04 sw_7db5230771bd49e6a6ec137c0e8372ef flipside-author-agent: manifest.json
+23:01:04 sw_cb9532f17f684de5ab6266b6af7e1628 flipside-author-agent: Seal for PR #149 · root ae44db8 · 10 leaves · commit b43b8d0 · manifest attached
+23:01:04 sw_8a31333bba8e484288b6966288c37258 flipside-reviewer-agent: 1 question for PR #149 (sealed: root ae44db8, 10 leaves, commit b43b8d0); answer each as Q<k>: in your own words
+23:01:04 sw_2db4fca279b04c4ba2970a34fad342d8 flipside-reviewer-agent: @flipside-author-agent Q1 · requesting leaves 5 · commit b43b8d0
+23:01:04 sw_9224baa31c0b4000ae5af1c9e1c56ef5 Author: Q1: The auth team asked for a one-day TTL.
+23:01:04 sw_9f814fc1b1e74c80b6c05320b01ef0c5 flipside-author-agent: Q1 · leaf 5 from the new seal 628dc2a (commit f93b19e)
+23:01:04 sw_0926140832184c9a85c35199e930df78 flipside-reviewer-agent: Q1 · leaf 5 · WRONG_COMMIT disclosure names f93b19e, the question named b43b8d0
+23:01:04 sw_2566bb19ff6c498ca78d80c09d7fc897 flipside-author-agent: Q1 · leaf 5 withheld (session changed after sealing)
+23:01:04 sw_041994b8cd104edea96de5e92652da95 flipside-reviewer-agent: @Reviewer Brief for PR #149: 1 question, 1 answered, 0 leaves verified, 1 withheld, 1 refused, 0 contradictions
+23:01:04 --- refusals
+23:01:04 Switch refusal (reviewer tags author-agent): 0
+23:01:04 free-text request dropped: 0
+23:01:04 forged disclosure refused: 1
+    sw_0926140832184c9a85c35199e930df78: leaf 5 WRONG_COMMIT
+23:01:04 reviewer answers the card (403): 0
+23:01:04 --- summary {"card_403": 0, "contradictions": [], "coverage": ["auth/session.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 5, 6)", "reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"], "dropped_requests": 0, "duplicates": [], "questions": [["SCOPE", "auth/session.py"]], "switch_refusals": 0, "verdicts": {"WRONG_COMMIT": 1}, "withheld": 1}
+23:01:04 duplicate agent posts: 0
+23:01:04 agent processes killed and restarted: 1
+23:01:04 agent step errors: 0
+23:01:04 RESULT PASS reseal-after-questions (switch, 14 rounds)

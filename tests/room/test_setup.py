@@ -240,3 +240,25 @@ def test_pr_source_github_or_pr_json(tmp_path: Path) -> None:
         setup.pr_source(ns(tmp_path, pr=5, pr_json=str(pr)))
     with pytest.raises(setup.SetupError, match="not #6"):
         setup.pr_source(ns(tmp_path, pr=6, pr_json=str(pr), head="abc"))
+
+
+def test_show_prints_the_card_text(capsys: pytest.CaptureFixture[str]) -> None:
+    card = {
+        "requestId": "abc123",
+        "agentId": "agent-a",
+        "sessionId": "s",
+        "roomId": "priv",
+        "state": "open",
+        "title": "Disclose step 5 chunk 0 to #pr-7?",
+        "detail": "raising TIMEOUT_SECONDS to 120\n\nsha256 0123abcd",
+    }
+
+    class H(Http):
+        def get(self, path: str) -> Any:
+            return [card]
+
+    cfg = {"role": "author", "agent_id": "agent-a", "private": "priv"}
+    a = chat.parser().parse_args(["--config", "x", "show", "abc"])
+    assert chat.run(cfg, a, H("http://fake")) == 0
+    out = capsys.readouterr().out
+    assert "Disclose step 5 chunk 0" in out and "TIMEOUT_SECONDS to 120" in out

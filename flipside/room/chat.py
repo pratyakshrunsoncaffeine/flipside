@@ -6,6 +6,7 @@ Uses the owner's own gateway session from an agent config (``flip setup`` writes
     flip chat --config author-agent.json say "Q1: The test kept failing, so ..."
     flip chat --config author-agent.json say --private "@flipside-author-agent offer Q1 step 3"
     flip chat --config author-agent.json cards            # my agent's open approval cards
+    flip chat --config author-agent.json show 3f2a        # the exact text a card discloses
     flip chat --config author-agent.json answer 3f2a approve
 
 A message that starts with ``@<agent name>`` tags that agent, as a chat app would.
@@ -108,6 +109,11 @@ def run(cfg: dict[str, Any], a: argparse.Namespace, h: Http) -> int:
             print("no open cards")
         return 0
     c = find_card(cards, a.card)
+    if a.cmd == "show":
+        print(c.get("title", ""))
+        print()
+        print(c.get("detail", ""))
+        return 0
     path = (
         f"/gateway/agent-sessions/{c['agentId']}/{c['sessionId']}/approvals/{c['requestId']}/answer"
     )
@@ -127,6 +133,8 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--private", action="store_true", help="the author's private room")
     s.add_argument("text", nargs="+")
     sub.add_parser("cards", help="list your agent's open approval cards")
+    sh = sub.add_parser("show", help="print the text an approval card would disclose")
+    sh.add_argument("card", help="card id or its first characters")
     an = sub.add_parser("answer", help="answer an approval card")
     an.add_argument("card", help="card id or its first characters")
     an.add_argument("answer", choices=("approve", "decline"))
