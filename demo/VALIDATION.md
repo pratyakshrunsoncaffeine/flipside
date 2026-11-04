@@ -1,4 +1,14 @@
-# Codex Windows baseline
+# Windows validation
+
+## Current integration
+
+PRs #5 and #6 now target main and include its Windows fixes and room-greeting merge `44852e6`.
+Ubuntu and Windows CI passed on the updated demo branch `4666919`.
+A fresh main clone completed one local full run with 328 passing tests and two skips; the second run and exact offline gate commands are tracked in issue #10 and its separate verification PR.
+Set B passed twice from a fresh clone after that merge, with its original expectations unchanged.
+Live Switch replay remains a separate gate because this Windows machine has no Switch endpoint.
+
+## Historical baseline
 
 Recorded 4 Nov 2026 IST against PR #2 base `f14aead` in an isolated worktree.
 This records the baseline before the lead's pending Windows fixes.
