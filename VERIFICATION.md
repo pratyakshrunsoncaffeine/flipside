@@ -89,7 +89,7 @@ The author's Switch account claimed the Slack user.
 | K3.a the author's private room is bridged to a private Slack channel | channel `C0CEGUSSJJ3` |
 | K3.b author-agent's card renders with Approve and Decline buttons | `evidence/k3-slack-card-20261105T005334-before.png` |
 | K3.c the reviewer cannot answer it | 403 `NOT_AUTHORIZED` |
-| K3.d the author presses Approve in Slack and author-agent receives `approve` | answered by the author's bridged Slack identity; `evidence/k3-slack-card-20261105T005334-after.png` |
+| K3.d the author presses Approve in Slack and author-agent receives `approve` | the log records `answer: approve`, `answeredBy` the author's bridged Slack identity (`evidence/k3-20261105T005334.log`); `evidence/k3-slack-card-20261105T005334-after.png` shows the channel after the press, with the card no longer shown |
 
 Earlier runs are kept.
 `k3-20261105T004827.log`: creating a bridged room needs `channel_type`.
