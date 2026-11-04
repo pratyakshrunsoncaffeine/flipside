@@ -145,6 +145,8 @@ class EventTap:
     def __post_init__(self) -> None:
         if self.cursor_path.exists():
             raw = json.loads(self.cursor_path.read_text(encoding="utf-8"))
+            if raw.get("agent") != self.agent_id or raw.get("rooms") != sorted(self.rooms):
+                return  # a cursor for another agent or other rooms: start a fresh stream
             self.addressed = {str(k): bool(v) for k, v in raw.get("addressed", {}).items()}
             self.last_event_id = raw.get("last_event_id")
 
@@ -160,7 +162,12 @@ class EventTap:
 
     def _save(self) -> None:
         with self._lock:
-            state = {"addressed": self.addressed, "last_event_id": self.last_event_id}
+            state = {
+                "addressed": self.addressed,
+                "agent": self.agent_id,
+                "last_event_id": self.last_event_id,
+                "rooms": sorted(self.rooms),
+            }
         write_atomic(self.cursor_path, json.dumps(state, sort_keys=True))
 
     def _stream(self) -> None:

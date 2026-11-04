@@ -1,6 +1,6 @@
 # Handoff
 
-Updated 5 Nov 2026, 00:20 IST.
+Updated 5 Nov 2026, 00:35 IST.
 Load first: `AGENTS.md`, this file, `docs/BUILD.md` (gates, protocol, Switch facts in section 9), `docs/seal/SPEC.md` before touching `flipside/seal/`, `VERIFICATION.md` (evidence).
 Skills: `pr-protocol` before branching or opening a PR; `handoff` to update this file.
 
@@ -15,7 +15,7 @@ The team repo is `pratyakshrunsoncaffeine/gateplus` (private).
 Pratyaksh is lead and chose Flipside as the base (board, 4 Nov 23:00 IST).
 `main` has Flipside (PR #2), Gate v1 in `legacy/gate-v1/`, and the lead's ported rules and Windows fixes (PR #7).
 CI: Ubuntu required, Windows reporting, macOS on pushes to `main` only (GitHub cancelled PR macOS jobs for lack of runners).
-Open PRs: `room-greeting` (Aarav: rooms open with Flipside's own first message, plus live evidence), #8 (lead: optional `changed_lines` in `--pr-json`, approved), #5 and #6 (Codex: blind set B and the demo, drafts).
+Merged: #2, #7, #9. Open: `github-pr-e2e` (Aarav: room-bound agent state, GitHub run evidence), #8 (lead, approved), #5 and #6 (Codex: set B and the demo), Codex's M4 evidence PR.
 New work branches from `main`.
 
 Done (evidence in `evidence/`, details in `VERIFICATION.md`):
@@ -33,11 +33,11 @@ Done (evidence in `evidence/`, details in `VERIFICATION.md`):
 - SPEC C14 and C15: a Bash call that never ran seals as `ok: null`; `cmd` classifies every shell segment, wrappers and package scripts.
 - One approval card per leaf; its answer covers every question that asked for that leaf, also after a restart.
 - Windows: text is written UTF-8 with LF, private files open with `O_BINARY`, `.gitattributes` checks out LF; `make lint` also runs `mypy --platform win32`.
-- The GitHub reader `fetch_pr` ran live on team PRs #2 and #7 (files, check runs, changed lines match GitHub).
-- 329 tests pass twice on `main` plus `room-greeting`; ruff, ruff format and mypy strict are clean; Gate v1's 156 tests pass in `legacy/gate-v1/`.
+- The full flow on a sealed PR on GitHub (`kadoo69/flipside-sandbox#1`, private, synthetic, with a GitHub Actions check run): `evidence/github-pr-20261105T002706.log`. `fetch_pr` also ran live on team PRs #2 and #7.
+- Agent state and the event cursor record their rooms; state from another setup for the same commit is ignored (found in the GitHub run).
+- 332 tests pass twice on `github-pr-e2e`; ruff, ruff format and mypy strict are clean; Gate v1's 156 tests pass in `legacy/gate-v1/`.
 
 Not done:
-- The full flow against a sealed PR on GitHub: blocked on the user. Auto mode refuses `gh repo create` even with the user's go-ahead. The sealed sandbox repo is ready; the user runs `scratchpad/push-sandbox.sh` (creates private `kadoo69/flipside-sandbox`, pushes, opens the PR), then the agent runs both sides with `--github`.
 - Switch itself posts "Hi! I'm flipside-author-agent - how can I help?" and a "no session connected" reply when author-agent joins `#pr-<n>`. `greeting` on room create, `receives_join_events: false` and `!follow-ups off` do not stop it.
 - M4 clean clone on Windows: Codex, on `main`.
 - K3 (Slack approval card): needs a Slack workspace connected to Switch's Slack bridge.
@@ -75,6 +75,8 @@ Not done:
 - A second clone has no `killtests/.local-users.json`; `make solo` and `make killtests` now stop with a clear message instead of inventing passwords for existing users. Copy the file (mode 0600) from the clone that created the users.
 - A local secrets hook blocks any shell command whose text contains ".env"; write such edits as a script file and run it by path.
 - A hook rewrites some shell commands (`make` becomes `rtk make`), and auto mode then asks for the call to be sent again on its own.
+- The same hook rewrites `git log` output and hid a merge commit; use `command git` or `gh api repos/<r>/commits/main` for exact hashes.
+- Auto mode refuses `gh pr merge` on the agent's own PR ("Merge Without Review"); the lead reviews and merges.
 
 ## Files
 
@@ -109,10 +111,9 @@ A real PR, by hand: README section "Run it on a real PR" (`flip seal`, `flip set
 
 ## Open questions
 
-- The user runs `! bash <scratchpad>/push-sandbox.sh` for the GitHub run.
 - Slack workspace for K3, or Docker plus Mattermost, for a chat window in the demo.
 - Demo narration: macOS `say` (free, local) or an ElevenLabs key.
 
 ## Next step
 
-Merge the `room-greeting` PR once CI is green; then, after the user pushes the sandbox, run `flip setup` (reviewer with `--github kadoo69/flipside-sandbox --pr 1`), both agents and `flip chat` against GitHub, and log it to `evidence/github-pr-<ts>.log`.
+The lead merges the `github-pr-e2e` PR. Then: the coverage wording proposal (coverage says "withheld" for steps nobody asked for, while the brief's "withheld" means the author declined), K3 once Slack is connected, and the demo video.

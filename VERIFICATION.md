@@ -8,8 +8,10 @@ Every line below is backed by a command that passed or an evidence file in `evid
 
 | OS | Command | Result |
 |---|---|---|
-| macOS 26.1 | `make lint test`, twice | ruff and mypy clean; 241 passed, twice |
-| Ubuntu | `.github/workflows/ci.yml` | Not run yet: the GitHub repo does not exist yet |
+| macOS 26.1 | `make lint test`, twice | ruff, ruff format, mypy strict (also `--platform win32`) clean; 332 passed, twice |
+| Ubuntu | `.github/workflows/ci.yml` on every PR | Green (required job) |
+| Windows | `.github/workflows/ci.yml` on every PR | Green since PR #7; reported without blocking |
+| macOS | `.github/workflows/ci.yml` on pushes to `main` | Runs on `main` only: GitHub cancelled PR macOS jobs for lack of runners |
 
 ## Clean clone
 
@@ -31,6 +33,7 @@ The second-machine run (M4 gate, the teammate's laptop) is not done yet.
 | All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
 | M5: 9 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
 | Real session end to end: `claude -p` made the change in a synthetic sandbox repo, `flip seal`, `flip setup` (three steps), both `flip agent` processes, people via `flip chat`; 2 questions, 8 leaves OK, 0 contradictions | manual run | `evidence/real-session-20261104T224823.log` |
+| The same sealed PR on GitHub (`kadoo69/flipside-sandbox#1`, private, with a GitHub Actions check run): reviewer cloned from GitHub, `flip setup reviewer --github`, reviewer-agent read the PR with `gh api`; 2 questions, 2 answered, 8 leaves OK, 0 contradictions | manual run | `evidence/github-pr-20261105T002706.log` |
 | All 9 fixture cases live, twice, after one-card-per-leaf | `make solo-all` | `evidence/solo-all-20261104T225437.log` (9/9), `evidence/solo-all-20261104T230152.log` (9/9) |
 
 Two earlier `make solo` runs are kept as they ran:
@@ -70,9 +73,9 @@ Not recorded yet; its SHA-256 goes here.
 
 ## Outside the checked scope
 
-- K3, Slack rendering of the approval card: not run; it needs the lead's Slack login.
+- K3, Slack rendering of the approval card: not run; it needs a Slack workspace connected to the Switch server.
 - Two machines live (author and reviewer on different laptops): not run.
-- PR data (title, body, changed files, check runs) comes from each case's `case.json`; there is no GitHub API reader yet.
+- In fixtures, PR data (title, body, changed files, check runs) comes from each case's `case.json`; the GitHub reader ran on the sandbox PR and on team PRs #2 and #7.
 - All sessions and repos in `fixtures/` and `examples/` are synthetic.
   Real Claude Code sessions were sealed only for G4, G6 and G7 (M1 evidence log).
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room (`users: "*"`): Switch matches people by a member client id that the gateway does not expose.
@@ -82,5 +85,8 @@ Not recorded yet; its SHA-256 goes here.
 `evidence/solo-all-20261104T221502.log` passed 9/9 but is not gate evidence.
 It started after the C14 fix and before C15 and the `PreToolUse:` prefix, and the fixtures were regenerated while it ran.
 The two runs above use the committed code.
+
+The GitHub run found one bug, fixed with a test: an author repo whose `.git/flipside/work-author` came from an earlier setup for the same commit made author-agent wait on that setup's cards, so the new room never got one.
+Agent state and the event cursor now record their rooms (and agent), and a mismatch starts fresh.
 
 The first real-session run found three bugs, each fixed with a test (commit e8530d0): the default work directory did not exist, so state saves failed; two questions on one merged step gave the author a card per question for the same bytes; and "with tests" did not count as mentioning the test file.
