@@ -39,3 +39,29 @@ def test_every_write_text_is_utf8_and_lf() -> None:
 def test_every_read_text_is_utf8() -> None:
     bad = [f"{f}:{n}" for f, n, kw in calls("read_text") if "encoding" not in kw]
     assert not bad, bad
+
+
+def test_every_os_open_is_binary() -> None:
+    """Without ``O_BINARY`` the Windows C runtime writes each LF byte as CR LF, so a random
+    32-byte key containing 0x0A was stored longer and then refused (Codex, Windows)."""
+    bad = []
+    for d in DIRS:
+        for f in sorted((ROOT / d).rglob("*.py")):
+            if f in SKIP:
+                continue
+            text = f.read_text(encoding="utf-8")
+            for fn in ast.walk(ast.parse(text)):
+                if not isinstance(fn, ast.FunctionDef):
+                    continue
+                opens = [
+                    n
+                    for n in ast.walk(fn)
+                    if isinstance(n, ast.Call)
+                    and isinstance(n.func, ast.Attribute)
+                    and n.func.attr == "open"
+                    and isinstance(n.func.value, ast.Name)
+                    and n.func.value.id == "os"
+                ]
+                if opens and "O_BINARY" not in (ast.get_source_segment(text, fn) or ""):
+                    bad += [f"{f.relative_to(ROOT)}:{n.lineno}" for n in opens]
+    assert not bad, bad

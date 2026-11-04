@@ -97,7 +97,10 @@ def load_config(path: Path) -> dict[str, Any]:
 
 def write_config(path: Path, cfg: dict[str, Any]) -> None:
     """Write an agent config readable only by its owner."""
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    flags = (
+        os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0)
+    )  # no CRT newline mapping
+    fd = os.open(path, flags, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
         json.dump(cfg, f, sort_keys=True, indent=1)
     os.chmod(path, 0o600)
