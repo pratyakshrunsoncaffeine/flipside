@@ -68,12 +68,30 @@ def policy(*rules: dict[str, Any]) -> dict[str, Any]:
     return {"policy": {"rules": list(rules)}}
 
 
-def open_chat(user: Http, name: str, agent_id: str) -> str:
-    return room_id(
-        user.post(
-            "/gateway/chats", {"requestId": uuid.uuid4().hex, "name": name, "agentIds": [agent_id]}
-        )
+def shared_greeting(pr: int) -> str:
+    return (
+        f"Flipside review of PR #{pr}. reviewer-agent asks about the PR here; the author "
+        "answers each question as Q<k>: in their own words."
     )
+
+
+def private_greeting(pr: int) -> str:
+    return (
+        f"Flipside approvals for PR #{pr}. Only you and author-agent are in this room. "
+        "Nothing from your session leaves it until you approve a card."
+    )
+
+
+def open_chat(user: Http, name: str, agent_id: str, greeting: str) -> str:
+    """A new room with one agent. ``greeting`` is the room's first message; without it
+    Switch posts a generic "how can I help?" under the agent's name."""
+    body = {
+        "requestId": uuid.uuid4().hex,
+        "name": name,
+        "agentIds": [agent_id],
+        "greeting": greeting,
+    }
+    return room_id(user.post("/gateway/chats", body))
 
 
 def author_policy(shared: str, reviewer_agent: str) -> dict[str, Any]:
@@ -137,7 +155,7 @@ def setup_author_start(a: argparse.Namespace, owner: tuple[Http, str, str]) -> s
     ``owner`` is the author's gateway session, user id and name (``login``)."""
     h, uid, name = owner
     agent, key = register(h, a.base, a.agent_name)
-    private = open_chat(h, f"pr-{a.pr}-author", agent)
+    private = open_chat(h, f"pr-{a.pr}-author", agent, private_greeting(a.pr))
     repo = Path(a.repo).resolve()
     cfg = {
         "role": "author",
@@ -209,7 +227,7 @@ def setup_reviewer(a: argparse.Namespace, owner: tuple[Http, str, str]) -> str:
     source = pr_source(a)
     h, _uid, name = owner
     agent, key = register(h, a.base, a.agent_name)
-    shared = open_chat(h, f"pr-{a.pr}", agent)
+    shared = open_chat(h, f"pr-{a.pr}", agent, shared_greeting(a.pr))
     h.put(f"/gateway/agents/{agent}/addressing-policy", reviewer_policy(shared, j["agent"]))
     h.post(f"/gateway/chats/{shared}/members", {"userId": j["user"]})
     h.post(f"/gateway/rooms/{shared}/agents", {"agent_ids": [j["agent"]]})
