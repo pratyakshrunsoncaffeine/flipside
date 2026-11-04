@@ -13,7 +13,7 @@ All fixtures are synthetic.
 
 ## Quick start
 
-Offline, no Switch and no accounts (Python 3.12 and [uv](https://docs.astral.sh/uv/)):
+Offline, no Switch and no accounts (Git, Python 3.12, [uv](https://docs.astral.sh/uv/) and make; on Windows without make, see below):
 
 ```
 uv sync --frozen
@@ -39,6 +39,34 @@ make replay
 Each agent then runs as its own process (`flip agent`); both are killed with SIGKILL mid-flow and restarted.
 It writes `evidence/solo-*.log` with every Switch message id.
 `make solo-all` does the same for all 9 fixture cases.
+
+### Without make (Windows PowerShell)
+
+The same targets, run directly:
+
+```
+uv sync --frozen
+uv run --frozen ruff check flipside tests docs/seal/example.py examples fixtures
+uv run --frozen ruff format --check flipside tests docs/seal/example.py examples fixtures
+uv run --frozen mypy
+uv run --frozen pytest
+$c = Get-Content examples/commit.txt
+uv run --frozen python -m flipside.cli verify --bundle examples/seal.bundle --commit $c --manifest examples/manifest.json examples/q2-ok.json
+uv run --frozen python -m flipside.cli verify --bundle examples/seal.bundle --commit $c --manifest examples/manifest.json examples/q2-forged.json; $LASTEXITCODE
+uv run --frozen python -m flipside.cli replay --offline
+uv run --frozen python -m flipside.cli replay --fixtures
+```
+
+The first verify prints `OK`; the forged one prints `PROOF_FAIL` and `$LASTEXITCODE` is 2.
+On Windows, give pytest a short temporary folder if a path is too long: `uv run --frozen pytest --basetemp=C:/t/run1`.
+
+Live, set `FLIP_SWITCH_ENV` to the Console's `switch-core.env` file first, then:
+
+```
+cd killtests; uv run --frozen python k1_k2.py; uv run --frozen python k4.py; cd ..
+uv run --frozen python -m flipside.cli solo
+uv run --frozen python -m flipside.cli replay
+```
 
 ## Run it on a real PR
 

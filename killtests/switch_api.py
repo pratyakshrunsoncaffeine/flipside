@@ -12,18 +12,24 @@ import uuid
 from http.cookiejar import CookieJar
 
 BASE = os.environ.get("SWITCH_BASE", "http://127.0.0.1:52370")
-ENV_FILE = (
+# Switch Console's env file on macOS; FLIP_SWITCH_ENV overrides it (Windows, Linux), as in
+# flipside/room/solo.py.
+CONSOLE_ENV = (
     pathlib.Path.home()
     / "Library/Application Support/switchdash/local-switch-server/native/run/switch-core.env"
 )
 
 
+def env_file() -> pathlib.Path:
+    return pathlib.Path(os.environ.get("FLIP_SWITCH_ENV", str(CONSOLE_ENV)))
+
+
 def console_env() -> dict[str, str]:
     out = {}
-    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
+    for line in env_file().read_text(encoding="utf-8").splitlines():
         if "=" in line and not line.startswith("#"):
             k, v = line.split("=", 1)
-            out[k] = v
+            out[k.strip()] = v.strip()
     return out
 
 
