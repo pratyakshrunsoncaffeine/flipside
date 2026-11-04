@@ -14,7 +14,8 @@ it must be mode 0600 and is never printed. Keys:
   with ``pr_number``.
 - author: ``private``, ``reviewer_agent``, ``author_user``, ``author_name``; optional
   ``root`` and ``commit`` (default: the newest seal commit in ``base_ref``..HEAD, with
-  ``base_ref`` defaulting to ``origin/main``).
+  ``base_ref`` defaulting to ``origin/main``), and ``author_answerers`` (the author's linked
+  messaging-app accounts, ``@switch-slack-<connection>-<username>``, whose card answers count).
 - reviewer: ``author_agent``, ``author_agent_name``, ``pr_author``, ``reviewer_name``;
   optional ``head`` (default: the PR's head commit from GitHub), ``base_ref`` (default
   ``origin/main``) and ``timeout`` (default ``FLIP_ANSWER_TIMEOUT`` or 30 minutes).
@@ -179,6 +180,7 @@ def author(cfg: dict[str, Any]) -> tuple[AuthorAgent, SwitchTransport]:
             author_name=cfg["author_name"],
             state_path=Path(cfg["work"]) / "author-agent.json",
             agent_name=cfg["agent_name"],
+            author_answerers=tuple(cfg.get("author_answerers", ())),
         ),
         log=log,
     )

@@ -38,11 +38,15 @@ from flipside.room.run import Card, Cast, Log, Result, Script, play
 from flipside.room.scenario import World, load_case, materialize
 from flipside.room.setup import (
     OWNER_RULE,
-    open_chat,
+    bridged_ids,
+    invite,
+    linked_names,
+    open_room,
     policy,
     private_greeting,
     register,
     shared_greeting,
+    slack_bridge,
 )
 from flipside.room.switch_client import DEFAULT_BASE, Http, SwitchTransport
 
@@ -147,10 +151,13 @@ class Live:
     keys: dict[str, str]
     cast: Cast
     session_id: str
+    author_answerers: list[str] = field(default_factory=list)
 
 
-def bootstrap(world: World, log: Log) -> Live:
-    """Users, agents, rooms and policies for one run. Fresh rooms every run."""
+def bootstrap(world: World, log: Log, slack: bool = False) -> Live:
+    """Users, agents, rooms and policies for one run. Fresh rooms every run. With ``slack``
+    both rooms are private channels on the server's Slack connection, and each person's
+    linked Slack account is added to the channels they are in."""
     base = base_url()
     admin = admin_login(base)
     author_h, author_id, author_name = person(admin, base, "author")
@@ -161,8 +168,9 @@ def bootstrap(world: World, log: Log) -> Live:
         f"Switch {base}: author {author_name} user {author_id}, reviewer {reviewer_name} user "
         f"{reviewer_id}; author-agent {a_agent}, reviewer-agent {r_agent}"
     )
+    bridge = slack_bridge(admin) if slack else None
     n = world.pr.number
-    shared = open_chat(reviewer_h, f"pr-{n}", r_agent, shared_greeting(n))
+    shared = open_room(reviewer_h, f"pr-{n}", r_agent, shared_greeting(n), bridge)
     # Switch matches a person against `users` by their member client id, which the gateway
     # does not expose, so reviewer-agent admits any person in its own #pr-<n> room: only
     # the author and the reviewer are members, and it acts only on the PR author's answers.
@@ -176,7 +184,14 @@ def bootstrap(world: World, log: Log) -> Live:
     )
     reviewer_h.post(f"/gateway/chats/{shared}/members", {"userId": author_id})
     reviewer_h.post(f"/gateway/rooms/{shared}/agents", {"agent_ids": [a_agent]})
-    private = open_chat(author_h, f"pr-{n}-author", a_agent, private_greeting(n))
+    private = open_room(author_h, f"pr-{n}-author", a_agent, private_greeting(n), bridge)
+    answerers: list[str] = []
+    if bridge:
+        answerers = bridged_ids(author_h, bridge)
+        author_names = linked_names(author_h, bridge)
+        invite(reviewer_h, shared, linked_names(reviewer_h, bridge) + author_names)
+        invite(author_h, private, author_names)
+        log(f"Slack connection {bridge}: added linked accounts {author_names or 'none'} (author)")
     log(
         f"reviewer opened #pr-{n} {shared} and added the author and author-agent; author opened "
         f"#pr-{n}-author {private}; author-agent policy: owner, owner's agents, reviewer-agent "
@@ -194,7 +209,7 @@ def bootstrap(world: World, log: Log) -> Live:
         reviewer_name,
     )
     keys = {"author": a_key, "reviewer": r_key}
-    return Live(base, author_h, reviewer_h, keys, cast, str(uuid.uuid4()))
+    return Live(base, author_h, reviewer_h, keys, cast, str(uuid.uuid4()), answerers)
 
 
 def agent_configs(world: World, live: Live, work: Path) -> dict[str, Path]:
@@ -218,6 +233,7 @@ def agent_configs(world: World, live: Live, work: Path) -> dict[str, Path]:
             "pr_number": pr.number,
             "reviewer_agent": c.r_agent,
             "author_user": c.author_u,
+            "author_answerers": live.author_answerers,
             "author_name": c.author_name,
         },
         "reviewer": {
@@ -296,9 +312,20 @@ class Agents:
         return path.read_text(encoding="utf-8").splitlines() if path.exists() else []
 
 
-def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Result:
-    """Play ``world`` on the local Switch server with each agent in its own process."""
-    live = bootstrap(world, log)
+def run_switch(
+    world: World,
+    log: Log,
+    work: Path,
+    restarts: bool = True,
+    slack: bool = False,
+    press: bool = False,
+    pace: float = 1.0,
+) -> Result:
+    """Play ``world`` on the local Switch server with each agent in its own process;
+    with ``slack`` the rooms are Slack channels (see ``bootstrap``). With ``press`` the
+    author answers their cards in Slack, and the run waits up to 15 minutes for it;
+    ``pace`` is the pause between the people's turns, in seconds."""
+    live = bootstrap(world, log, slack)
     c = live.cast
     agents = Agents(agent_configs(world, live, work), work, log)
     ids = {"author": c.a_agent.split(":", 1)[1], "reviewer": c.r_agent.split(":", 1)[1]}
@@ -320,6 +347,7 @@ def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Res
     }
     humans = SwitchHumans(owners, ids, c.private, log)
     script = Script(world, humans, c, attack["author"], attack["reviewer"], AUTHOR_AGENT_NAME, log)
+    script.by_hand = press
     killed: set[str] = set()
 
     def on_round(_rnd: int, transcript: list[Any]) -> None:
@@ -357,8 +385,8 @@ def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Res
             lambda: attack["author"].read(c.shared),
             log,
             dropped=dropped,
-            max_rounds=90,
-            pause=1.0,
+            max_rounds=max(90, int(900 / (2 * pace))) if press else 90,
+            pause=pace,
             on_round=on_round,
             settle=4,
         )
@@ -371,7 +399,9 @@ def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Res
     return result
 
 
-def run_case(case_dir: Path, restarts: bool) -> tuple[bool, str]:
+def run_case(
+    case_dir: Path, restarts: bool, slack: bool = False, press: bool = False, pace: float = 1.0
+) -> tuple[bool, str]:
     """Run one case live; write its evidence log. Returns the result and the log name."""
     case = load_case(case_dir)
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
@@ -391,7 +421,9 @@ def run_case(case_dir: Path, restarts: bool) -> tuple[bool, str]:
             f"{world.commit or 'none'}"
         )
         started = time.monotonic()
-        result = run_switch(world, log, work, restarts=restarts)
+        result = run_switch(
+            world, log, work, restarts=restarts, slack=slack, press=press, pace=pace
+        )
         log(f"elapsed {time.monotonic() - started:.0f} s")
         diffs = report(result, case.expected, log)
     dups = result.summary()["duplicates"]
@@ -420,12 +452,25 @@ def main(argv: list[str]) -> int:
     p.add_argument("--case", default=str(DEFAULT_CASE))
     p.add_argument("--all", action="store_true", help="run every case in fixtures/cases")
     p.add_argument("--no-restart", action="store_true", help="skip the restart test")
+    p.add_argument(
+        "--slack",
+        action="store_true",
+        help="open the rooms as Slack channels on the server's Slack connection",
+    )
+    p.add_argument(
+        "--press",
+        action="store_true",
+        help="with --slack: leave the author's cards for the author to answer in Slack",
+    )
+    p.add_argument("--pace", type=float, default=1.0, help="seconds between the people's turns")
     a = p.parse_args(argv)
+    if a.press and not a.slack:
+        p.error("--press needs --slack")
     if not a.all:
-        return 0 if run_case(Path(a.case), not a.no_restart)[0] else 1
+        return 0 if run_case(Path(a.case), not a.no_restart, a.slack, a.press, a.pace)[0] else 1
     rows = []
     for d in sorted((ROOT / "fixtures" / "cases").iterdir()):
-        ok, name = run_case(d, not a.no_restart)
+        ok, name = run_case(d, not a.no_restart, a.slack, a.press, a.pace)
         rows.append(f"{'PASS' if ok else 'FAIL'} {d.name} evidence/{name}")
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
     summary = ROOT / "evidence" / f"solo-all-{stamp}.log"
