@@ -184,7 +184,8 @@ def setup_author_finish(a: argparse.Namespace, http: Http | None = None) -> str:
 
 def pr_source(a: argparse.Namespace) -> dict[str, Any]:
     """Where reviewer-agent reads the PR: GitHub (``--github``), or a PR data file
-    (``--pr-json``, keys number, title, body, author, files, checks) with ``--head``."""
+    (``--pr-json``, keys number, title, body, author, files, checks, and optionally
+    changed_lines for the SIZE gap) with ``--head``."""
     if bool(a.github) == bool(a.pr_json):
         raise SetupError("give exactly one of --github or --pr-json")
     if a.github:

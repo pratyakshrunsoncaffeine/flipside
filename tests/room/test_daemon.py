@@ -48,6 +48,12 @@ def test_pr_data_from_the_config() -> None:
         }
     )
     assert (pr.number, pr.files, pr.checks) == (7, ("x.py",), (CheckRun("ci", "failure"),))
+    assert pr.changed_lines is None
+
+
+def test_pr_data_reads_optional_changed_lines() -> None:
+    p = {"number": 7, "title": "t", "body": "b", "author": "a", "files": [], "changed_lines": 512}
+    assert pr_data({"pr": p}).changed_lines == 512
 
 
 def test_reviewer_head_needs_a_head_or_github() -> None:
