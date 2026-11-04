@@ -3,12 +3,14 @@
 from typing import Any
 
 from flipside.room.rules import (
+    MAX_LINES,
     CheckRun,
     Gap,
     PRData,
     asked,
     contradictions,
     gaps,
+    is_lockfile,
     select,
 )
 
@@ -63,8 +65,9 @@ def pr(
     body: str = "Adds CSV export to the reports page.",
     files: tuple[str, ...] = (F, G),
     checks: tuple[CheckRun, ...] = (),
+    changed_lines: int | None = None,
 ) -> PRData:
-    return PRData(142, title, body, "priya", files, checks)
+    return PRData(142, title, body, "priya", files, checks, changed_lines)
 
 
 def kinds(gs: list[Gap]) -> list[tuple[str, str | None]]:
@@ -92,7 +95,10 @@ def test_tests_fires_on_failed_last_run_and_not_on_pass() -> None:
     assert kinds(g) == [("TESTS", None)]
     assert "step `4`" in g[0].text
     assert gaps(pr(body="session export. Tests pass."), MANIFEST) == []
-    assert gaps(pr(body="session export. tests are flaky", files=(G,)), m) == []
+    # No pass claim: the failed last run is asked as RERUN instead.
+    assert kinds(gaps(pr(body="session export. tests are flaky", files=(G,)), m)) == [
+        ("RERUN", None)
+    ]
 
 
 def test_tests_fires_when_no_test_ran() -> None:
@@ -229,3 +235,77 @@ def test_scope_test_file_counts_as_mentioned_when_the_body_says_it_adds_tests() 
     assert kinds(g) == [("TESTS", None), ("SCOPE", t)]
     # The test's subject must be mentioned too.
     assert kinds(gaps(pr(body="Adds render_json, with tests.", files=(t,)), m)) == [("SCOPE", t)]
+
+
+LINT_RUN = [
+    e(12, 11, tools=["Bash"], cmd="lint"),
+    e(13, 12, "tool_result", ["Bash"], cmd="lint", ok=False),
+]
+
+
+def test_lint_claim_fires_when_no_lint_ran_or_the_last_failed() -> None:
+    body = "session export. Ruff is clean."
+    g = gaps(pr(body=body), MANIFEST)
+    assert kinds(g) == [("LINT", None)] and "No sealed step ran lint" in g[0].text
+    g = gaps(pr(body=body), [*MANIFEST, *LINT_RUN])
+    assert kinds(g) == [("LINT", None)] and "step `12`" in g[0].text
+    passed = [LINT_RUN[0], {**LINT_RUN[1], "ok": True}]
+    assert gaps(pr(body=body), [*MANIFEST, *passed]) == []
+
+
+def test_lint_and_build_need_a_pass_claim() -> None:
+    for body in (
+        "session export. Fixed the lint warnings.",
+        "session export. A build step that passes flags to the linter.",
+        "session export. Build passes: see CI.",
+    ):
+        got = kinds(gaps(pr(body=body), MANIFEST))
+        assert got == ([("BUILD", None)] if body.startswith("session export. Build") else []), body
+
+
+def test_build_claim_fires_and_not() -> None:
+    body = "session export. The build succeeded."
+    assert kinds(gaps(pr(body=body), MANIFEST)) == [("BUILD", None)]
+    ran = [
+        e(12, 11, tools=["Bash"], cmd="build"),
+        e(13, 12, "tool_result", ["Bash"], cmd="build", ok=True),
+    ]
+    assert gaps(pr(body=body), [*MANIFEST, *ran]) == []
+
+
+def test_lint_claim_skips_a_call_that_never_ran() -> None:
+    never = [LINT_RUN[0], {**LINT_RUN[1], "ok": None}]
+    g = gaps(pr(body="session export. mypy passes."), [*MANIFEST, *never])
+    assert kinds(g) == [("LINT", None)] and "No sealed step ran lint" in g[0].text
+
+
+def test_rerun_fires_without_a_claim_and_not_after_a_passing_rerun() -> None:
+    g = gaps(pr(body="session export", files=(G,)), MANIFEST[:5])
+    assert kinds(g) == [("RERUN", None)] and g[0].step == (0, 4)
+    assert gaps(pr(body="session export"), MANIFEST) == []
+
+
+def test_size_fires_over_the_limit_and_not_at_it() -> None:
+    g = gaps(pr(body="session export", changed_lines=MAX_LINES + 1), MANIFEST)
+    assert kinds(g) == [("SIZE", None)] and f"{MAX_LINES + 1} lines" in g[0].text
+    assert gaps(pr(body="session export", changed_lines=MAX_LINES), MANIFEST) == []
+    assert gaps(pr(body="session export", changed_lines=None), MANIFEST) == []
+
+
+def test_new_rules_come_after_the_build_md_rules() -> None:
+    body = "x session export. Lint passes."
+    g = gaps(pr(body=body, files=(F, G, "README.md"), changed_lines=900), MANIFEST)
+    assert [k for k, _ in kinds(g)] == ["UNSEALED", "LINT", "SIZE"]
+
+
+def test_is_lockfile() -> None:
+    assert is_lockfile("web/package-lock.json") and is_lockfile("uv.lock")
+    assert not is_lockfile("src/lock.py")
+
+
+def test_select_lint_and_rerun() -> None:
+    m = [*MANIFEST, *LINT_RUN]
+    assert select(Gap("LINT", ""), m).leaves == (13, 12)
+    assert select(Gap("BUILD", ""), m).leaves == ()
+    assert select(Gap("RERUN", ""), MANIFEST[:5]).leaves == (4, 3)
+    assert select(Gap("SIZE", ""), m).leaves == ()

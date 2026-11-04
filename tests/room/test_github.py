@@ -24,7 +24,11 @@ def fake(args: Sequence[str]) -> str:
             }
         )
     if path.endswith("/pulls/142/files"):
-        return "reports/export.py\nauth/session.py\n"
+        return (
+            '{"filename":"reports/export.py","additions":30,"deletions":4}\n'
+            '{"filename":"auth/session.py","additions":1,"deletions":1}\n'
+            '{"filename":"web/package-lock.json","additions":900,"deletions":0}\n'
+        )
     if path.endswith(f"/commits/{SHA}/check-runs"):
         return '{"name":"tests","conclusion":"success"}\n{"name":"lint","conclusion":null}\n'
     raise AssertionError(path)
@@ -33,7 +37,8 @@ def fake(args: Sequence[str]) -> str:
 def test_fetch_pr_maps_every_field() -> None:
     pr = fetch_pr("acme/app", 142, run=fake)
     assert (pr.number, pr.title, pr.body, pr.author) == (142, "Add CSV export", "", "priya")
-    assert pr.files == ("reports/export.py", "auth/session.py")
+    assert pr.files == ("reports/export.py", "auth/session.py", "web/package-lock.json")
+    assert pr.changed_lines == 36, "lockfile lines are not counted"
     assert pr.checks == (CheckRun("tests", "success"), CheckRun("lint", None))
 
 

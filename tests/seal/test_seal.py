@@ -66,8 +66,10 @@ def test_seal_commit_trailer_state_and_key_mode(pr: PR) -> None:
     t = parse_trailer(values[0])
     assert t == res.sealed.trailer
     assert run(pr.repo, "diff", "--name-only", "HEAD~1", "HEAD") == ""
-    assert stat.S_IMODE(res.key_path.stat().st_mode) == 0o600
-    assert stat.S_IMODE(res.state_path.stat().st_mode) == 0o600
+    assert len(res.key_path.read_bytes()) == 32
+    if os.name == "posix":
+        assert stat.S_IMODE(res.key_path.stat().st_mode) == 0o600
+        assert stat.S_IMODE(res.state_path.stat().st_mode) == 0o600
     assert res.key_path.parent == pr.repo / ".git" / "flipside"
     state = json.loads(res.state_path.read_text(encoding="utf-8"))
     assert state["commit"] == res.commit and state["changed_files"] == [
@@ -78,6 +80,12 @@ def test_seal_commit_trailer_state_and_key_mode(pr: PR) -> None:
     assert res.manifest_path.read_bytes() == res.sealed.manifest
     assert b"86400" not in res.sealed.manifest
     assert "86400" not in res.state_path.read_text(encoding="utf-8")
+
+
+def test_a_key_with_newline_bytes_is_stored_byte_for_byte(pr: PR) -> None:
+    key = b"\n\r" * 16
+    res = seal(pr.repo, pr.session, "main", key=key)
+    assert res.key_path.read_bytes() == key
 
 
 def test_same_key_same_root_new_key_new_root(pr: PR) -> None:
@@ -199,18 +207,22 @@ def test_private_write_is_binary_and_keeps_lf_bytes(
     # Windows: a key of LF bytes was stored as CR LF pairs (64 bytes) and load_key refused it.
     from flipside.seal import seal as seal_mod
 
-    monkeypatch.setattr(os, "O_BINARY", 0x8000, raising=False)
+    # On POSIX there is no O_BINARY: inject one, and strip it before the real open.
+    binary = getattr(os, "O_BINARY", 0)
+    injected = 0 if binary else 0x8000
+    if injected:
+        monkeypatch.setattr(os, "O_BINARY", injected, raising=False)
     real_open = os.open
     seen: list[int] = []
 
     def spy(path: Any, flags: int, mode: int = 0o777) -> int:
         seen.append(flags)
-        return real_open(path, flags & ~0x8000, mode)
+        return real_open(path, flags & ~injected, mode)
 
     monkeypatch.setattr(os, "open", spy)
     key = tmp_path / "k.key"
     seal_mod._write_private(key, b"\n" * 32)
-    assert seen and seen[0] & 0x8000
+    assert seen and seen[0] & (binary or injected)
     assert seal_mod.load_key(key) == b"\n" * 32
     if os.name == "posix":  # Windows has no owner-only mode bits
         assert key.stat().st_mode & 0o777 == 0o600
