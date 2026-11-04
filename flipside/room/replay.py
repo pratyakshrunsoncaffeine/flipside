@@ -174,7 +174,7 @@ def fixtures_report(out: Path) -> int:
         asked_files = {q[1] for q in s["questions"]}
         surfaced = "n/a" if not hidden else ("yes" if set(hidden) <= asked_files else "NO")
         false_flags = len(s["questions"]) if not hidden else 0
-        ok = not compare(s, exp) and result.brief is not None
+        ok = not compare(s, exp) and result.brief is not None and not s["duplicates"]
         failures += not ok
         codes = ", ".join(f"{k} {v}" for k, v in sorted(s["verdicts"].items())) or "none"
         asked = ", ".join(f"{q[0]} {q[1] or ''}".strip() for q in s["questions"]) or "none"
@@ -242,7 +242,7 @@ def main(argv: list[str]) -> int:
             solo = importlib.import_module("flipside.room.solo")
             result = solo.run_switch(world, log, work)
         diffs = report(result, case.expected, log)
-    ok = not diffs and result.brief is not None
+    ok = not diffs and result.brief is not None and not result.summary()["duplicates"]
     log(f"RESULT {'PASS' if ok else 'FAIL'} {case.name} ({mode}, {result.rounds} rounds)")
     if not a.no_evidence:
         log_path.parent.mkdir(exist_ok=True)
