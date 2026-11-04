@@ -22,22 +22,25 @@ class Clock:
         return self.t
 
 
-def setup(world: World, tmp: Path, clock: Clock) -> dict[str, Any]:
+def setup(
+    world: World, tmp: Path, clock: Clock, rooms: tuple[str, str] = ("pr", "priv")
+) -> dict[str, Any]:
+    shared, private = rooms
     hub = FakeSwitch()
     au, ru = hub.user("a", "priya"), hub.user("r", "omar")
     aa = hub.agent("aa", replay.AUTHOR_AGENT_NAME, au)
     ra = hub.agent("ra", replay.REVIEWER_AGENT_NAME, ru)
-    hub.room("pr", [au, ru, aa, ra])
-    hub.room("priv", [au, aa])
-    hub.set_policy(aa, [Rule(owner=True), Rule(agents=(ra,), rooms=("pr",))], by=au)
+    hub.room(shared, [au, ru, aa, ra])
+    hub.room(private, [au, aa])
+    hub.set_policy(aa, [Rule(owner=True), Rule(agents=(ra,), rooms=(shared,))], by=au)
 
     def author() -> AuthorAgent:
         return AuthorAgent(
             FakeTransport(hub, aa),
             AuthorConfig(
                 world.pr.number,
-                "pr",
-                "priv",
+                shared,
+                private,
                 world.author_repo,
                 world.root or "",
                 world.commit or "",
@@ -54,7 +57,7 @@ def setup(world: World, tmp: Path, clock: Clock) -> dict[str, Any]:
             FakeTransport(hub, ra),
             ReviewerConfig(
                 world.pr,
-                "pr",
+                shared,
                 world.reviewer_repo,
                 world.head,
                 world.base,
@@ -227,3 +230,22 @@ def test_declined_leaf_is_withheld_for_every_question(tmp_path: Path) -> None:
     assert sorted({w["q"] for w in withheld}) == [1, 2]
     assert {w["reason"] for w in withheld} == {"author"}
     assert _decided(hub, "disclosure") == []
+
+
+def test_state_from_another_room_is_not_reused(tmp_path: Path) -> None:
+    # Found live: an author repo whose .git/flipside/work-author came from an earlier run
+    # (same sealed commit, other rooms) believed its 8 cards were already open, so the new
+    # room never got a card and the flow stalled after the request.
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    a, r = s["author"](), s["reviewer"]()
+    a.step()
+    r.step()
+    a.step()
+    assert len(s["hub"].cards) == 1
+    s2 = setup(world, tmp_path, Clock(), rooms=("pr-second", "priv-second"))
+    a, r = s2["author"](), s2["reviewer"]()
+    a.step()
+    r.step()
+    a.step()
+    assert len(s2["hub"].cards) == 1

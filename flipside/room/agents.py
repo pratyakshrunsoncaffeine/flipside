@@ -115,9 +115,20 @@ class AuthorAgent:
     dropped: set[str] = field(default_factory=set)
     _rebuilt: Rebuilt | None = None
 
+    def _rooms(self) -> list[str]:
+        return [self.cfg.shared, self.cfg.private]
+
     def __post_init__(self) -> None:
         if self.cfg.state_path and self.cfg.state_path.exists():
             raw = json.loads(self.cfg.state_path.read_text(encoding="utf-8"))
+            if raw.get("rooms") != self._rooms():
+                # Cards and dropped requests belong to the rooms they were made in; a state
+                # file from another pair of rooms (an earlier setup for the same commit)
+                # would make the agent wait on cards that will never be answered here.
+                self.log(
+                    f"author-agent: ignoring state saved for other rooms in {self.cfg.state_path}"
+                )
+                return
             self.cards = {
                 k: int(v[-1] if isinstance(v, list) else v) for k, v in raw.get("cards", {}).items()
             }
@@ -131,6 +142,7 @@ class AuthorAgent:
                     {
                         "cards": dict(self.cards),
                         "dropped": sorted(self.dropped),
+                        "rooms": self._rooms(),
                     },
                     sort_keys=True,
                 ),
