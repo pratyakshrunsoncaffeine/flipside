@@ -1,0 +1,27 @@
+{
+  "repo": "acme/shop",
+  "author": "dana",
+  "reviewer": "sam",
+  "head_sha": "9f2c4e1a7b",
+  "checks": [
+    {
+      "name": "ci / test",
+      "conclusion": "success"
+    }
+  ],
+  "number": 42,
+  "title": "Fix rounding in invoice totals",
+  "body": "Totals rounded each line instead of the sum. Ran `pytest tests/invoices`.",
+  "files": [
+    {
+      "path": "app/invoices/totals.py",
+      "additions": 9,
+      "deletions": 5
+    },
+    {
+      "path": "tests/invoices/test_totals.py",
+      "additions": 22,
+      "deletions": 0
+    }
+  ]
+}

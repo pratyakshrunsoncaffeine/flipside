@@ -1,0 +1,11 @@
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": "Invoice totals are off by a cent; fix the rounding in totals and add a test"}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0001", "name": "Edit", "input": {"file_path": "app/invoices/totals.py", "old_string": "a", "new_string": "b"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0001", "content": ""}]}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0002", "name": "Bash", "input": {"command": "pytest tests/invoices"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0002", "content": "1 failed", "is_error": true}]}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0003", "name": "Edit", "input": {"file_path": "app/invoices/totals.py", "old_string": "a", "new_string": "b"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0003", "content": ""}]}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0004", "name": "Write", "input": {"file_path": "tests/invoices/test_totals.py", "content": "x"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0004", "content": ""}]}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0005", "name": "Bash", "input": {"command": "pytest tests/invoices"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0005", "content": "8 passed"}]}}

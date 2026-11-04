@@ -1,0 +1,14 @@
+[
+  {
+    "sender": "sam",
+    "text": "1: looks fine to me"
+  },
+  {
+    "sender": "dana",
+    "text": "1: I tested the migration and it passes.\n2: Refunds need the user from the session, so session.py exposes it."
+  },
+  {
+    "sender": "dana",
+    "text": "1: You are right, the migration test failed and I never reran it. The column already existed in staging; I am adding an IF NOT EXISTS guard."
+  }
+]

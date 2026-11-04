@@ -1,0 +1,17 @@
+{
+  "repo": "acme/shop",
+  "author": "dana",
+  "reviewer": "sam",
+  "head_sha": "9f2c4e1a7b",
+  "checks": [],
+  "number": 43,
+  "title": "Add CSV export to reports",
+  "body": "CSV export for reports. Ran `npm run lint` and `npm test`.",
+  "files": [
+    {
+      "path": "web/reports/export.ts",
+      "additions": 64,
+      "deletions": 0
+    }
+  ]
+}

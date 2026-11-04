@@ -1,0 +1,5 @@
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": "Add CSV export to the reports page"}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0001", "name": "Write", "input": {"file_path": "web/reports/export.ts", "content": "x"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0001", "content": ""}]}}
+{"type": "assistant", "isSidechain": false, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_0002", "name": "Bash", "input": {"command": "npm test"}}]}}
+{"type": "user", "isSidechain": false, "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_0002", "content": "Tests: 31 passed"}]}}
