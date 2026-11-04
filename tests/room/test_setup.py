@@ -105,13 +105,14 @@ def test_three_steps_give_two_complete_private_configs(
     )
     check_config(a)
     check_config(r)
-    assert mode(a_out) == 0o600 and mode(r_out) == 0o600
+    if os.name == "posix":
+        assert mode(a_out) == 0o600 and mode(r_out) == 0o600
     assert a["shared"] == r["shared"] == "room-pr-142"
     assert a["private"] == "room-pr-142-author"
     assert a["reviewer_agent"] == "agent:agent-r" and r["author_agent"] == "agent:agent-a"
     assert r["pr_author"] == a["author_user"] == "user:u-author"
     assert r["author_agent_name"] == "fs-author" and r["github"] == "acme/shop"
-    assert a["work"].endswith(".git/flipside/work-author")
+    assert Path(a["work"]).parts[-3:] == (".git", "flipside", "work-author")
     # The join lines carry ids only: no key, password or token.
     for line in (line_a, line_r):
         assert "secret" not in line and "pw" not in line and "token" not in line
@@ -165,6 +166,7 @@ def test_wrong_pr_join_line_is_refused(fake: type[FakeSwitch], tmp_path: Path) -
         )
 
 
+@pytest.mark.skipif(os.name != "posix", reason="Windows has no mode bits; access is by ACL")
 def test_creds_readable_by_others_is_refused(tmp_path: Path) -> None:
     creds = tmp_path / "c.json"
     creds.write_text(
@@ -173,6 +175,13 @@ def test_creds_readable_by_others_is_refused(tmp_path: Path) -> None:
     os.chmod(creds, 0o644)
     with pytest.raises(setup.SetupError, match="chmod 600"):
         setup.load_creds(creds, "me")
+
+
+def test_private_creds_load_on_every_os(tmp_path: Path) -> None:
+    creds = tmp_path / "c.json"
+    creds.write_text(json.dumps({"me": {"email": "e", "password": "p"}}))
+    os.chmod(creds, 0o600)
+    assert setup.load_creds(creds, "me") == {"email": "e", "password": "p"}
 
 
 def test_main_reports_missing_flags(capsys: pytest.CaptureFixture[str]) -> None:

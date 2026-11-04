@@ -63,5 +63,7 @@ def test_work_dir_is_created_private(tmp_path: Path) -> None:
 
     work = tmp_path / "repo" / ".git" / "flipside" / "work-author"
     prepare_work({"work": str(work)})
-    assert work.is_dir() and os.stat(work).st_mode & 0o777 == 0o700
+    assert work.is_dir()
+    if os.name == "posix":
+        assert os.stat(work).st_mode & 0o777 == 0o700
     prepare_work({"work": str(work)})  # idempotent
