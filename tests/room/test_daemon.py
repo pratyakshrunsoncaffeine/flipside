@@ -20,10 +20,12 @@ def test_config_is_written_private_and_read_back(tmp_path: Path) -> None:
     path = tmp_path / "agent.json"
     cfg = {k: "synthetic" for k in (*COMMON_KEYS, *ROLE_KEYS["author"])}
     write_config(path, {**cfg, "role": "author", "pr_number": 1})
-    assert os.stat(path).st_mode & 0o777 == 0o600
+    if os.name == "posix":
+        assert os.stat(path).st_mode & 0o777 == 0o600
     assert load_config(path)["role"] == "author"
 
 
+@pytest.mark.skipif(os.name != "posix", reason="Windows has no POSIX mode bits")
 def test_a_config_readable_by_others_is_refused(tmp_path: Path) -> None:
     path = tmp_path / "agent.json"
     write_config(path, {"role": "author"})
@@ -61,5 +63,7 @@ def test_work_dir_is_created_private(tmp_path: Path) -> None:
 
     work = tmp_path / "repo" / ".git" / "flipside" / "work-author"
     prepare_work({"work": str(work)})
-    assert work.is_dir() and os.stat(work).st_mode & 0o777 == 0o700
+    assert work.is_dir()
+    if os.name == "posix":
+        assert os.stat(work).st_mode & 0o777 == 0o700
     prepare_work({"work": str(work)})  # idempotent
