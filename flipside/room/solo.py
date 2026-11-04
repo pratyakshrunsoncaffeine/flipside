@@ -391,12 +391,9 @@ def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Res
     return result
 
 
-def main(argv: list[str]) -> int:
-    p = argparse.ArgumentParser(prog="flip solo")
-    p.add_argument("--case", default=str(DEFAULT_CASE))
-    p.add_argument("--no-restart", action="store_true", help="skip the restart test")
-    a = p.parse_args(argv)
-    case = load_case(Path(a.case))
+def run_case(case_dir: Path, restarts: bool) -> tuple[bool, str]:
+    """Run one case live; write its evidence log. Returns the result and the log name."""
+    case = load_case(case_dir)
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
     log_path = ROOT / "evidence" / f"solo-{case.name}-{stamp}.log"
     lines: list[str] = []
@@ -414,7 +411,7 @@ def main(argv: list[str]) -> int:
             f"{world.commit or 'none'}"
         )
         started = time.monotonic()
-        result = run_switch(world, log, work, restarts=not a.no_restart)
+        result = run_switch(world, log, work, restarts=restarts)
         log(f"elapsed {time.monotonic() - started:.0f} s")
         diffs = report(result, case.expected, log)
     dups = result.summary()["duplicates"]
@@ -426,9 +423,33 @@ def main(argv: list[str]) -> int:
         log(f"four refusals live: {'yes' if four else 'NO'}")
     restarted = sum("process killed with SIGKILL" in x for x in lines)
     log(f"agent processes killed and restarted: {restarted}")
-    ok = not diffs and not dups and (four or not attacks) and result.brief is not None
+    errors = [x for x in lines if "STEP ERROR" in x or "Traceback" in x]
+    log(f"agent step errors: {len(errors)}")
+    ok = (
+        not diffs and not dups and not errors and (four or not attacks) and result.brief is not None
+    )
     log(f"RESULT {'PASS' if ok else 'FAIL'} {case.name} (switch, {result.rounds} rounds)")
     log_path.parent.mkdir(exist_ok=True)
     log_path.write_text("\n".join(lines) + "\n")
     print(f"evidence {log_path.relative_to(ROOT)}")
-    return 0 if ok else 1
+    return ok, log_path.name
+
+
+def main(argv: list[str]) -> int:
+    p = argparse.ArgumentParser(prog="flip solo")
+    p.add_argument("--case", default=str(DEFAULT_CASE))
+    p.add_argument("--all", action="store_true", help="run every case in fixtures/cases")
+    p.add_argument("--no-restart", action="store_true", help="skip the restart test")
+    a = p.parse_args(argv)
+    if not a.all:
+        return 0 if run_case(Path(a.case), not a.no_restart)[0] else 1
+    rows = []
+    for d in sorted((ROOT / "fixtures" / "cases").iterdir()):
+        ok, name = run_case(d, not a.no_restart)
+        rows.append(f"{'PASS' if ok else 'FAIL'} {d.name} evidence/{name}")
+    stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
+    summary = ROOT / "evidence" / f"solo-all-{stamp}.log"
+    passed = sum(r.startswith("PASS") for r in rows)
+    summary.write_text("\n".join([*rows, f"RESULT {passed}/{len(rows)} cases pass live"]) + "\n")
+    print(summary.read_text(), end="")
+    return 0 if passed == len(rows) else 1

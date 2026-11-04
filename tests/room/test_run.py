@@ -35,3 +35,19 @@ def test_distinct_posts_and_attack_posts_are_not_duplicates() -> None:
 def test_plain_chat_lines_are_ignored() -> None:
     rows = [{"id": f"m{k}", "seq": k, "sender": "user", "body": "Q1: same"} for k in range(3)]
     assert duplicates(rows) == []
+
+
+def test_verdicts_are_counted_in_the_room_including_after_the_brief() -> None:
+    from flipside.room.run import Refusals, Result
+
+    def r(mid: str, sender: str, obj: dict[str, Any]) -> dict[str, Any]:
+        return {**row(mid, sender, obj), "sender_id": sender}
+
+    rows = [
+        r("m1", "agent:rev", {"t": "verdict", "ref": "d1", "code": "OK"}),
+        r("m2", "agent:rev", {"t": "brief", "commit": "c" * 40}),
+        r("m3", "agent:rev", {"t": "verdict", "ref": "d2", "code": "PROOF_FAIL"}),
+        r("m4", "agent:author", {"t": "verdict", "ref": "d3", "code": "OK"}),
+    ]
+    res = Result(rows, {"gaps": []}, Refusals(), 1, reviewer_id="agent:rev")
+    assert res.summary()["verdicts"] == {"OK": 1, "PROOF_FAIL": 1}

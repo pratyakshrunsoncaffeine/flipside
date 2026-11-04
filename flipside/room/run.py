@@ -79,13 +79,17 @@ class Result:
     rounds: int
     false_approvals: int = 0
     attack_ids: frozenset[str] = frozenset()
+    reviewer_id: str = ""
 
     def summary(self) -> dict[str, Any]:
+        """The outcome compared against a case's ``expected``. Verdicts are counted in the
+        room, not in the brief: a forged copy posted after the brief is still refused."""
         b = self.brief or {}
         codes: dict[str, int] = {}
-        for g in b.get("gaps", []):
-            for v in g["verdicts"]:
-                codes[v["code"]] = codes.get(v["code"], 0) + 1
+        for r in self.transcript:
+            o = decode(r["body"])
+            if o and o["t"] == "verdict" and r.get("sender_id") == self.reviewer_id:
+                codes[o["code"]] = codes.get(o["code"], 0) + 1
         return {
             "questions": [[g["gap"], g["file"] or g["check"]] for g in b.get("gaps", [])],
             "verdicts": codes,
@@ -321,8 +325,19 @@ def play(
         and o["code"] == "OK"
         and o.get("ref") in script.attack_ids
     )
-    rows = [{"id": m.id, "seq": m.seq, "sender": m.sender_name, "body": m.body} for m in transcript]
-    return Result(rows, brief, script.refusals, rounds, false_ok, frozenset(script.attack_ids))
+    rows = [
+        {"id": m.id, "seq": m.seq, "sender": m.sender_name, "sender_id": m.sender, "body": m.body}
+        for m in transcript
+    ]
+    return Result(
+        rows,
+        brief,
+        script.refusals,
+        rounds,
+        false_ok,
+        frozenset(script.attack_ids),
+        script.cast.r_agent,
+    )
 
 
 def post_key(sender: str, obj: dict[str, Any]) -> tuple[Any, ...]:

@@ -26,6 +26,7 @@ import signal
 import stat
 import sys
 import threading
+import traceback
 from pathlib import Path
 from typing import Any
 
@@ -164,6 +165,12 @@ def run(cfg: dict[str, Any], stop: threading.Event, poll: float = 1.0) -> int:
                 agent.step()
             except (SwitchError, Forbidden, OSError) as e:
                 log(f"{cfg['agent_name']} step failed, retrying: {e}")
+            except Exception as e:  # keep serving; the run log flags it as a bug
+                where = traceback.extract_tb(e.__traceback__)[-1]
+                log(
+                    f"{cfg['agent_name']} STEP ERROR {type(e).__name__}: {e} "
+                    f"({Path(where.filename).name}:{where.lineno})"
+                )
             stop.wait(poll)
     finally:
         t.close()

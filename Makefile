@@ -1,7 +1,7 @@
 PY ?= uv run --frozen python
 UV_RUN ?= uv run --frozen
 
-.PHONY: help test lint killtests g8 replay-offline fixtures solo replay
+.PHONY: help test lint killtests g8 replay-offline fixtures solo solo-all replay
 help: ## List targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "%-12s %s\n", $$1, $$2}'
 
@@ -28,6 +28,9 @@ fixtures: ## M5: run all 8 fixture cases offline; writes docs/results/fixtures.m
 
 solo: ## M3: two owners on the local Switch server, full flow over SwitchTransport (room lane)
 	$(PY) -m flipside.cli solo
+
+solo-all: ## M5: all 8 fixture cases live on the local Switch server; writes evidence/solo-all-*.log
+	$(PY) -m flipside.cli solo --all
 
 replay: ## M4: fresh local server, recorded inputs, no keys needed (room lane)
 	$(PY) -m flipside.cli replay

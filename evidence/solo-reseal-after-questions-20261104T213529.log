@@ -1,0 +1,82 @@
+21:35:29 case reseal-after-questions: PR #149 'Add CSV export to the reports page'; seal commit b43b8d05daf4c1b78df245d049b66f59ea8e4365
+21:35:30 Switch http://127.0.0.1:52370: author Author user a4690271-4320-44a1-984f-459e4765d85a, reviewer Reviewer user 54b7b256-242d-4154-b7de-838e15260380; author-agent 5557b586-915a-429c-9bb1-8d73cec90e33, reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60
+21:35:30 reviewer opened #pr-149 68cc1168-20e4-435d-ba78-7a4d4d23ad4b and added the author and author-agent; author opened #pr-149-author 94d804b3-9a82-4bac-9f27-e5a20d617c04; author-agent policy: owner, owner's agents, reviewer-agent in #pr-149 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-149
+21:35:31 author-agent process started (pid 97566)
+21:35:31 reviewer-agent process started (pid 97567)
+21:35:41 restart: reviewer-agent process killed with SIGKILL (pid 97567)
+21:35:41 reviewer-agent process started (pid 98241)
+21:35:41 author posted sw_9e8f5f31917d44bc9af41260282bba2d: Q1: The auth team asked for a one-day TTL.
+21:35:41 script: the author rewrote the session and re-sealed: root 628dc2a, commit f93b19e
+21:35:41 script: author-agent posted a disclosure from the new seal sw_e24086af587243ed874422d518a2aa54
+21:35:50 restart: author-agent process killed with SIGKILL (pid 97566)
+21:35:50 author-agent process started (pid 98740)
+21:35:50 author answered card f8eebc1f: approve
+21:38:38 author-agent process exited with 1
+21:38:38 reviewer-agent process exited with 0
+21:38:38 [author-agent] 21:35:31 flipside-author-agent started (pid 97566)
+21:38:38 [author-agent] 21:35:39 author-agent posted seal sw_41ae72b5fd5b4236abf87e9b4e602255
+21:38:38 [author-agent] 21:35:49 author-agent opened card f8eebc1f for Q1 leaf 5
+21:38:38 [author-agent] 21:35:50 flipside-author-agent started (pid 98740)
+21:38:38 [author-agent] 21:35:58 flipside-author-agent stopped
+21:38:38 [author-agent] Traceback (most recent call last):
+21:38:38 [author-agent]   File "<frozen runpy>", line 198, in _run_module_as_main
+21:38:38 [author-agent]   File "<frozen runpy>", line 88, in _run_code
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/cli.py", line 180, in <module>
+21:38:38 [author-agent]     sys.exit(main())
+21:38:38 [author-agent]              ^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/cli.py", line 173, in main
+21:38:38 [author-agent]     return run_room(args[0], args[1:])
+21:38:38 [author-agent]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/cli.py", line 120, in run_room
+21:38:38 [author-agent]     code: int = mod.main(args)
+21:38:38 [author-agent]                 ^^^^^^^^^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/daemon.py", line 188, in main
+21:38:38 [author-agent]     return run(cfg, stop, a.poll)
+21:38:38 [author-agent]            ^^^^^^^^^^^^^^^^^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/daemon.py", line 164, in run
+21:38:38 [author-agent]     agent.step()
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/agents.py", line 150, in step
+21:38:38 [author-agent]     n = self.rebuilt.sealed.n
+21:38:38 [author-agent]         ^^^^^^^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/agents.py", line 131, in rebuilt
+21:38:38 [author-agent]     self._rebuilt = rebuild(self.cfg.repo, self.cfg.root)
+21:38:38 [author-agent]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/seal/prove.py", line 62, in rebuild
+21:38:38 [author-agent]     sources = [Source(Path(r["path"]), _prefix(r)) for r in state["sessions"]]
+21:38:38 [author-agent]                                        ^^^^^^^^^^
+21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/seal/prove.py", line 51, in _prefix
+21:38:38 [author-agent]     raise ProveError("SESSION_CHANGED", f"the sealed part of {path.name} changed")
+21:38:38 [author-agent] flipside.seal.prove.ProveError: SESSION_CHANGED: the sealed part of session.jsonl changed
+21:38:38 [reviewer-agent] 21:35:31 flipside-reviewer-agent started (pid 97567)
+21:38:38 [reviewer-agent] 21:35:40 reviewer-agent posted questions sw_663c26d56c3d48d0a06c66360e4fc9b0: Q1 SCOPE auth/session.py
+21:38:38 [reviewer-agent] 21:35:40 reviewer-agent posted request sw_f2b1031082314ef6bf0681aca7e5946d for Q1: leaves [5]
+21:38:38 [reviewer-agent] 21:35:41 flipside-reviewer-agent started (pid 98241)
+21:38:38 [reviewer-agent] 21:35:41 reviewer-agent posted verdict sw_023c321502f44821bb4402e75f6b7963: Q1 leaf 5 WRONG_COMMIT
+21:38:38 [reviewer-agent] 21:38:38 flipside-reviewer-agent stopped
+21:38:38 Switch message ids: sw_961981fe6e754b9d9e4a4e487486bd92, sw_362f01d5e1b7426aa6f753ff50dfc6c4, sw_fa1d0f4d219b48b391b28be0de735f32, sw_04ed8cddd0ac4161be2e01b6f319e289, sw_41ae72b5fd5b4236abf87e9b4e602255, sw_663c26d56c3d48d0a06c66360e4fc9b0, sw_f2b1031082314ef6bf0681aca7e5946d, sw_9e8f5f31917d44bc9af41260282bba2d, sw_e24086af587243ed874422d518a2aa54, sw_023c321502f44821bb4402e75f6b7963
+21:38:38 elapsed 189 s
+21:38:38 --- transcript
+21:38:38 sw_961981fe6e754b9d9e4a4e487486bd92 flipside-reviewer-agent: Hi! I'm flipside-reviewer-agent — how can I help?
+21:38:38 sw_362f01d5e1b7426aa6f753ff50dfc6c4 flipside-author-agent: Hi! I'm flipside-author-agent — how can I help?
+21:38:38 sw_fa1d0f4d219b48b391b28be0de735f32 flipside-reviewer-agent: @flipside-author-agent I don't have a session connected to this room right now, but I do have other session(s) connected to **pr-145**. Either ask me in one of those rooms to come here, or start a new session connected to this room — my operator should run:
+21:38:38 sw_04ed8cddd0ac4161be2e01b6f319e289 flipside-author-agent: manifest.json
+21:38:38 sw_41ae72b5fd5b4236abf87e9b4e602255 flipside-author-agent: Seal for PR #149 · root ae44db8 · 10 leaves · commit b43b8d0 · manifest attached
+21:38:38 sw_663c26d56c3d48d0a06c66360e4fc9b0 flipside-reviewer-agent: 1 question for PR #149 (sealed: root ae44db8, 10 leaves, commit b43b8d0); answer each as Q<k>: in your own words
+21:38:38 sw_f2b1031082314ef6bf0681aca7e5946d flipside-reviewer-agent: @flipside-author-agent Q1 · requesting leaves 5 · commit b43b8d0
+21:38:38 sw_9e8f5f31917d44bc9af41260282bba2d Author: Q1: The auth team asked for a one-day TTL.
+21:38:38 sw_e24086af587243ed874422d518a2aa54 flipside-author-agent: Q1 · leaf 5 from the new seal 628dc2a (commit f93b19e)
+21:38:38 sw_023c321502f44821bb4402e75f6b7963 flipside-reviewer-agent: Q1 · leaf 5 · WRONG_COMMIT disclosure names f93b19e, the question named b43b8d0
+21:38:38 --- refusals
+21:38:38 Switch refusal (reviewer tags author-agent): 0
+21:38:38 free-text request dropped: 0
+21:38:38 forged disclosure refused: 1
+    sw_023c321502f44821bb4402e75f6b7963: leaf 5 WRONG_COMMIT
+21:38:38 reviewer answers the card (403): 0
+21:38:38 --- summary {"card_403": 0, "contradictions": [], "coverage": [], "dropped_requests": 0, "duplicates": [], "questions": [], "switch_refusals": 0, "verdicts": {}, "withheld": 0}
+21:38:38 MISMATCH questions: expected [["SCOPE", "auth/session.py"]], got []
+21:38:38 MISMATCH verdicts: expected {"WRONG_COMMIT": 1}, got {}
+21:38:38 MISMATCH withheld: expected 1, got 0
+21:38:38 MISMATCH coverage: expected ["auth/session.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 5, 6)", "reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"], got []
+21:38:38 duplicate agent posts: 0
+21:38:38 agent processes killed and restarted: 2
+21:38:38 RESULT FAIL reseal-after-questions (switch, 90 rounds)
