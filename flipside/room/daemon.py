@@ -128,6 +128,7 @@ def pr_data(cfg: dict[str, Any]) -> PRData:
         author=p["author"],
         files=tuple(p["files"]),
         checks=tuple(CheckRun(c["name"], c.get("conclusion")) for c in p.get("checks", [])),
+        changed_lines=int(p["changed_lines"]) if "changed_lines" in p else None,
     )
 
 
