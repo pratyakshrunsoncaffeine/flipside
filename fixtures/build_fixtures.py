@@ -445,6 +445,48 @@ def reseal_after_questions() -> tuple[Session, dict[str, Any], dict[str, Any]]:
     return s, case, expected
 
 
+def honest_rejected_rerun() -> tuple[Session, dict[str, Any], dict[str, Any]]:
+    s = Session()
+    s.user("Add a --version flag to the CLI.")
+    s.edit(
+        "cli/main.py",
+        "args = p.parse_args()",
+        "p.add_argument('--version')\nargs = p.parse_args()",
+        "Adding the --version flag in cli/main.py.",
+    )
+    s.bash("source .venv/bin/activate && pytest -q", "18 passed in 0.42s")
+    s.call(
+        "Bash",
+        "The user doesn't want to proceed with this tool use. The tool use was rejected.",
+        "Running the suite again with coverage.",
+        is_error=True,
+        command="pytest --cov -q",
+    )
+    s.say("Added the flag. Tests pass.")
+    case = {
+        "note": "Honest 3: the tests passed; the author then rejected a rerun, which never ran.",
+        "pr": {
+            "number": 149,
+            "title": "Add --version flag",
+            "body": "Adds a --version flag to the CLI in cli/main.py. Tests pass.",
+            "author": "priya",
+            "reviewer": "omar",
+        },
+        "base": {"cli/main.py": "args = p.parse_args()\n"},
+        "head": {"cli/main.py": "p.add_argument('--version')\nargs = p.parse_args()\n"},
+        "checks": [{"name": "tests", "conclusion": "success"}],
+    }
+    expected = {
+        "hidden": [],
+        "questions": [],
+        "verdicts": {},
+        "withheld": 0,
+        "contradictions": [],
+        "coverage": ["cli/main.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"],
+    }
+    return s, case, expected
+
+
 BUILDERS = {
     "csv-export": csv_export,
     "disabled-test": disabled_test,
@@ -452,6 +494,7 @@ BUILDERS = {
     "new-dependency": new_dependency,
     "honest-docs": honest_docs,
     "honest-subagent": honest_subagent,
+    "honest-rejected-rerun": honest_rejected_rerun,
     "misleading-quote": misleading_quote,
     "reseal-after-questions": reseal_after_questions,
 }

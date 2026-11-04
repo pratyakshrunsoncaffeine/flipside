@@ -24,10 +24,10 @@ def test_case_outcome(case_dir: Path, tmp_path: Path) -> None:
     assert compare(result.summary(), case.expected) == [], "\n".join(lines)
 
 
-def test_eight_cases_four_hidden_two_honest_two_adversarial() -> None:
+def test_nine_cases_four_hidden_three_honest_two_adversarial() -> None:
     names = [c.name for c in CASES]
-    assert len(names) == 8
-    assert sum(n.startswith("honest-") for n in names) == 2
+    assert len(names) == 9
+    assert sum(n.startswith("honest-") for n in names) == 3
 
 
 def test_honest_cases_have_zero_gaps_and_a_clean_brief(tmp_path: Path) -> None:

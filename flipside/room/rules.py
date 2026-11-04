@@ -69,9 +69,21 @@ def _mentioned(f: str, pr: PRData) -> bool:
     return f.lower() in text or (bool(stem) and stem in text)
 
 
+def never_ran(entry: dict[str, Any]) -> bool:
+    """A Bash result whose call never ran (C14): rejected, interrupted or denied."""
+    return (
+        entry.get("role") == "tool_result"
+        and "Bash" in entry.get("tools", [])
+        and entry["ok"] is None
+    )
+
+
 def _last_test_result(steps: dict[StepId, list[dict[str, Any]]]) -> StepId | None:
+    """The latest sealed test result that actually ran."""
     found = [
-        k for k, es in steps.items() if es[0]["role"] == "tool_result" and es[0]["cmd"] == "test"
+        k
+        for k, es in steps.items()
+        if es[0]["role"] == "tool_result" and es[0]["cmd"] == "test" and not never_ran(es[0])
     ]
     return max(found) if found else None
 
@@ -210,6 +222,7 @@ def contradictions(
         if (
             answer
             and _ANSWER_PASS.search(answer)
+            and not never_ran(leaf)
             and (leaf["ok"] is False or _FAIL_TEXT.search(leaf["text"]))
         ):
             out.append(

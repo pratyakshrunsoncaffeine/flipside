@@ -25,7 +25,7 @@ make fixtures
 
 `make g8` verifies `examples/q2-ok.json` (`OK`) and `examples/q2-forged.json` (`PROOF_FAIL`) with no network.
 `make replay-offline` plays the CSV-export case end to end on an in-process Switch stand-in and writes `evidence/replay-offline-*.log`.
-`make fixtures` runs all 8 cases and writes `docs/results/fixtures.md`.
+`make fixtures` runs all 9 cases and writes `docs/results/fixtures.md`.
 
 Live, on a local Switch server (Switch Console's built-in server at `http://127.0.0.1:52370`):
 
@@ -38,7 +38,7 @@ make replay
 `make solo` creates two local users (Author, Reviewer), registers each one's agent, opens both rooms and sets the scoped policies.
 Each agent then runs as its own process (`flip agent`); both are killed with SIGKILL mid-flow and restarted.
 It writes `evidence/solo-*.log` with every Switch message id.
-`make solo-all` does the same for all 8 fixture cases.
+`make solo-all` does the same for all 9 fixture cases.
 
 ## Run it on a real PR
 
@@ -108,7 +108,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
 | Seal core gates G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
 | Offline end to end, with the four refusals | `make replay-offline` |
-| 8 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
+| 9 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
 | Live end to end on local Switch with the four refusals, each agent in its own process, both killed with SIGKILL and restarted without duplicate posts | `make solo` |
 | GitHub PR reader, on canned data and one public PR | `tests/room/test_github.py` |
 

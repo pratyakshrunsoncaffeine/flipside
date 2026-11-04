@@ -179,3 +179,35 @@ def test_c_file_fires_only_on_anchored_leaf() -> None:
     v = [{"i": 5, "leaf": leaf("context")}, {"i": 6, "leaf": leaf("edit", files=[F])}]
     assert contradictions(1, "why", gap, v, frozenset({6})) == []
     assert [c.rule for c in contradictions(1, "why", gap, v, frozenset({5}))] == ["C-FILE"]
+
+
+def test_tests_skips_a_test_call_that_never_ran() -> None:
+    # C14: a passing run, then a rerun the author rejected (ok null). Not a failure.
+    m = [
+        *MANIFEST,
+        e(12, 11, tools=["Bash"], cmd="test"),
+        e(13, 12, "tool_result", ["Bash"], cmd="test"),
+    ]
+    assert gaps(pr(body="session export. Tests pass."), m) == []
+    assert select(Gap("TESTS", ""), m).leaves == (10, 9)
+
+
+def test_tests_with_only_never_ran_calls_means_no_test_ran() -> None:
+    m = [
+        *MANIFEST[:3],
+        e(3, 3, tools=["Bash"], cmd="test"),
+        e(4, 4, "tool_result", ["Bash"], cmd="test"),
+    ]
+    g = gaps(pr(body="export: tests green", files=(G,)), m)
+    assert kinds(g) == [("TESTS", None)] and "No sealed step ran tests" in g[0].text
+
+
+def test_c_tests_ignores_a_bash_call_that_never_ran() -> None:
+    # C14: the author offers a rejected call; "Error:" in its text is not a failed run.
+    never = {
+        **leaf("<tool_use_error>InputValidationError: command is required</tool_use_error>"),
+        "role": "tool_result",
+        "tools": ["Bash"],
+    }
+    v = [{"i": 13, "leaf": never}]
+    assert contradictions(1, "tests pass", Gap("TESTS", ""), v, frozenset()) == []

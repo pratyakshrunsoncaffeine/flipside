@@ -118,7 +118,7 @@ flipside/                       repo root
       daemon.py                 flip agent author|reviewer: one agent as its own process
       github.py                 PR title, body, changed files, check runs (gh api)
   fixtures/build_fixtures.py    writes fixtures/cases/<case>/ (session, case.json, expected.json)
-  fixtures/cases/               the 8 synthetic fixture cases; PR data comes from case.json
+  fixtures/cases/               the 9 synthetic fixture cases; PR data comes from case.json
   examples/                     q2-ok.json, q2-forged.json, manifest.json, seal commit bundle
   tests/                        unit + offline end to end
   killtests/                    K1, K2, K4 (pass), K3
@@ -168,7 +168,7 @@ Evaluated in this order; at most five questions per round, the rest listed in th
 | Gap | Fires when | Question text |
 |---|---|---|
 | `CI` | A check run on the seal commit concluded `failure` | "Check `<name>` failed on the sealed commit. What happened?" |
-| `TESTS` | PR body matches `\btests? (pass|passed|passing|green)\b` (case-insensitive) and either no manifest step has `cmd: test`, or the last `cmd: test` result step has `ok: false` | "The PR says tests pass. The last sealed test run did not pass (step `<t>`). Which run is right?" or "…no sealed step ran tests…" |
+| `TESTS` | PR body matches `\btests? (pass|passed|passing|green)\b` (case-insensitive) and either no manifest step has `cmd: test`, or the last `cmd: test` result step that ran has `ok: false`. A result with `ok: null` never ran (SPEC C14) and is skipped | "The PR says tests pass. The last sealed test run did not pass (step `<t>`). Which run is right?" or "…no sealed step ran tests…" |
 | `SCOPE` | A changed file F is not mentioned in the PR title or body (path, or basename without extension, case-insensitive), and at least one sealed step has F in `files` or `mentions` | "`F` changed and the PR description does not mention it. Why?" |
 | `UNSEALED` | A changed file F has no sealed step touching it | "No sealed step touched `F`. Was it changed outside the agent?" |
 
@@ -191,7 +191,7 @@ Typical clean case: the author offers the prompt leaf that asked for the change 
 
 | Rule | Fires when |
 |---|---|
-| `C-TESTS` | The author's answer matches `\b(pass|passed|green)\b` and a verified leaf for that question has `ok: false` or contains `FAILED`, `Error:`, or `exit code [1-9]` |
+| `C-TESTS` | The author's answer matches `\b(pass|passed|green)\b` and a verified leaf for that question has `ok: false` or contains `FAILED`, `Error:`, or `exit code [1-9]`. A Bash result that never ran (SPEC C14) never counts |
 | `C-FILE` | A verified edit-step leaf requested for file F has neither F in `files` nor in `mentions` (selection bug; must never fire, tested). The text step before it is context and is not checked |
 
 The brief lists contradictions; it never hides them and never blocks on them.
@@ -317,7 +317,7 @@ Gates:
 ### M5. Fixtures, CI, verification record
 
 Gates:
-- 8 fixture cases in `fixtures/cases/`, each with an expected outcome file: 4 hidden changes (TTL raise, disabled test, widened CORS rule, new dependency), 2 honest PRs, 2 adversarial (valid but misleading quote; session edited after the questions).
+- 9 fixture cases in `fixtures/cases/`, each with an expected outcome file: 4 hidden changes (TTL raise, disabled test, widened CORS rule, new dependency), 3 honest PRs (one with a rejected test rerun), 2 adversarial (valid but misleading quote; session edited after the questions).
   `make fixtures` writes `docs/results/fixtures.md` with surfaced or not, verify result, false approvals and false flags.
 - `.github/workflows/ci.yml` runs lint, tests and G8 on Ubuntu and macOS, and is green on `main`.
 - `VERIFICATION.md` records: date and time in IST, test counts per OS, the clean-clone result, Switch message ids from M3, the evidence log names, the video's SHA-256, and an "Outside the checked scope" section.

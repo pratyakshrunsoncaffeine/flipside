@@ -59,15 +59,15 @@ Step text:
 | `files` | Paths from structured tool input only: `file_path`, `notebook_path`, `path`; repo-relative POSIX; outside the repo becomes `<external>`; a `tool_result` inherits the files of its call |
 | `mentions` | F2. For Bash steps: every PR-changed path that appears as a substring of the command text; sorted; empty otherwise |
 | `cmd` | F6. For Bash steps: `test`, `lint`, `build` or `other`, from the fixed table below; `null` otherwise |
-| `ok` | F6. For a Bash `tool_result`: `true` unless the result has `is_error: true`; `null` otherwise |
+| `ok` | F6. For a Bash `tool_result`: `true` unless the result has `is_error: true`; `null` when the call never ran (C14); `null` for every other step |
 
-The `cmd` table is matched on the first command word after stripping `cd …&&`, env assignments and `uv run`/`npx`/`python -m`:
+The `cmd` table is matched on the first command word of each shell segment after stripping env assignments, wrappers and `uv run`/`npx`/`python -m` (C15); the command's class is the highest of its segments:
 
 | cmd | Commands |
 |---|---|
-| test | `pytest`, `unittest`, `npm test`, `pnpm test`, `yarn test`, `go test`, `cargo test`, `make test`, `vitest`, `jest` |
-| lint | `ruff`, `mypy`, `eslint`, `tsc --noEmit`, `flake8`, `black --check`, `make lint` |
-| build | `npm run build`, `pnpm build`, `cargo build`, `go build`, `make`, `docker build` |
+| test | `pytest`, `unittest`, `go test`, `cargo test`, `make test`, `vitest`, `jest`; package scripts `test` or `test:*` (C15) |
+| lint | `ruff`, `mypy`, `eslint`, `tsc --noEmit`, `flake8`, `black --check`, `make lint`; package scripts `lint` or `lint:*` (C15) |
+| build | `cargo build`, `go build`, `make`, `docker build`; package scripts `build` or `build:*` (C15) |
 | other | everything else |
 
 A `tool_result` step copies `cmd` from its call.
@@ -216,6 +216,7 @@ The author may also offer extra leaves; they verify the same way.
 ## Clarifications (v1.1, settled 4 Nov 2026)
 
 C1 to C4 were decided by the lead; C5 to C11 follow the most direct reading of the text above.
+C14 and C15 (5 Nov 2026) fix false flags on honest PRs: a rejected test call was sealed as a failed run, and common test commands such as `npm run test` or `source .venv/bin/activate && pytest` were sealed as `other`.
 All are implemented and tested in `flipside/seal/` and `tests/seal/`.
 
 | ID | Case | Rule |
@@ -233,3 +234,5 @@ All are implemented and tested in `flipside/seal/` and `tests/seal/`.
 | C11 | Other block types; thinking-only messages | Block types other than text, tool_use, tool_result and image are not sealed. An assistant message with only thinking is still a step, with empty text and one empty chunk |
 | C12 | Chunk window | The cut point is searched in the first 300 code points only, so no chunk exceeds 300. The v1 `example.py` searched 301 and could emit a 301-code-point chunk |
 | C13 | Seal commit hygiene | `flip seal` refuses when the index has staged changes, so the seal commit stays empty |
+| C14 | A Bash call that never ran: the user rejected or interrupted it, a permission rule or hook denied it, or its input was invalid | When `is_error` is true and the result's first text starts with `The user doesn't want to proceed`, `Permission to use`, `Permission for this`, `[Request interrupted`, `<tool_use_error>` or `PreToolUse:` (after leading whitespace), `ok` is `null`, not `false`. The leaf text is unchanged |
+| C15 | Which command a Bash call runs | Segments: split at unquoted `&&`, `\|\|`, `;`, `\|`, `&`, `(`, `)` and newlines; heredoc bodies (`<<WORD` to a line `WORD`) are dropped; an unbalanced quote makes the whole command one segment. Wrappers stripped with their flags: `env`, `timeout` (and its duration), `time`, `nice`, `exec`, `command` (`command -v` is `other`). Package scripts: for `npm`, `pnpm`, `yarn` and `bun`, the script is the word after `run` or `run-script`; without `run`, it is the first word, except that `npm` runs only `test` and `t`. A script named `test`, `lint` or `build`, or starting with that name and `:`, has that class. Example: `ruff check . && npm run test:unit` is `test` |

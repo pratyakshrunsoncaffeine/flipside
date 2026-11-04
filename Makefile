@@ -23,13 +23,13 @@ killtests: ## K1, K2 and K4 against the local Switch server; writes evidence/k1k
 replay-offline: ## M2: CSV-export scenario over FakeTransport (room lane)
 	$(PY) -m flipside.cli replay --offline
 
-fixtures: ## M5: run all 8 fixture cases offline; writes docs/results/fixtures.md
+fixtures: ## M5: run all 9 fixture cases offline; writes docs/results/fixtures.md
 	$(PY) -m flipside.cli replay --fixtures
 
 solo: ## M3: two owners on the local Switch server, full flow over SwitchTransport (room lane)
 	$(PY) -m flipside.cli solo
 
-solo-all: ## M5: all 8 fixture cases live on the local Switch server; writes evidence/solo-all-*.log
+solo-all: ## M5: all 9 fixture cases live on the local Switch server; writes evidence/solo-all-*.log
 	$(PY) -m flipside.cli solo --all
 
 replay: ## M4: fresh local server, recorded inputs, no keys needed (room lane)

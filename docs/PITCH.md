@@ -107,8 +107,8 @@ The only model in the loop is the author's own coding agent, whose session is wh
 
 ## Impact, shown on fixtures
 
-Eight synthetic pull requests, as a demonstration and not as proof of savings.
-`make fixtures` runs them offline (`docs/results/fixtures.md`); `make solo-all` runs the same eight live on Switch.
+Nine synthetic pull requests, as a demonstration and not as proof of savings.
+`make fixtures` runs them offline (`docs/results/fixtures.md`); `make solo-all` runs the same nine live on Switch.
 
 | Case | Kind | Questions | Verdicts | Result |
 |---|---|---|---|---|
@@ -118,6 +118,7 @@ Eight synthetic pull requests, as a demonstration and not as proof of savings.
 | new-dependency | Hidden change: new dependency, license check failed | CI `license-scan`, SCOPE `requirements.txt` | OK 3 | Surfaced |
 | honest-docs | Honest PR | none | none | No false flag |
 | honest-subagent | Honest PR, work done by a subagent | none | none | No false flag |
+| honest-rejected-rerun | Honest PR; the author rejected a second test run, which never ran | none | none | No false flag |
 | misleading-quote | Adversarial: the author offers a quote that sounds right and declines the edit | SCOPE `auth/session.py` | OK 1; the edit step withheld | Coverage shows the withheld edit |
 | reseal-after-questions | Adversarial: session edited and re-sealed after the questions | SCOPE `auth/session.py` | WRONG_COMMIT 1 | Refused |
 
@@ -127,7 +128,7 @@ False flags: 0.
 ## Reproduce
 
 - `make lint test g8`: the test suite, and an offline check that one disclosure verifies and its forged copy fails.
-- `make replay-offline`, `make fixtures`: the full flow and all eight cases, offline.
+- `make replay-offline`, `make fixtures`: the full flow and all nine cases, offline.
 - `make killtests`, `make solo`, `make solo-all`, `make replay`: the same against a local Switch server, with both agents killed and restarted mid-flow.
 
 ## Limits
@@ -147,7 +148,7 @@ False flags: 0.
 | Kill tests K1, K2 (9 checks) and K4 (6 checks) on switch-core 0.31.0 | pass | `make killtests` |
 | Seal, prove, verify, coverage; gates G1 to G8 | pass | `make lint test g8` |
 | Full flow offline, with the four refusals | pass | `make replay-offline` |
-| Eight fixture cases, offline and live | pass | `make fixtures`, `make solo-all` |
+| Nine fixture cases, offline and live | pass | `make fixtures`, `make solo-all` |
 | Full flow live, each agent in its own process, both killed and restarted mid-flow | pass | `make solo` |
 | GitHub PR reader (title, body, files, check runs) | pass on canned data and one public PR | `tests/room/test_github.py` |
 | Approval card in Slack with buttons (K3) | not run | - |

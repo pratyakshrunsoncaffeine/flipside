@@ -28,9 +28,6 @@ PATH_KEYS = ("file_path", "notebook_path", "path")
 CMD_TABLE: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("test", ("pytest",)),
     ("test", ("unittest",)),
-    ("test", ("npm", "test")),
-    ("test", ("pnpm", "test")),
-    ("test", ("yarn", "test")),
     ("test", ("go", "test")),
     ("test", ("cargo", "test")),
     ("test", ("make", "test")),
@@ -43,8 +40,6 @@ CMD_TABLE: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("lint", ("flake8",)),
     ("lint", ("black", "--check")),
     ("lint", ("make", "lint")),
-    ("build", ("npm", "run", "build")),
-    ("build", ("pnpm", "build")),
     ("build", ("cargo", "build")),
     ("build", ("go", "build")),
     ("build", ("make",)),
@@ -52,7 +47,6 @@ CMD_TABLE: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 CMD_PRIORITY = {"test": 3, "lint": 2, "build": 1, "other": 0}
 
-_CD_PREFIX = re.compile(r"^\s*cd\s+[^&;|]*?&&\s*")
 _ENV = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 _PYTHON = re.compile(r"^python(3(\.\d+)?)?$")
 _POINTER = re.compile(r"Full output saved to: (\S+)")
@@ -142,6 +136,19 @@ UV_VALUE_FLAGS = frozenset(
 )
 NPX_VALUE_FLAGS = frozenset({"--package", "-p", "--call", "-c"})
 PYTHON_VALUE_FLAGS = frozenset({"-X", "-W", "--check-hash-based-pycs"})
+# C15: wrappers that run the next word as the command, with their value-taking flags.
+WRAPPERS: dict[str, frozenset[str]] = {
+    "env": frozenset({"-u", "--unset", "-C", "--chdir", "-S", "--split-string"}),
+    "timeout": frozenset({"-s", "--signal", "-k", "--kill-after"}),
+    "time": frozenset({"-f", "--format", "-o", "--output"}),
+    "nice": frozenset({"-n", "--adjustment"}),
+    "exec": frozenset({"-a"}),
+    "command": frozenset(),
+}
+PACKAGE_MANAGERS = frozenset({"npm", "pnpm", "yarn", "bun"})
+SCRIPT_CLASSES = ("test", "lint", "build")
+_SEPARATOR = re.compile(r"^[&|;()]+$")
+_HEREDOC = re.compile(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1")
 
 
 def _strip_flags(words: list[str], value_flags: frozenset[str], stop: str = "") -> list[str]:
@@ -154,24 +161,99 @@ def _strip_flags(words: list[str], value_flags: frozenset[str], stop: str = "") 
     return words
 
 
-def classify_cmd(command: str) -> str:
-    """Command class (test, lint, build, other) from the first command word (SPEC cmd table).
+# C14: error results for Bash calls that never ran. The user rejected or interrupted
+# the call, a permission rule or hook denied it, or its input was invalid.
+NEVER_RAN_PREFIXES = (
+    "The user doesn't want to proceed",
+    "Permission to use",
+    "Permission for this",
+    "[Request interrupted",
+    "<tool_use_error>",
+    "PreToolUse:",
+)
 
-    Strips leading ``cd ... &&``, env assignments, ``uv run``, ``npx`` and
-    ``python -m`` (also python3, python3.N), each with any flags after it.
+
+def _first_text(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                t = item.get("text")
+                return t if isinstance(t, str) else ""
+    return ""
+
+
+def _bash_ok(b: dict[str, Any]) -> bool | None:
+    """``ok`` for a Bash ``tool_result``: true, false, or null when the call never ran."""
+    if b.get("is_error") is not True:
+        return True
+    if _first_text(b.get("content")).lstrip().startswith(NEVER_RAN_PREFIXES):
+        return None
+    return False
+
+
+def classify_cmd(command: str) -> str:
+    """Command class (test, lint, build, other) of a Bash command (SPEC cmd table, C15).
+
+    Each shell segment (split at unquoted ``&&``, ``||``, ``;``, ``|``, ``&``,
+    parentheses and newlines, heredoc bodies dropped) is classified on its first
+    command word after stripping env assignments, wrappers (``env``, ``timeout``,
+    ``time``, ``nice``, ``exec``, ``command``), ``uv run``, ``npx`` and ``python -m``.
+    The command's class is the highest of its segments.
     """
-    s = command
-    while (m := _CD_PREFIX.match(s)) is not None:
-        s = s[m.end() :]
+    best = "other"
+    for words in _segments(command):
+        cls = _classify_words(words)
+        if CMD_PRIORITY[cls] > CMD_PRIORITY[best]:
+            best = cls
+    return best
+
+
+def _strip_heredocs(command: str) -> str:
+    out: list[str] = []
+    end: str | None = None
+    for line in command.split("\n"):
+        if end is not None:
+            if line.strip() == end:
+                end = None
+            continue
+        out.append(line)
+        if (m := _HEREDOC.search(line)) is not None:
+            end = m.group(2)
+    return "\n".join(out)
+
+
+def _segments(command: str) -> list[list[str]]:
+    text = _strip_heredocs(command).replace("\n", " ; ")
+    lex = shlex.shlex(text, posix=True, punctuation_chars=True)
+    lex.whitespace_split = True
     try:
-        words = shlex.split(s)
+        tokens = list(lex)
     except ValueError:
-        words = s.split()
+        return [command.split()]
+    segments: list[list[str]] = [[]]
+    for t in tokens:
+        if _SEPARATOR.match(t):
+            segments.append([])
+        else:
+            segments[-1].append(t)
+    return [w for w in segments if w]
+
+
+def _classify_words(words: list[str]) -> str:
     while True:
         before = list(words)
         while words and _ENV.match(words[0]):
             words = words[1:]
-        if words[:2] == ["uv", "run"]:
+        head = posixpath.basename(words[0]) if words else ""
+        if head == "command" and words[1:2] and words[1] in ("-v", "-V"):
+            return "other"
+        if head in WRAPPERS:
+            words = _strip_flags(words[1:], WRAPPERS[head])
+            if head == "timeout" and words:
+                words = words[1:]
+        elif words[:2] == ["uv", "run"]:
             words = _strip_flags(words[2:], UV_VALUE_FLAGS)
         elif words[:1] == ["npx"]:
             words = _strip_flags(words[1:], NPX_VALUE_FLAGS)
@@ -184,11 +266,27 @@ def classify_cmd(command: str) -> str:
     if not words:
         return "other"
     words = [posixpath.basename(words[0]), *words[1:]]
+    if words[0] in PACKAGE_MANAGERS:
+        return _script_cmd(words[0], words[1:])
     best, best_len = "other", 0
     for cls, pattern in CMD_TABLE:
         if tuple(words[: len(pattern)]) == pattern and len(pattern) > best_len:
             best, best_len = cls, len(pattern)
     return best
+
+
+def _script_cmd(manager: str, args: list[str]) -> str:
+    """``npm test``, ``npm run test:unit``, ``pnpm lint``, ``yarn build``, ``bun test``."""
+    if args[:1] in (["run"], ["run-script"]):
+        script = args[1] if len(args) > 1 else ""
+    elif manager == "npm":
+        script = "test" if args[:1] in (["test"], ["t"]) else ""
+    else:
+        script = args[0] if args else ""
+    for cls in SCRIPT_CLASSES:
+        if script == cls or script.startswith(cls + ":"):
+            return cls
+    return "other"
 
 
 def _rel_path(p: str, cwd: str, repo_root: str) -> str:
@@ -345,7 +443,7 @@ class _Parser:
             step.mentions = list(call.mentions)
             step.cmd = call.cmd
             if call.name == "Bash":
-                step.ok = b.get("is_error") is not True
+                step.ok = _bash_ok(b)
         content = b.get("content")
         if isinstance(content, str):
             step.parts.append(self.follow(content))

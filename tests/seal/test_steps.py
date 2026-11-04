@@ -364,7 +364,6 @@ def test_bad_json_line_raises() -> None:
         ("ls -la", "other"),
         ("black .", "other"),
         ("tsc", "other"),
-        ("npm run test", "other"),
         ("echo pytest", "other"),
         ("", "other"),
         ("pytest 'unbalanced", "test"),
@@ -381,3 +380,86 @@ def test_relative_cwd_resolves_against_repo_root() -> None:
     b2.assistant(tool("t1", "Read", file_path="reports/export.py"))
     assert parse(b)[0].files == ["auth/session.py"]
     assert parse(b2)[0].files == ["reports/export.py"]
+
+
+# --- C14: a Bash call that never ran is not a failed run ---------------------
+
+NEVER_RAN = [
+    "The user doesn't want to proceed with this tool use. The tool use was rejected.",
+    "Permission to use Bash has been denied.",
+    "Permission for this tool use was denied by a hook.",
+    "[Request interrupted by user for tool use]",
+    "<tool_use_error>InputValidationError: command is required</tool_use_error>",
+    "PreToolUse:Bash hook error: [command hook 1]: Blocked by a rule",
+]
+
+
+@pytest.mark.parametrize("out", NEVER_RAN)
+@pytest.mark.parametrize("as_list", [False, True])
+def test_bash_call_that_never_ran_has_ok_null(out: str, as_list: bool) -> None:
+    b = SessionBuilder(REPO)
+    b.assistant(tool("t1", "Bash", command="pytest -q"))
+    b.result("t1", [text(out)] if as_list else out, is_error=True)
+    r = parse(b)[-1]
+    assert r.role == "tool_result" and r.cmd == "test"
+    assert r.ok is None
+
+
+def test_bash_call_that_ran_and_failed_has_ok_false() -> None:
+    b = SessionBuilder(REPO)
+    b.assistant(tool("t1", "Bash", command="pytest -q"))
+    b.result("t1", "Exit code 1\nFAILED tests/test_x.py::test_a", is_error=True)
+    assert parse(b)[-1].ok is False
+
+
+def test_never_ran_prefix_only_counts_at_the_start() -> None:
+    b = SessionBuilder(REPO)
+    b.assistant(tool("t1", "Bash", command="pytest -q"))
+    b.result("t1", "Exit code 1\n[Request interrupted by user for tool use]", is_error=True)
+    assert parse(b)[-1].ok is False
+
+
+# --- C15: every shell segment counts, wrappers strip, script runners ---------
+
+
+@pytest.mark.parametrize(
+    ("command", "expected"),
+    [
+        ("source .venv/bin/activate && pytest -q", "test"),
+        (". .venv/bin/activate; pytest", "test"),
+        ("git status && pytest", "test"),
+        ("set -e; pytest", "test"),
+        ("(cd api; pytest)", "test"),
+        ("ruff check . && pytest -q", "test"),
+        ("pytest -q || true", "test"),
+        ("make lint\nmake test", "test"),
+        ("ruff check . && npm run build", "lint"),
+        ("env FOO=1 pytest", "test"),
+        ("env -u HOME pytest", "test"),
+        ("timeout 60 pytest", "test"),
+        ("timeout -s KILL 5m npm test", "test"),
+        ("time pytest", "test"),
+        ("nice -n 10 cargo test", "test"),
+        ("exec pytest", "test"),
+        ("command pytest", "test"),
+        ("npm run test", "test"),
+        ("npm run test:unit", "test"),
+        ("pnpm run test", "test"),
+        ("yarn run test", "test"),
+        ("bun test", "test"),
+        ("bun run test", "test"),
+        ("npm run lint", "lint"),
+        ("pnpm lint", "lint"),
+        ("yarn lint", "lint"),
+        ("pnpm run build", "build"),
+        ("yarn build", "build"),
+        ("bun run build", "build"),
+        ("echo 'pytest && ruff'", "other"),
+        ('git commit -m "run pytest; fix"', "other"),
+        ("npm run testimony", "other"),
+        ("cat <<EOF > notes.md\npytest\nEOF", "other"),
+        ("cat <<'EOF' > notes.md\npytest\nEOF\nruff check .", "lint"),
+    ],
+)
+def test_cmd_segments_wrappers_and_scripts(command: str, expected: str) -> None:
+    assert classify_cmd(command) == expected
