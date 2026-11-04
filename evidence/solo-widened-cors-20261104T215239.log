@@ -1,0 +1,52 @@
+21:52:39 case widened-cors: PR #144 'Public status endpoint'; seal commit f9b6f3504f2ec5a5f33117e3f72d68fe2914bf13
+21:52:40 Switch http://127.0.0.1:52370: author Author user a4690271-4320-44a1-984f-459e4765d85a, reviewer Reviewer user 54b7b256-242d-4154-b7de-838e15260380; author-agent 5557b586-915a-429c-9bb1-8d73cec90e33, reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60
+21:52:41 reviewer opened #pr-144 c69e64c2-4714-4aa9-902a-67ca546a671c and added the author and author-agent; author opened #pr-144-author 8f940027-cf12-44ce-84f8-2d7e85bb2d56; author-agent policy: owner, owner's agents, reviewer-agent in #pr-144 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-144
+21:52:41 author-agent process started (pid 69394)
+21:52:41 reviewer-agent process started (pid 69395)
+21:52:51 restart: reviewer-agent process killed with SIGKILL (pid 69395)
+21:52:51 reviewer-agent process started (pid 70214)
+21:52:51 author posted sw_4634e690bd9749c99ab1254f87ec1225: Q1: The status page is called from other origins, so CORS had to open.
+21:52:59 restart: author-agent process killed with SIGKILL (pid 69394)
+21:52:59 author-agent process started (pid 70944)
+21:52:59 author answered card 6faedf37: approve
+21:53:27 author-agent process exited with 0
+21:53:27 reviewer-agent process exited with 0
+21:53:27 [author-agent] 21:52:41 flipside-author-agent started (pid 69394)
+21:53:27 [author-agent] 21:52:49 author-agent posted seal sw_da5a7105d8764411ab7934fd4f2978ee
+21:53:27 [author-agent] 21:52:59 author-agent opened card 6faedf37 for Q1 leaf 5
+21:53:27 [author-agent] 21:53:00 flipside-author-agent started (pid 70944)
+21:53:27 [author-agent] 21:53:08 author-agent posted disclosure sw_7a45d4a6af5d4252a5a2b9dc840d2128 for Q1 leaf 5
+21:53:27 [author-agent] 21:53:27 flipside-author-agent stopped
+21:53:27 [reviewer-agent] 21:52:41 flipside-reviewer-agent started (pid 69395)
+21:53:27 [reviewer-agent] 21:52:50 reviewer-agent posted questions sw_8fa4b93701224979a9206aa7d3603e8f: Q1 SCOPE config/cors.py
+21:53:27 [reviewer-agent] 21:52:50 reviewer-agent posted request sw_ee1a226ec7dc479e85686be1a3b1eec0 for Q1: leaves [5]
+21:53:27 [reviewer-agent] 21:52:52 flipside-reviewer-agent started (pid 70214)
+21:53:27 [reviewer-agent] 21:53:09 reviewer-agent posted verdict sw_dc66679f5f5e4fffaae561d34700e227: Q1 leaf 5 OK
+21:53:27 [reviewer-agent] 21:53:09 reviewer-agent posted brief sw_2934a2210d00453f9fa497ca9ebdc50f: @Reviewer Brief for PR #144: 1 question, 1 answered, 1 leaf verified, 0 withheld, 0 refused, 0 contradictions
+21:53:27 [reviewer-agent] 21:53:09   coverage api/routes.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)
+21:53:27 [reviewer-agent] 21:53:09   coverage config/cors.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6); 2 by Bash mention
+21:53:27 [reviewer-agent] 21:53:27 flipside-reviewer-agent stopped
+21:53:27 Switch message ids: sw_a835ef71f3e64dcf8727a7532006ee21, sw_7ff57e91c7de448490f3cbf057cc1cee, sw_b88258b27f3441639d6ddd49f4fe8601, sw_21ceb6e71e29438caea087b80c0ab596, sw_da5a7105d8764411ab7934fd4f2978ee, sw_8fa4b93701224979a9206aa7d3603e8f, sw_ee1a226ec7dc479e85686be1a3b1eec0, sw_4634e690bd9749c99ab1254f87ec1225, sw_7a45d4a6af5d4252a5a2b9dc840d2128, sw_dc66679f5f5e4fffaae561d34700e227, sw_2934a2210d00453f9fa497ca9ebdc50f
+21:53:27 elapsed 48 s
+21:53:27 --- transcript
+21:53:27 sw_a835ef71f3e64dcf8727a7532006ee21 flipside-reviewer-agent: Hi! I'm flipside-reviewer-agent — how can I help?
+21:53:27 sw_7ff57e91c7de448490f3cbf057cc1cee flipside-author-agent: Hi! I'm flipside-author-agent — how can I help?
+21:53:27 sw_b88258b27f3441639d6ddd49f4fe8601 flipside-reviewer-agent: @flipside-author-agent I don't have a session connected to this room right now, but I do have other session(s) connected to **pr-149**. Either ask me in one of those rooms to come here, or start a new session connected to this room — my operator should run:
+21:53:27 sw_21ceb6e71e29438caea087b80c0ab596 flipside-author-agent: manifest.json
+21:53:27 sw_da5a7105d8764411ab7934fd4f2978ee flipside-author-agent: Seal for PR #144 · root 2c2d3aa · 10 leaves · commit f9b6f35 · manifest attached
+21:53:27 sw_8fa4b93701224979a9206aa7d3603e8f flipside-reviewer-agent: 1 question for PR #144 (sealed: root 2c2d3aa, 10 leaves, commit f9b6f35); answer each as Q<k>: in your own words
+21:53:27 sw_ee1a226ec7dc479e85686be1a3b1eec0 flipside-reviewer-agent: @flipside-author-agent Q1 · requesting leaves 5 · commit f9b6f35
+21:53:27 sw_4634e690bd9749c99ab1254f87ec1225 Author: Q1: The status page is called from other origins, so CORS had to open.
+21:53:27 sw_7a45d4a6af5d4252a5a2b9dc840d2128 flipside-author-agent: Q1 · step 5, chunk 0 · approved by @Author · proof against seal 2c2d3aa (commit f9b6f35)
+21:53:27 sw_dc66679f5f5e4fffaae561d34700e227 flipside-reviewer-agent: Q1 · leaf 5 · OK leaf 5 (session 0, step 5, chunk 0) against seal 2c2d3aa in commit f9b6f35
+21:53:27 sw_2934a2210d00453f9fa497ca9ebdc50f flipside-reviewer-agent: @Reviewer Brief for PR #144: 1 question, 1 answered, 1 leaf verified, 0 withheld, 0 refused, 0 contradictions
+21:53:27 --- refusals
+21:53:27 Switch refusal (reviewer tags author-agent): 0
+21:53:27 free-text request dropped: 0
+21:53:27 forged disclosure refused: 0
+21:53:27 reviewer answers the card (403): 0
+21:53:27 --- summary {"card_403": 0, "contradictions": [], "coverage": ["api/routes.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)", "config/cors.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6); 2 by Bash mention"], "dropped_requests": 0, "duplicates": [], "questions": [["SCOPE", "config/cors.py"]], "switch_refusals": 0, "verdicts": {"OK": 1}, "withheld": 0}
+21:53:27 duplicate agent posts: 0
+21:53:27 agent processes killed and restarted: 2
+21:53:27 agent step errors: 0
+21:53:27 RESULT PASS widened-cors (switch, 19 rounds)

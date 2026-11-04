@@ -98,11 +98,7 @@ def test_seal_default_session_from_claude_projects(pr: PR) -> None:
     assert s.stdout.startswith("sealed s.jsonl")
 
 
-def test_room_commands_report_missing_lane(tmp_path: Path) -> None:
-    import importlib.util
-
-    if importlib.util.find_spec("flipside.room") is not None:
-        return
-    for cmd in ("solo", "replay"):
-        r = flip(cmd, "--offline", cwd=tmp_path)
-        assert r.returncode == 1 and "not built yet" in r.stderr, r.stderr
+def test_every_room_command_dispatches(tmp_path: Path) -> None:
+    for cmd, prog in (("solo", "flip solo"), ("replay", "flip replay"), ("agent", "flip agent")):
+        r = flip(cmd, "--help", cwd=tmp_path)
+        assert r.returncode == 0 and f"usage: {prog}" in r.stdout, (cmd, r.stderr)

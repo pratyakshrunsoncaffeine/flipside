@@ -1,6 +1,6 @@
 # Verification record
 
-Recorded 4 Nov 2026, 21:15 IST, by the lead's agent on the lead's machine.
+Recorded 4 Nov 2026, 21:15 IST, updated 22:10 IST, by the lead's agent on the lead's machine.
 Machine: macOS 26.1, Python 3.12.2 (uv), git 2.50.1, local Switch server switch-core 0.31.0 at `http://127.0.0.1:52370`.
 Every line below is backed by a command that passed or an evidence file in `evidence/`.
 
@@ -8,7 +8,7 @@ Every line below is backed by a command that passed or an evidence file in `evid
 
 | OS | Command | Result |
 |---|---|---|
-| macOS 26.1 | `make lint test`, twice | ruff and mypy clean; 228 passed, twice |
+| macOS 26.1 | `make lint test`, twice | ruff and mypy clean; 241 passed, twice |
 | Ubuntu | `.github/workflows/ci.yml` | Not run yet: the GitHub repo does not exist yet |
 
 ## Clean clone
@@ -26,6 +26,8 @@ The second-machine run (M4 gate, the teammate's laptop) is not done yet.
 | M2: offline flow | `make replay-offline` | `evidence/replay-offline-csv-export-20261104T205047.log` |
 | M3: live flow, twice, four refusals, restart | `make solo` | `evidence/solo-csv-export-20261104T210302.log`, `evidence/solo-csv-export-20261104T210641.log` |
 | M4: live replay on this machine | `make replay` | `evidence/replay-switch-csv-export-20261104T210939.log` |
+| M3 with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
+| All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
 | M5: 8 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
 
 Two earlier `make solo` runs are kept as they ran:
@@ -33,6 +35,10 @@ Two earlier `make solo` runs are kept as they ran:
   Attack posts are now excluded (`tests/room/test_run.py`).
 - `evidence/solo-csv-export-20261104T205916.log` passed, but reviewer-agent also refused untagged messages from the author and author-agent.
   `make solo` now sets reviewer-agent's room rule before author-agent joins.
+
+The first `make solo-all` run (`evidence/solo-all-20261104T213925.log`) passed 6/8, and both failures are fixed with tests:
+- csv-export: the forged copy landed after the brief, so the brief had no `PROOF_FAIL`; the run summary now counts verdicts in the room (`tests/room/test_run.py`).
+- reseal-after-questions: the restarted author-agent crashed because the session had been rewritten; it now withholds `session_changed` (`tests/room/test_agents.py`).
 
 ## Switch message ids (M3, `evidence/solo-csv-export-20261104T210641.log`)
 
