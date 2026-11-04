@@ -114,7 +114,9 @@ flipside/                       repo root
       scenario.py               a fixture case as two git repos (author, reviewer clone)
       run.py                    one PR round: both agents, the humans' script, the refusals
       replay.py                 flip replay [--offline | --fixtures]
-      solo.py                   flip solo: the full flow on the local Switch server
+      solo.py                   flip solo [--all]: the full flow on the local Switch server
+      daemon.py                 flip agent author|reviewer: one agent as its own process
+      github.py                 PR title, body, changed files, check runs (gh api)
   fixtures/build_fixtures.py    writes fixtures/cases/<case>/ (session, case.json, expected.json)
   fixtures/cases/               the 8 synthetic fixture cases; PR data comes from case.json
   examples/                     q2-ok.json, q2-forged.json, manifest.json, seal commit bundle
@@ -209,6 +211,9 @@ A refused verdict (`PROOF_FAIL` and the other codes) does not settle a leaf; onl
   Card title: `Disclose step <t> chunk <c> to #pr-<n>?`; detail: the exact text and `sha256(leaf)[:12]`.
 - Cards are opened with `POST /agent-sessions/{sid}/approvals` and outcomes read from `GET /agent-sessions/approvals/outcomes` (both proven in K2).
 - `flip prove` runs only after an accept outcome for that exact leaf.
+- The author may offer more leaves from `#pr-<n>-author`: `@flipside-author-agent offer Q<k> step <t>` (every chunk of main-session step t) or `offer Q<k> leaf <i>`.
+  Only the author's own messages that Switch delivered as addressed count; each offered leaf goes through the same scan and card.
+- `n` and the manifest come from the stored seal state, so an author-agent restarted after the session was rewritten still runs, and withholds requested leaves with `session_changed`.
 
 ## 9. Switch facts (switch-core 0.31.0, verified)
 
@@ -299,6 +304,7 @@ Gates:
 - `make solo` runs the CSV-export scenario end to end, twice, and writes `evidence/solo-*.log` with every Switch message id.
 - The four refusals happen live and are logged: reviewer tags author-agent (Switch refusal), free-text request dropped, forged disclosure `PROOF_FAIL`, reviewer answers the card (403).
 - Restart test: killing and restarting either agent mid-flow resumes from its cursor without duplicate posts.
+  `make solo` runs each agent as its own process and kills both with SIGKILL: author-agent while its first card is pending, reviewer-agent while its first request is unanswered.
 
 ### M4. Replay from a clean clone
 

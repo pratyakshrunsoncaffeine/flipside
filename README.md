@@ -35,8 +35,32 @@ make solo
 make replay
 ```
 
-`make solo` creates two local users (Author, Reviewer), registers each one's agent, opens both rooms, sets the scoped policies, and runs the full flow, restarting each agent once mid-flow.
+`make solo` creates two local users (Author, Reviewer), registers each one's agent, opens both rooms and sets the scoped policies.
+Each agent then runs as its own process (`flip agent`); both are killed with SIGKILL mid-flow and restarted.
 It writes `evidence/solo-*.log` with every Switch message id.
+`make solo-all` does the same for all 8 fixture cases.
+
+## Run it on a real PR
+
+The author seals their session into the PR branch, then runs their agent:
+
+```
+flip seal --base origin/main          # adds the empty seal commit; keys stay in .git/flipside/
+git push
+flip agent author --config author.json
+```
+
+The reviewer runs theirs against a local clone of the PR, reading the PR from GitHub:
+
+```
+git fetch origin pull/142/head:pr-142
+flip agent reviewer --config reviewer.json
+```
+
+Each config file must be mode 0600, since it holds the agent's API key.
+Its keys are listed in `flipside/room/daemon.py`.
+The reviewer's config takes `"github": "owner/repo"` and `"pr_number"`, so the PR title, body, changed files and check runs come from `gh api` (`flipside/room/github.py`).
+The page-rule timeout is `FLIP_ANSWER_TIMEOUT` seconds (default 1800).
 
 ## The four refusals
 
@@ -55,6 +79,7 @@ It writes `evidence/solo-*.log` with every Switch message id.
 2. author-agent posts the seal and the public manifest (step metadata, no text) in the reviewer's room `#pr-<n>`.
 3. reviewer-agent finds gaps with deterministic rules (`CI`, `TESTS`, `SCOPE`, `UNSEALED`), asks up to five questions, and requests the leaves that would answer them (`flipside/room/rules.py`).
 4. author-agent secret-scans each requested leaf, then opens one approval card per leaf in the author's private room `#pr-<n>-author`.
+   The author can offer more steps there: `@flipside-author-agent offer Q1 step 3`.
 5. On approve, author-agent re-checks the sealed prefix and posts the disclosure with its inclusion proof.
    On decline it posts `withheld`.
 6. reviewer-agent verifies each disclosure (`flipside/seal/verify.py`), checks contradictions on verified bytes only, and posts the brief, which mentions the reviewer.
@@ -81,14 +106,21 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | Check | Command |
 |---|---|
 | Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
-| Seal core gates G1 to G8; ruff and mypy clean; 228 tests, twice | `make lint test`, `make g8` |
+| Seal core gates G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
 | Offline end to end, with the four refusals | `make replay-offline` |
-| 8 fixture cases match their expected outcomes | `make fixtures` |
-| Live end to end on local Switch, twice, with the four refusals and an agent restart | `make solo` |
+| 8 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
+| Live end to end on local Switch with the four refusals, each agent in its own process, both killed with SIGKILL and restarted without duplicate posts | `make solo` |
+| GitHub PR reader, on canned data and one public PR | `tests/room/test_github.py` |
 
 ## Limits
 
-- Not yet checked: Slack rendering of the approval card, two machines, CI on Ubuntu.
-- PR data comes from each case file; there is no GitHub API reader yet.
+- A session forged before sealing is not caught; the seal proves the evidence did not change after review began.
+- Work done outside the agent has no session evidence; the `UNSEALED` gap asks about it.
+- The manifest is public: step count, roles, tool names, repo paths, chunk counts, command classes and test outcomes.
+  It never holds text.
+- A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was withheld.
+- Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
+- Not yet checked: Slack rendering of the approval card, two machines, CI on Ubuntu, the GitHub reader on a sealed PR end to end.
+- The local server has no chat window for people without Docker (its bundled Mattermost needs Docker); `make solo` acts for both people through the gateway API.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.
