@@ -63,10 +63,36 @@ def _touches(entries: list[dict[str, Any]], f: str) -> bool:
     return f in entries[0]["files"] or f in entries[0]["mentions"]
 
 
+_ADDS_TESTS = re.compile(
+    r"\b(with|adds?|added|adding|new|updated?|more)\s+(unit\s+|integration\s+)?tests?\b"
+    r"|\btests?\s+for\b",
+    re.I,
+)
+_TEST_NAME = re.compile(r"^(test_(?P<a>.+)|(?P<b>.+?)(_test|\.test|\.spec))$")
+
+
+def tested_subject(f: str) -> str | None:
+    """``report`` for ``tests/test_report.py``, ``report_test.go`` or ``report.spec.ts``;
+    None for a file that is not a test."""
+    name = posixpath.basename(f).lower()
+    stem = (
+        name.split(".")[0] if ".test." in name or ".spec." in name else posixpath.splitext(name)[0]
+    )
+    if ".test." in name or ".spec." in name:
+        return stem or None
+    hit = _TEST_NAME.match(stem)
+    return (hit.group("a") or hit.group("b")) if hit else None
+
+
 def _mentioned(f: str, pr: PRData) -> bool:
+    """F is named by path or by basename without extension. A test file also counts when
+    the description says it adds or changes tests and names the test's subject."""
     text = f"{pr.title}\n{pr.body}".lower()
     stem = posixpath.splitext(posixpath.basename(f))[0].lower()
-    return f.lower() in text or (bool(stem) and stem in text)
+    if f.lower() in text or (bool(stem) and stem in text):
+        return True
+    subject = tested_subject(f)
+    return subject is not None and bool(_ADDS_TESTS.search(text)) and subject in text
 
 
 def never_ran(entry: dict[str, Any]) -> bool:

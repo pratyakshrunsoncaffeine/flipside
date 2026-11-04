@@ -68,7 +68,7 @@ def setup(world: World, tmp: Path, clock: Clock) -> dict[str, Any]:
             clock=clock,
         )
 
-    return {"hub": hub, "au": au, "author": author, "reviewer": reviewer}
+    return {"hub": hub, "au": au, "ra": ra, "author": author, "reviewer": reviewer}
 
 
 def types(hub: FakeSwitch) -> list[str]:
@@ -169,3 +169,61 @@ def test_restart_after_the_session_was_rewritten_withholds_instead_of_crashing(
     ]
     assert [(o["t"], o.get("reason")) for o in out] == [("withheld", "session_changed")]
     assert types(hub).count("seal") == 1
+
+
+def _rerequest(hub: FakeSwitch, ra: str, q: int) -> None:
+    """reviewer-agent asks for the same leaves again, under question ``q``."""
+    req = next(m for m in hub.messages if (o := decode(m.body)) and o["t"] == "request")
+    body = req.body.replace("Q1 ·", f"Q{q} ·").replace('"q":1', f'"q":{q}')
+    FakeTransport(hub, ra).post("pr", body)
+
+
+def _decided(hub: FakeSwitch, t: str) -> list[tuple[int, int]]:
+    return sorted((o["q"], o["i"]) for m in hub.messages if (o := decode(m.body)) and o["t"] == t)
+
+
+def test_one_card_per_leaf_and_its_answer_covers_every_question(tmp_path: Path) -> None:
+    # Found on a real PR: one merged step edited three files, so two SCOPE questions
+    # requested the same leaves and the author got a card per question for the same bytes.
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    hub = s["hub"]
+    a, r = s["author"](), s["reviewer"]()
+    a.step()
+    r.step()
+    _rerequest(hub, s["ra"], 2)
+    a.step()
+    leaves = {
+        i
+        for m in hub.messages
+        if (o := decode(m.body)) and o["t"] == "request"
+        for i in o["leaves"]
+    }
+    assert len(hub.cards) == len(leaves)
+    for card in list(hub.cards):
+        hub.answer(s["au"], card, "approve")
+    a.step()
+    assert _decided(hub, "disclosure") == sorted((q, i) for q in (1, 2) for i in leaves)
+    _rerequest(hub, s["ra"], 3)
+    a = s["author"]()  # restart: the decision is read back from the room
+    a.step()
+    assert len(hub.cards) == len(leaves)
+    assert {q for q, _ in _decided(hub, "disclosure")} == {1, 2, 3}
+
+
+def test_declined_leaf_is_withheld_for_every_question(tmp_path: Path) -> None:
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    hub = s["hub"]
+    a, r = s["author"](), s["reviewer"]()
+    a.step()
+    r.step()
+    _rerequest(hub, s["ra"], 2)
+    a.step()
+    for card in list(hub.cards):
+        hub.answer(s["au"], card, "decline")
+    a.step()
+    withheld = [o for m in hub.messages if (o := decode(m.body)) and o["t"] == "withheld"]
+    assert sorted({w["q"] for w in withheld}) == [1, 2]
+    assert {w["reason"] for w in withheld} == {"author"}
+    assert _decided(hub, "disclosure") == []

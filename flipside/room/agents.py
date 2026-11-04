@@ -78,9 +78,10 @@ def find_seal(repo: Path, base: str, head: str) -> str | None:
 APPROVE = ("approve", "accept")
 
 
-def card_id(commit: str, q: int, i: int) -> str:
-    """Deterministic card id, so a restarted author-agent never opens a second card."""
-    return hashlib.sha256(f"flipside/card/{commit}/{q}/{i}".encode()).hexdigest()[:32]
+def card_id(commit: str, i: int) -> str:
+    """Deterministic card id, one per leaf: a restarted author-agent never opens a second
+    card, and two questions asking for the same leaf share one card (the same bytes)."""
+    return hashlib.sha256(f"flipside/card/{commit}/{i}".encode()).hexdigest()[:32]
 
 
 def _short(sha: str) -> str:
@@ -110,14 +111,16 @@ class AuthorAgent:
     t: Transport
     cfg: AuthorConfig
     log: Log = print
-    cards: dict[str, tuple[int, int]] = field(default_factory=dict)
+    cards: dict[str, int] = field(default_factory=dict)
     dropped: set[str] = field(default_factory=set)
     _rebuilt: Rebuilt | None = None
 
     def __post_init__(self) -> None:
         if self.cfg.state_path and self.cfg.state_path.exists():
             raw = json.loads(self.cfg.state_path.read_text())
-            self.cards = {k: (v[0], v[1]) for k, v in raw.get("cards", {}).items()}
+            self.cards = {
+                k: int(v[-1] if isinstance(v, list) else v) for k, v in raw.get("cards", {}).items()
+            }
             self.dropped = set(raw.get("dropped", []))
 
     def _save(self) -> None:
@@ -126,7 +129,7 @@ class AuthorAgent:
                 self.cfg.state_path,
                 json.dumps(
                     {
-                        "cards": {k: list(v) for k, v in self.cards.items()},
+                        "cards": dict(self.cards),
                         "dropped": sorted(self.dropped),
                     },
                     sort_keys=True,
@@ -166,35 +169,43 @@ class AuthorAgent:
             for o in mine
             if o["t"] in ("disclosure", "withheld") and o.get("commit") == self.cfg.commit
         }
-        n = self.n
-        for m in msgs:
-            for q, i in self.wanted(m, n):
-                if (q, i) in done or card_id(self.cfg.commit, q, i) in self.cards:
-                    continue
-                acts += self.consider(q, i)
-                if card_id(self.cfg.commit, q, i) not in self.cards:
-                    done.add((q, i))
-        for q, i in self.owner_offers():
-            if (q, i) in done or card_id(self.cfg.commit, q, i) in self.cards:
+        # A leaf's decision, read back from the room: once disclosed or withheld for one
+        # question, the same bytes get the same answer for every other question.
+        decided: dict[int, str] = {}
+        for o in mine:
+            if o.get("commit") != self.cfg.commit:
                 continue
-            acts += self.consider(q, i)
-            if card_id(self.cfg.commit, q, i) not in self.cards:
-                done.add((q, i))
+            if o["t"] == "disclosure":
+                decided[int(o["i"])] = "approve"
+            elif o["t"] == "withheld":
+                decided.setdefault(int(o["i"]), str(o["reason"]))
+        n = self.n
+        wanted: list[tuple[int, int]] = []
+        for m in msgs:
+            wanted += self.wanted(m, n)
+        wanted += self.owner_offers()
+        pending = list(dict.fromkeys(w for w in wanted if w not in done))
         for oc in self.t.outcomes():
             if oc.card not in self.cards:
                 continue
-            q, i = self.cards[oc.card]
-            if (q, i) in done:
-                continue
+            i = self.cards[oc.card]
             if oc.answered_by != self.cfg.author_user:
                 self.log(f"author-agent ignored card {oc.card[:8]} answered by {oc.answered_by}")
                 continue
-            if oc.answer in APPROVE:
-                self.disclose(q, i)
+            decided.setdefault(i, "approve" if oc.answer in APPROVE else "author")
+        for q, i in pending:
+            if i not in decided:
+                if card_id(self.cfg.commit, i) in self.cards:
+                    continue  # the author has not answered this leaf's card yet
+                reason = self.consider(q, i)
+                acts += 1
+                if reason is None:
+                    continue
+                decided[i] = reason
             else:
-                self.withhold(q, i, "author")
+                self.apply(q, i, decided[i])
+                acts += 1
             done.add((q, i))
-            acts += 1
         self._save()
         return acts
 
@@ -263,25 +274,33 @@ class AuthorAgent:
         mid = self.t.post(self.cfg.shared, encode(line, obj))
         self.log(f"author-agent posted seal {mid}")
 
-    def consider(self, q: int, i: int) -> int:
-        """Secret-scan leaf i, then withhold it or open the author's approval card."""
+    def apply(self, q: int, i: int, decision: str) -> None:
+        """Act on a leaf's decision for question q: disclose, or withhold with the reason."""
+        if decision == "approve":
+            self.disclose(q, i)
+        else:
+            self.withhold(q, i, decision)
+
+    def consider(self, q: int, i: int) -> str | None:
+        """Secret-scan leaf i, then withhold it (returns the reason) or open the author's
+        approval card (returns None)."""
         try:
             hits = leaf_secret_hits(self.rebuilt, i)
         except ProveError as e:
             self.log(f"author-agent cannot rebuild leaf {i}: {e}")
             self.withhold(q, i, "session_changed")
-            return 1
+            return "session_changed"
         if hits:
             self.withhold(q, i, "secret_scan")
-            return 1
+            return "secret_scan"
         leaf = self.rebuilt.sealed.leaves[i]
-        cid = card_id(self.cfg.commit, q, i)
+        cid = card_id(self.cfg.commit, i)
         title = f"Disclose step {leaf['step']} chunk {leaf['chunk']} to #pr-{self.cfg.pr}?"
         detail = f"{leaf['text']}\n\nsha256 {hashlib.sha256(canon(leaf)).hexdigest()[:12]}"
         self.t.open_card(self.cfg.private, cid, title, detail)
-        self.cards[cid] = (q, i)
-        self.log(f"author-agent opened card {cid[:8]} for Q{q} leaf {i}")
-        return 1
+        self.cards[cid] = i
+        self.log(f"author-agent opened card {cid[:8]} for leaf {i} (first asked in Q{q})")
+        return None
 
     def disclose(self, q: int, i: int) -> None:
         """Re-check the sealed prefix (F1) and disclose; a changed session is withheld."""

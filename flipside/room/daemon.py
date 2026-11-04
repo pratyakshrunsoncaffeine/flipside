@@ -126,6 +126,14 @@ def pr_data(cfg: dict[str, Any]) -> PRData:
     )
 
 
+def prepare_work(cfg: dict[str, Any]) -> Path:
+    """Create the agent's state directory (mode 0700) if it does not exist."""
+    work = Path(cfg["work"])
+    work.mkdir(mode=0o700, parents=True, exist_ok=True)
+    os.chmod(work, 0o700)
+    return work
+
+
 def transport(cfg: dict[str, Any], rooms: tuple[str, ...]) -> SwitchTransport:
     work = Path(cfg["work"])
     return SwitchTransport(
@@ -208,6 +216,7 @@ def reviewer(cfg: dict[str, Any]) -> tuple[ReviewerAgent, SwitchTransport]:
 def run(cfg: dict[str, Any], stop: threading.Event, poll: float = 1.0) -> int:
     """Step the agent until ``stop`` is set. Transient Switch errors are logged and retried."""
     agent: AuthorAgent | ReviewerAgent
+    prepare_work(cfg)
     agent, t = author(cfg) if cfg["role"] == "author" else reviewer(cfg)
     log(f"{cfg['agent_name']} started (pid {os.getpid()})")
     try:

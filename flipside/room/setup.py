@@ -180,11 +180,30 @@ def setup_author_finish(a: argparse.Namespace, http: Http | None = None) -> str:
     return f"author-agent ready; run: flip agent author --config {out}"
 
 
+def pr_source(a: argparse.Namespace) -> dict[str, Any]:
+    """Where reviewer-agent reads the PR: GitHub (``--github``), or a PR data file
+    (``--pr-json``, keys number, title, body, author, files, checks) with ``--head``."""
+    if bool(a.github) == bool(a.pr_json):
+        raise SetupError("give exactly one of --github or --pr-json")
+    if a.github:
+        return {"github": a.github, **({"head": a.head} if a.head else {})}
+    if not a.head:
+        raise SetupError("--pr-json needs --head (the PR head commit)")
+    pr = json.loads(Path(a.pr_json).read_text())
+    missing = [k for k in ("number", "title", "body", "author", "files") if k not in pr]
+    if missing:
+        raise SetupError(f"{a.pr_json} is missing: {', '.join(missing)}")
+    if int(pr["number"]) != a.pr:
+        raise SetupError(f"{a.pr_json} is PR #{pr['number']}, not #{a.pr}")
+    return {"pr": pr, "head": a.head}
+
+
 def setup_reviewer(a: argparse.Namespace, owner: tuple[Http, str, str]) -> str:
     """Step 2: register reviewer-agent, open ``#pr-<n>``, admit the author and author-agent."""
     j = parse_join(a.join, "author")
     if int(j["pr"]) != a.pr:
         raise SetupError(f"join line is for PR #{j['pr']}, not #{a.pr}")
+    source = pr_source(a)
     h, _uid, name = owner
     agent, key = register(h, a.base, a.agent_name)
     shared = open_chat(h, f"pr-{a.pr}", agent)
@@ -207,7 +226,7 @@ def setup_reviewer(a: argparse.Namespace, owner: tuple[Http, str, str]) -> str:
         "repo": str(repo),
         "base_ref": a.base_ref,
         "shared": shared,
-        "github": a.github,
+        **source,
         "pr_number": a.pr,
         "author_agent": f"agent:{j['agent']}",
         "author_agent_name": j["agent_name"],
@@ -227,6 +246,8 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--pr", type=int, help="pull request number")
     p.add_argument("--repo", default=".", help="local clone of the repo (default .)")
     p.add_argument("--github", help="owner/repo on GitHub (reviewer)")
+    p.add_argument("--pr-json", help="PR data file instead of GitHub (reviewer)")
+    p.add_argument("--head", help="PR head commit (default: from GitHub)")
     p.add_argument("--creds", type=Path, help="owner credentials file (mode 0600)")
     p.add_argument("--as", dest="as_", help="entry in the credentials file")
     p.add_argument("--base", default=os.environ.get("SWITCH_BASE", DEFAULT_BASE), help="Switch URL")
@@ -246,8 +267,8 @@ def main(argv: list[str]) -> int:
     finishing = a.role == "author" and a.join
     if not finishing:
         missing = [f for f in ("pr", "creds", "as_") if getattr(a, f) is None]
-        if a.role == "reviewer" and not a.github:
-            missing.append("github")
+        if a.role == "reviewer" and not (a.github or a.pr_json):
+            missing.append("github or --pr-json")
         if a.role == "reviewer" and not a.join:
             missing.append("join")
         if missing:

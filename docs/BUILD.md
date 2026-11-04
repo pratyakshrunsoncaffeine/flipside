@@ -169,7 +169,7 @@ Evaluated in this order; at most five questions per round, the rest listed in th
 |---|---|---|
 | `CI` | A check run on the seal commit concluded `failure` | "Check `<name>` failed on the sealed commit. What happened?" |
 | `TESTS` | PR body matches `\btests? (pass|passed|passing|green)\b` (case-insensitive) and either no manifest step has `cmd: test`, or the last `cmd: test` result step that ran has `ok: false`. A result with `ok: null` never ran (SPEC C14) and is skipped | "The PR says tests pass. The last sealed test run did not pass (step `<t>`). Which run is right?" or "…no sealed step ran tests…" |
-| `SCOPE` | A changed file F is not mentioned in the PR title or body (path, or basename without extension, case-insensitive), and at least one sealed step has F in `files` or `mentions` | "`F` changed and the PR description does not mention it. Why?" |
+| `SCOPE` | A changed file F is not mentioned in the PR title or body (path, or basename without extension, case-insensitive; a test file such as `tests/test_report.py` also counts as mentioned when the body says it adds or changes tests, e.g. "with tests" or "tests for", and names its subject `report`), and at least one sealed step has F in `files` or `mentions` | "`F` changed and the PR description does not mention it. Why?" |
 | `UNSEALED` | A changed file F has no sealed step touching it | "No sealed step touched `F`. Was it changed outside the agent?" |
 
 The honest cases (`fixtures/cases/honest-*`) must give zero gaps.

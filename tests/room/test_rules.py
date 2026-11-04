@@ -211,3 +211,21 @@ def test_c_tests_ignores_a_bash_call_that_never_ran() -> None:
     }
     v = [{"i": 13, "leaf": never}]
     assert contradictions(1, "tests pass", Gap("TESTS", ""), v, frozenset()) == []
+
+
+def test_scope_test_file_counts_as_mentioned_when_the_body_says_it_adds_tests() -> None:
+    # Found on a real PR: "Adds render_json to report.py ..., with tests." still asked
+    # why tests/test_report.py changed.
+    t = "tests/test_report.py"
+    m = [e(0, 0, "user"), e(1, 1, tools=["Edit"], files=["report.py", t])]
+    for body in (
+        "Adds render_json to report.py, with tests.",
+        "Adds tests for report.py.",
+        "report.py: new JSON output; added unit tests.",
+    ):
+        assert gaps(pr(body=body, files=("report.py", t)), m) == [], body
+    # "Tests pass" is a claim about a run, not a change to tests: the question stays.
+    g = gaps(pr(body="Adds JSON to report.py. Tests pass.", files=("report.py", t)), m)
+    assert kinds(g) == [("TESTS", None), ("SCOPE", t)]
+    # The test's subject must be mentioned too.
+    assert kinds(gaps(pr(body="Adds render_json, with tests.", files=(t,)), m)) == [("SCOPE", t)]

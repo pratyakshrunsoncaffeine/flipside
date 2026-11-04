@@ -52,3 +52,14 @@ def test_reviewer_head_needs_a_head_or_github() -> None:
     assert reviewer_head({"head": "abc"}) == "abc"
     with pytest.raises(SystemExit):
         reviewer_head({})
+
+
+def test_work_dir_is_created_private(tmp_path: Path) -> None:
+    # Found on a real PR: flip setup's default work dir did not exist, so every state
+    # save failed and author-agent reopened its cards on each step.
+    from flipside.room.daemon import prepare_work
+
+    work = tmp_path / "repo" / ".git" / "flipside" / "work-author"
+    prepare_work({"work": str(work)})
+    assert work.is_dir() and os.stat(work).st_mode & 0o777 == 0o700
+    prepare_work({"work": str(work)})  # idempotent

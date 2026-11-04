@@ -66,6 +66,8 @@ def ns(tmp: Path, **kw: Any) -> argparse.Namespace:
         work=None,
         base_ref="origin/main",
         github=None,
+        pr_json=None,
+        head=None,
         join=None,
     )
     return argparse.Namespace(**{**base, **kw})
@@ -224,3 +226,17 @@ def test_open_cards_only_my_agent_and_private_room() -> None:
 def test_render_multiline() -> None:
     m = {"seq": 3, "sender": {"name": "Priya"}, "body": "Q1: first\nsecond"}
     assert chat.render(m) == "   3 Priya: Q1: first\n       second"
+
+
+def test_pr_source_github_or_pr_json(tmp_path: Path) -> None:
+    pr = tmp_path / "pr.json"
+    pr.write_text(json.dumps({"number": 5, "title": "t", "body": "b", "author": "a", "files": []}))
+    assert setup.pr_source(ns(tmp_path, pr=5, github="o/r")) == {"github": "o/r"}
+    got = setup.pr_source(ns(tmp_path, pr=5, pr_json=str(pr), head="abc"))
+    assert got["head"] == "abc" and got["pr"]["number"] == 5
+    with pytest.raises(setup.SetupError, match="exactly one"):
+        setup.pr_source(ns(tmp_path, pr=5, github="o/r", pr_json=str(pr)))
+    with pytest.raises(setup.SetupError, match="needs --head"):
+        setup.pr_source(ns(tmp_path, pr=5, pr_json=str(pr)))
+    with pytest.raises(setup.SetupError, match="not #6"):
+        setup.pr_source(ns(tmp_path, pr=6, pr_json=str(pr), head="abc"))
