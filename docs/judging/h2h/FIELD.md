@@ -1,0 +1,31 @@
+- abidhussain19932-stack/shopops-room [2026-11-04] Telegram back office where a shop owner and three AI agents run orders, stock, shipping and refunds together via Switch (Flip the Switch hackathon)
+- adeyanjufuhad/canary [2026-11-02] Your team writes the rules in chat. Canary tries to break them on every PR. Built on Switch.
+- Asmit-Rai/switch-preflight [2026-11-03] Preflight: a Switch room that takes a project from 'we think we're done' to 'verified, ready to submit'. The model proposes, code decides. Flip the Switch hackathon.
+- breeze-lyf/kb-steward [2026-11-04] Self-healing team knowledge base: Switch-connected agents turn chat corrections into owner-approved git changes (Flip the Switch hackathon)
+- Bruno-coder21/flip-the-switch-fluxo-ideias [2026-11-03] 
+- Chandanaa-003/Flip-the-Switch-Hackathon [2026-11-01] 
+- deveshchandiramani2006/switch-hackathon [2026-11-03] 
+- dukemawex/clearsend-room [2026-11-03] ClearSend Room: Switch-connected agent workflow for flights and escrow in Slack/Discord (Flip the Switch hackathon)
+- er-s-an/incidentroom [2026-11-03] IncidentRoom — on-call incident closeout in Switch chat (Flip the Switch Track 01)
+- evginayd/bug-to-pr-room [2026-11-03] 
+- ivergit88/ledgerroom-switch [2026-11-03] Evidence-first invoice review in real Switch rooms. AI explains exceptions; a named reviewer approves an exact evidence digest. Flip the Switch 2026.
+- jaysid97/pr-pilot [2026-11-01] AI-powered PR reviews in Discord, powered by Switch + Antigravity. Built for the Flip the Switch Hackathon.
+- jenniferevangelista-de/shield-for-data [2026-11-03] Shield: a human-in-the-loop data quality agent for team chat, built on Switch (business-date gate, Great Expectations, OpenMetadata adapter, local Gemma)
+- kamalesh404/CrewPilot [2026-11-01] CrewPilot — Evidence-Driven Bug Investigation Squad. Track: Flip the Switch Hackathon
+- kumarrohitkumar/orderroom [2026-11-03] FMCG distributor order desk in team chat: Telegram + Mattermost + one AI agent via Switch. Flip the Switch hackathon 2026.
+- majorML/flip-all-agent [2026-11-01] Autonomous DeFi & smart contract security copilot for Discord & team chat, powered by Switch. Built for the WeMakeDevs Flip the Switch Hackathon.
+- mars69kk/Evidenceguard-hacksprint [2026-10-31] Daytona Switch Hackathon
+- meetbhorania/full-circle [2026-11-03] From a customer’s text to a deployed fix in minutes. A Switch workflow where AI agents and humans close the loop across Telegram and Slack: reproduce, fix, review, approve, ship and reply, with human sign-off on every risky step. Built for the Flip the Switch hackathon.
+- mistily/VesselAi [2026-11-03] The Flip the Switch Hackathon project for Slack integrated ai automation for insurance docs
+- Ranger-Jay/hackathon-flip-the-switch [2026-11-03] Hackathon: Flip-the-Switch. Public submission repo for the Flip the Switch Hackathon: a council room workflow on Switch, hosted on nexus, reusable for Buddy Town.
+- ronitgupta138/Incident-Sentinel [2026-10-31] 🛡️ Autonomous SRE Incident Response & Canary Deployment Safety Room on Switch (WeMakeDevs Hackathon Track 01). Multi-agent outage triage, FastMCP telemetry, and human-in-the-loop rollback dispatch.
+- ronitgupta138/Study-Nexus [2026-10-31] 🎓 Autonomous Multi-Agent Personal Study & Creative Research Room on Switch (WeMakeDevs Hackathon Track 02). Ingests papers & lectures, Socratic active recall drills, and obsidian-ready markdown notes.
+- samprati18/switch-hack-demo [2026-11-02] Demo app for Flip the Switch hackathon
+- sarath-ppt/switch-hackathon-project [2026-10-29] OpsRelay: incident desk, PR review squad and content studio as AI agent rooms on Switch + Mattermost
+- Shubham-dev-stack/switchguard [2026-11-03] SwitchGuard: Autonomous Incident Response & War Room Commander powered by Switch
+- sivarao1771/incident-squad [2026-11-03] AI incident response squad in your team chat: triage, fixer and reviewer agents take a bug from report to merged PR, with a human approving in Discord. Built on Switch.
+- suhailult777/docdesk [2026-11-03] DocDesk: a Switch agent that answers from your repo with citations, and turns chat corrections into verified doc fixes
+- teguhirvan85-hue/airlock [2026-10-24] Let agents read the outside world without handing them the keys. Built on Switch.
+- thekashifnazir/context-keeper [2026-11-03] An agent in your team chat that answers 'why don't we do X?' with the source. Flip the Switch, Track 01.
+- victrvondoom/flip-the-switch [2026-10-28] 
+- vincenzo-afk/CrewPilot [2026-10-31] CrewPilot is an AI teammate for team chat. Built with Switch, it helps people and AI agents triage issues, manage tasks, and complete real workflows together.

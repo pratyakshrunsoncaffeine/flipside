@@ -1,0 +1,16 @@
+Use of Switch: 9/10 — Switch is central to room messaging, identity, agent delivery, and the approval workflow.
+
+Technical execution: 8/10 — The material describes careful safeguards and multiple verification paths, but the full implementation and live run cannot be inspected here.
+
+Creativity and impact: 8/10 — Evidence-bound invoice review addresses a real team need, though the prototype uses synthetic data and lacks accounting integrations.
+
+Presentation and documentation: 9/10 — The README gives a clear walkthrough, setup instructions, and limitations; the demo is described as edited screenshots from a local test.
+
+Shortlist: Yes — The submission shows a strong, well-documented use of Switch for a consequential workflow.
+
+Three weaknesses costing the most points:
+- The demo uses synthetic documents and an automation-controlled local reviewer, not a real customer workflow.
+- Reproduction depends on Docker, Mattermost, Switch, and authenticated Codex; setup is involved.
+- No code or video contents are available for independent inspection, limiting confidence in execution and presentation.
+
+TOTAL: 8.5/10

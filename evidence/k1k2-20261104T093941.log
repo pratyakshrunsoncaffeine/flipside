@@ -1,0 +1,5 @@
+2026-11-04T09:39:42 created user author@flipside.local
+2026-11-04T09:39:42 created user reviewer@flipside.local
+2026-11-04T09:39:43 server http://127.0.0.1:52370; author user a4690271-4320-44a1-984f-459e4765d85a; reviewer user 54b7b256-242d-4154-b7de-838e15260380
+2026-11-04T09:39:43 registered author-agent 5557b586-915a-429c-9bb1-8d73cec90e33 (owner author), reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60 (owner reviewer)
+2026-11-04T09:39:43 author created room pr-142 None; response keys ['chat']

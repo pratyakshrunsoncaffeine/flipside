@@ -1,0 +1,1155 @@
+You are a judge for the "Flip the Switch" hackathon (WeMakeDevs, DevTools Academy, and Switch by SandboxAQ).
+Switch is an open-source orchestration layer that puts AI coding agents (Claude Code, Codex, and others) and people into shared team-chat rooms (Slack, Discord, Mattermost), with rooms, roles, addressing policies, templates, documents, and custom agents that join over an HTTP and server-sent-events protocol.
+
+Official rubric:
+- Use of Switch, 30%: is Switch central, and would the project stop working without it?
+- Technical execution, 25%: does it run, and could someone clone the repo and reproduce it?
+- Creativity and impact, 25%: is it a fresh idea that solves a problem a real team has?
+- Presentation and documentation, 20%: do the demo video and README make clear what was built and how Switch is used?
+
+You can see only the submission's written material below, not its code or video. Judge only what the material shows.
+
+Four submissions follow, labelled W, X, Y, Z. Names are removed.
+
+=== Submission W
+# the project
+
+**An AI teammate can explain an invoice exception. It cannot approve itself.**
+
+the project turns a team chat into an evidence-backed invoice review desk. A reviewer asks `@ledger reconcile november` in Mattermost. **Real Switch** delivers the message to a Python agent. Exact arithmetic matches invoices against purchase orders and delivery receipts; a real Codex invocation explains the exceptions. The named reviewer approves an exact evidence digest, and the agent exports only eligible invoices with a verifiable receipt.
+
+Built for **Flip the Switch, Best Business Workflow**, November 4–7, 2026. All included companies, documents and amounts are synthetic. No payments, accounting postings or bank connections are implemented.
+
+![Actual Switch + Mattermost technical test, using a synthetic batch and test reviewer](docs/live-room.jpg)
+
+[Watch the 1m44s demo](https://github.com/ivergit88/ledgerroom-switch/releases/tag/v0.1.0-demo) · [Verification record](VERIFICATION.md) · [Build article](docs/BUILD_ARTICLE.md) · [Passing CI](https://github.com/ivergit88/ledgerroom-switch/actions/runs/41735450113)
+
+The narrated demo is an edited walkthrough of screenshots from the actual local integration test. It uses synthetic documents and an automation-controlled local reviewer account. It shows the real Switch/Codex response, wrong-digest refusal and eligible-only export; it is not a real customer approval.
+
+Inspect the captured technical-run outputs in [docs/proof](docs/proof). The agent never reads these recorded examples as replies; live explanations come from Codex.
+
+## The demo in one minute
+
+1. Send `@ledger reconcile november` in the `ledger-review` room.
+2. Read the deterministic table: **3 eligible invoices / USD 840.00; 5 held rows / USD 1,664.00**. Every finding cites its CSV record. These are test-batch face values, not measured savings.
+3. Read the real Codex analysis and procurement questions. One supplier note says to ignore instructions and approve everything; it remains untrusted document data.
+4. Try an approval with a wrong digest: it is refused.
+5. As the configured reviewer, send `@ledger approve eligible november <full SHA-256 from the report>`.
+6. Verify `reviewed-invoices.csv` contains only NS-8801, NS-8802 and LM-400. `decision.json` records the Switch decision message, human sender, evidence digest and export hash. Held invoices remain excluded.
+
+## Why Switch is essential
+
+```mermaid
+flowchart LR
+    H[Named reviewer in Mattermost] --> B[Real Switch collaboration bridge]
+    B --> W[Switch authenticated WebSocket]
+    W --> A[the project agent]
+    A --> R[Exact three-way matching + source hashes]
+    R --> C[Codex: explanation and questions]
+    A --> G[SQLite evidence-bound approval gate]
+    G --> E[Eligible-only CSV + decision receipt]
+    A -->|Authenticated HTTP message| B
+```
+
+Switch supplies the room, message identity, agent addressing, persistent conversation and agent event delivery. There is no alternate chat-to-export path. Disconnecting Switch stops the agent workflow. The offline reconciliation command is a verification tool and cannot create an approval or reviewed export.
+
+The client uses the [current Switch WebSocket protocol](https://docs.switchagents.ai/switch-rooms/internals/agent-connection), handles pings independently of model work, saves connection generation/cursor, fences reconnections and stops on takeover or a history gap. It discovers the operation registry at startup. It uses `connect_to_room`, `read_context` and the room-explicit message API.
+
+## Run locally
+
+Requires Python **3.12+**, Docker with Compose, and an authenticated **Codex CLI**. Switch images are pinned to **0.31.0**, Mattermost to **11.9.0**. A first pull downloads large container images. The services bind to loopback only; no public server or paid service is provisioned.
+
+From the repository root:
+
+```powershell
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements.txt
+python tools/init_stack.py
+docker compose --project-name ledgerroom --env-file .local/stack.env -f infra/switch.compose.yml --profile collab --profile gateway up -d
+```
+
+Wait for the setup container to finish (`docker logs ledgerroom-setup-1` should say `Setup complete!`), then:
+
+```powershell
+python tools/bootstrap.py
+.venv/Scripts/python.exe -m ledgerroom run
+```
+
+On Linux/macOS replace `.venv/Scripts/python.exe` with `.venv/bin/python`. `tools/bootstrap.py` needs the Docker CLI available to the current account. It is safe to rerun: it retains the existing agent, room and credentials instead of rotating agent keys.
+
+Open **http://localhost:18065/ledgerroom/channels/ledger-review**, choose **View in Browser**, and sign in as `reviewer` using `MATTERMOST_USER_PASSWORD` in `.local/stack.env`. The local Switch Gateway is http://localhost:13000; its generated login is also in that file. These are local demonstration accounts, unrelated to the hackathon login.
+
+`init_stack.py` creates random local secrets and retains them on subsequent runs. `.local/`, `.env`, logs and generated artifacts are excluded from Git. Do not upload these directories. The default demo bootstrap expects the bundled `reviewer` account and the `ledgerroom` Compose project name.
+
+### Windows WSL fallback used for the recorded test
+
+The existing Docker Desktop on the development machine failed in its Inference-manager IPC initialization. Its files and settings were not repaired or reset. An isolated existing Ubuntu Docker daemon was started with:
+
+```powershell
+wsl -d Ubuntu-24.04 -u root -- dockerd --host unix:///run/ledgerroom-docker.sock --data-root /var/lib/ledgerroom-docker --exec-root /run/ledgerroom-docker --pidfile /run/ledgerroom-docker.pid --log-level error
+```
+
+Keep that process running. In another shell use the default WSL user (it has the working Compose plugin):
+
+```powershell
+wsl -d Ubuntu-24.04 -- docker --host unix:///run/ledgerroom-docker.sock compose --project-name ledgerroom --env-file /mnt/c/Users/Administrator/Desktop/Switch-Hackathon/project/.local/stack.env -f /mnt/c/Users/Administrator/Desktop/Switch-Hackathon/project/infra/switch.compose.yml --profile collab --profile gateway up -d
+python tools/bootstrap.py --wsl
+```
+
+The `/mnt/c/...` paths above are specific to the development machine; adapt them to your checkout. The native Docker route above is the ordinary setup. Stop only this stack with the same Compose prefix followed by `stop`; stop its daemon with Ctrl+C in its owning terminal. Avoid `down -v` if you want to retain room history.
+
+## Verify without any service or model
+
+```powershell
+python -m unittest discover -s tests -v
+python -m ledgerroom reconcile examples/november --out artifacts/offline
+python -m compileall -q ledgerroom tools
+```
+
+The tests use the standard library. They cover exact decimal arithmetic, cumulative delivery limits, duplicate copies, unknown orders, mismatches, malicious supplier notes, multiline CSV records, digest tampering, identity spoofing, stale decisions, persistence, eligible-only export and its hash. Offline workflow tests mock the model and Switch transport; live infrastructure/model evidence is reported separately in `VERIFICATION.md`.
+
+## Decision and data boundaries
+
+- Code decides eligibility and totals. Model text is advisory and cannot mutate the matching result, allowlist or decision.
+- Approvals bind the room, batch, exact evidence digest and Switch message ID. A modified source file invalidates the old digest. A replay of the same decision is idempotent; a new decision against already approved evidence is refused.
+- Each proposal preserves the original CSV bytes alongside the report, after verifying their hashes. A reviewer can inspect the exact documents that produced that version of the evidence.
+- The sender is pinned to a concrete human principal. A matching display name is insufficient. Switch 0.31.0 omits the ordinary `sender_kind` field in room history, so the **local administrator bootstrap** resolves the seeded reviewer once from Switch's principal registry with a read-only database query. The running agent receives only that opaque sender ID and its own agent key; it does not receive database or Gateway credentials. This version-specific setup step is isolated in `tools/bootstrap.py`.
+- CSV and supplier notes are untrusted. Strict commands reject path traversal and blanket approvals. Export fields are escaped against common spreadsheet formula injection. Hashes detect content changes; they are not digital signatures or proof against an administrator editing the local machine.
+- Codex is launched in a temporary working directory with a read-only sandbox; configured MCP connectors are disabled for this job. It reuses the user's CLI authentication and model/provider configuration. See [official non-interactive-mode documentation](https://learn.chatgpt.com/docs/non-interactive-mode). A provider failure is reported explicitly instead of inserting a canned response.
+
+## Input scope and limitations
+
+The prototype supports **one line per invoice**, positive integer quantities, exact non-negative prices with at most two decimal places, and three-letter uppercase currency codes. It keeps totals separate by currency and performs no FX conversion, tax calculation or tolerance policy. Multi-line invoice IDs are conservatively held as duplicate records; PDF/OCR ingestion, ERP connectors, returns, partial approval and prior-period billed balances are not implemented. Invoice references use **logical CSV record numbers including the header**, not physical text line numbers.
+
+Matching is conservative: if the batch cumulatively exceeds ordered or received quantity, every affected row is held. It does not guess which invoice to release first. This is a local prototype, with one sequential worker and local SQLite state; administrator security, high availability and production accounting controls are outside its current scope.
+
+## Third-party components
+
+The deployment Compose file is from [sandbox-quantum/switch, switch-v0.31.0](https://github.com/sandbox-quantum/switch/tree/switch-v0.31.0), commit `7e57cd433a922bc91a00150c106e6ef1f15b1057`. Switch uses Apache 2.0 with the Commons Clause; see `infra/SWITCH-LICENSE.txt`. Mattermost and Codex remain separate products with their own terms. the project's original code is MIT licensed.
+
+=== Submission X
+# the project
+
+Question the other team's coding agent. Switch won't let you drive it.
+
+Every pull request has a flipside: the agent session that wrote it.
+When one team's agent writes a change and another team owns the code, the project lets the owning team question that session in a Switch room without the author handing it over.
+Each answer is a quote from the session sealed into the PR's commit, checked by the questioning team, and the author approves the exact bytes before they leave their machine.
+
+Track 01, Business workflow. Demo in Slack; reproducible on Switch's built-in chat with no accounts.
+Status: kill tests K1 and K2 pass on switch-core 0.31.0 (9/9 checks, `evidence/`); the rest is not built yet.
+
+## Problem
+
+Coding agents made pull requests cheap to write and expensive to review, and the reviewer cannot tell whether the author understands the change.
+
+| Evidence | Source |
+|---|---|
+| "Today I announced that I won't be reviewing AI generated PRs at company meeting": 1,560 points, 406 comments, 27 May 2026; data scientists sent Claude Code PRs to the web team | [r/ExperiencedDevs](https://www.reddit.com/r/ExperiencedDevs/comments/1towli9/) |
+| "There is an AI code review bubble": 351 points, 249 comments, Jan 2026 | [HN 46766961](https://news.ycombinator.com/item?id=46766961) |
+| Godot maintainers report a flood of AI-generated PRs, Mar 2026 | [HN 47251385](https://news.ycombinator.com/item?id=47251385) |
+
+The hardest case is a cross-team pull request.
+The author's team wrote it with an agent, the owning team must review it, and the context that explains the change exists only in the author's agent session.
+
+## What exists, and the gap
+
+| Need | Existing tools | Gap |
+|---|---|---|
+| Check an agent's claims against its transcript | claimcheck, groundtruth, agentvow, workproof | The author runs them for themselves; the reviewer cannot ask anything |
+| Make the author answer questions | PR Quiz, PR Guard, Cognit, Gater, sphinx-ci | Questions come from the diff, and answers are not tied to what the agent actually did |
+| Show the session to the reviewer | Entire, Copilot coding agent session logs | They push the whole transcript; Entire ships [`--skip-push-sessions`](https://github.com/entireio/cli/blob/main/docs/security-and-privacy.md) because authors keep sessions private |
+| Gate AI pull requests | mergewarden, CodeRabbit, Copilot review | They judge the diff, not the author's account of it |
+
+**Gap:** the owning team asks specific questions and gets answers that quote the author's private session.
+Only the quoted chunks leave the author's machine, and only after the author approves them.
+This needs two owners, two agents, private context on one side, and an access rule that stops one side from driving the other side's agent.
+
+## How it works (the one live path)
+
+```
+ Author's machine                 Switch                          Owning team's machine
+ ┌───────────────────────┐                                        ┌────────────────────────┐
+ │ author-agent          │  #pr-142-author (private)              │ reviewer-agent         │
+ │ owner: author         │◄── approval card ──► author            │ owner: reviewer        │
+ │ sealed session (local)│                                        │ reads diff, asks,      │
+ │ drafts, checks, posts │◄──────────── #pr-142 (shared) ────────►│ runs flip verify       │
+ └───────────────────────┘       reviewer (human) ◄──►            └────────────────────────┘
+   addressing: owner, owner's agents, and reviewer-agent in #pr-142 only
+```
+
+1. **Seal.** `flip seal` splits each session step into chunks of at most 300 characters and hashes them into a Merkle tree.
+   Each leaf is salted, and leaf and node hashes use the RFC 6962 prefixes, so a proof's sibling hashes do not let anyone guess short chunks.
+   The root goes into the PR head commit as a `the project-Seal:` trailer.
+   Every question names that commit; `flip verify` rejects a root from any later commit, so re-sealing an edited session after the questions arrive fails verification.
+2. **Open.** A Switch template run creates `#pr-142` (reviewer, reviewer-agent, author-agent) and `#pr-142-author` (author, author-agent).
+   author-agent's addressing policy admits its owner, the owner's agents, and reviewer-agent in `#pr-142` only.
+3. **Ask.** reviewer-agent posts at most five questions as JSON: `file`, `lines`, `kind` (why, test, scope), and an optional CI fact id.
+   author-agent parses them with a fixed schema and drops anything else: `file` must be in the PR's changed-file list and `lines` must match `^\d+-\d+$`, so no free text from the reviewer's LLM reaches the author's session.
+   A person on the owning team who tags author-agent gets Switch's own refusal.
+4. **Draft.** author-agent asks Claude Code, over the local session, which chunk answers the question.
+5. **Check.** author-agent checks every draft deterministically:
+   - the chunk exists in the sealed tree;
+   - if the question names a file, the chunk's step has a tool call on that file;
+   - a secret scanner finds nothing in the chunk.
+   A draft that fails is retried once; a second failure posts "no session evidence" for that question.
+6. **Approve.** author-agent opens a Switch approval card in `#pr-142-author` whose detail is the exact chunk and its hash.
+   Only someone who may address author-agent can answer it; the reviewer gets `403 You may not address this agent, so you may not answer it.`
+7. **Post.** author-agent posts the approved chunk with its Merkle proof in `#pr-142`.
+   A coverage line computed in plain Python posts with it, for example "4 sealed steps touched auth/session.py: 1 disclosed, 3 withheld (leaves 88, 91, 97)", so the reviewer sees what the author chose not to show.
+   An optional author's note is posted beside it, labelled unverified.
+8. **Verify.** reviewer-agent runs `flip verify`: the chunk hashes to the leaf, and the proof reaches the root in the commit trailer.
+   When every question is verified or marked "no session evidence", reviewer-agent pages the reviewer with one summary.
+
+Example:
+
+```
+#pr-142  (web team reviewing a pull request from the data team)
+reviewer-agent: Q2 {"file": "auth/session.py", "lines": "40-52", "kind": "why"}
+author-agent:   Q2, approved by @priya. Session step 23, chunk 2, proof ✓ against seal 9f3c0e1 (commit a41b2c7):
+                "test_export_csv failed with SessionExpired; raising SESSION_TTL to 86400 in auth/session.py"
+                Coverage: 2 sealed steps touched auth/session.py: 1 disclosed, 1 withheld (leaf 61).
+                Author's note (unverified): the TTL change was only meant for the test.
+reviewer:       @author-agent show me the full transcript
+author-agent:   [Switch] You're not permitted to direct messages to me in this room -
+                my operator has restricted who can address me here.
+reviewer:       A security change inside a CSV pull request. Split it out.
+```
+
+Priya learns about the TTL change from her own agent's session on the approval card, before the reviewer sees it, and the coverage line stops her quietly withholding it.
+
+The demo shows four refusals, each with its log line:
+1. The reviewer tags author-agent: Switch refuses (`delivery/addressing.py`).
+2. reviewer-agent sends free text instead of JSON: author-agent's schema drops it.
+3. A forged chunk fails `flip verify`: the hash does not reach the seal.
+4. The reviewer clicks the author's approval card: Switch returns 403 (`session_activity/service.py:463`).
+
+## Why Switch is load-bearing
+
+| Need | Switch feature (switch-core 0.31.0 source) | What a plain bot or CI job lacks |
+|---|---|---|
+| The reviewer cannot drive the author's agent, while reviewer-agent can ask in one room | Scoped addressing policy: per-room rules for users and agents, `PUT /agents/{id}/addressing-policy` (`addressing.py`); verified in K1.e and K1.f | A CI job has no notion of who may instruct an agent |
+| Only the author releases each answer | Approval cards answerable only by people who may address the agent (`session_activity/service.py:463`); verified in K2 | Custom permission code and a custom approval UI |
+| Two owners' agents meet without sharing machines or keys | Agents keep their owner; rooms hold agents from several owners | A bot runs under one identity with one set of credentials |
+| One pair of rooms per PR, set up the same way each time | Template v2 runs: rooms, agents, `addressing`, `connections`, `kickoff` (`template_guide.py`) | Manual channel setup per PR |
+| the project's own agents in the conversation | Protocol agents over `register-known`, server-sent events, `message`, and session approvals (`/agent-sessions/{id}/approvals`) | A bot per chat platform |
+| Teams stay in their chat app | Slack, Discord, Mattermost, Teams, Telegram bridges (`bridges/collaboration/`) | A rebuild per platform |
+
+## Switch Console fit
+
+Each item below was checked in Console 0.40.1 or switch-core 0.31.0.
+
+- The repo ships `flipside.template.yaml` (template version 2); a team imports it in Console > Templates.
+- author-agent and reviewer-agent are Claude Code or Codex agents that Console already runs (`provider: claude | codex`).
+- The reviewer-agent gets read access to the repo through the template's `connections: [{service: github, access: read}]`.
+- The reviewing team joins through Console's workspace invite, and each person keeps ownership of their own agent.
+- Switch Trust, when the workspace enables it, checks each message before it is sent (`trust/client.py`). It adds to author-agent's secret scan and does not replace it.
+
+## Chat app
+
+The demo runs in Slack, where cross-team review happens at most companies.
+A self-hosted Switch connects to Slack over Socket Mode with an app created from Switch's own manifest (`bridges/collaboration/own_app_setup.py`), so it needs no public URL.
+The same template runs on Discord, Teams, Mattermost, Telegram, or Switch's built-in chat; the kill tests and `make replay` use the built-in chat, so a judge needs no accounts.
+
+## What is deterministic
+
+Sealing, question parsing, the chunk and file checks, the secret scan, `flip verify`, the page rule, and the ledger are plain Python with no LLM calls.
+LLMs only choose which questions to ask (reviewer side) and which chunk answers them (author side).
+A chunk reaches the reviewer only after it passes the checks and the author approves it.
+
+## Impact, shown on fixtures
+
+A small fixture set, labelled as a demonstration and not as proof of savings:
+- 4 pull requests where the agent made an unrelated change (the TTL case, a disabled test, a widened CORS rule, a new dependency);
+- 2 honest pull requests;
+- 2 adversarial cases: a valid but misleading quote, and a session edited after the questions arrived.
+For each we report whether the change surfaced, whether `flip verify` passed, and any false approval or false flag.
+
+## Reproduce
+
+- `make replay`: plays recorded events and agent outputs into a fresh local Switch server, with no chat workspace and no vendor keys.
+- `make test`: unit tests for the citation checks, the question filter, the secret scan, and the ledger chain.
+- `make solo`: creates a second owner on the local server so one person can run the live two-owner flow.
+- `make killtests`: reruns K1 and K2 against a local Switch server and writes `evidence/k1k2-*.log`.
+
+## Limits
+
+- "Verified" means the quote matches the session the author sealed at PR open.
+  It does not prove the session file is genuine: an author who forges a session before opening the PR is out of scope.
+  The tool targets authors who did not read what their agent did.
+- Work done outside the agent has no session evidence, and the reviewer sees that.
+- Authors without a coding agent get questions only.
+- A verified chunk proves the quote is in the sealed session, not that it fully answers the question; the coverage line shows what was withheld.
+- The seal proves consistency with the committed session, not that this session produced the code.
+- Only the room owner can add an agent to a room (K1 found a 403 for the reviewer adding their own agent); the template run adds both agents.
+
+## Status
+
+| Item | State | Check |
+|---|---|---|
+| Two owners' agents in one room; reviewer refused by Switch; owner and scoped reviewer-agent admitted (K1, 6 checks) | pass | `killtests/k1_k2.py`, `evidence/k1k2-*.log` |
+| Approval card answerable only by the author; agent receives the decision (K2, 3 checks) | pass | same |
+| Approval card renders in Slack with buttons (K3) | not run | - |
+| Seal, chunk proofs, structured questions, checks | not built | `make test` |
+| Replay demo | not built | `make replay` |
+| Fixture results (8 cases) | not run | `docs/results/fixtures.md` |
+
+(Appendix to X: seal spec)
+FLIPSIDE · COMPONENT SPEC · M1
+
+
+flip seal v1
+Before the pull request is reviewed, the author's machine fixes every message of
+the agent session into one 32-byte fingerprint and writes it into git. Later, any
+single quote from that session can be shown to the reviewer with a short proof that
+it was there all along, while the rest of the session stays on the author's machine.
+
+ Awaiting approval          Math prototyped: proofs verify for every tree size 1 to 69
+
+ Python stdlib only          Claude Code sessions
+
+
+
+
+  What a verified quote proves                                What it does not prove
+     These exact bytes were in the session when it              That the session file is genuine. An author who
+     was sealed.                                                forges a session before sealing is out of scope.
+
+     They belong to step s, chunk c, with the tools             That the quote fully answers the question. The
+     and files the manifest lists.                              coverage line shows what was withheld.
+     The seal was in the commit the question                    That this session wrote the code. Work done
+     named, so editing the session afterwards                   outside the agent has no session evidence.
+     cannot change the answer.
+
+     How many other sealed steps touched the
+     same file and stayed hidden.
+
+
+
+
+PIPELINE
+
+
+From session file to seal
+ 1                              2                         3                               4
+
+ Read                           Steps                     Chunks                          Leaves
+ Load the Claude                One step per              NFC, CRLF to LF,                Each chunk plus its
+ Code session JSONL.            message. Assistant        then at most 300                metadata, as
+ Keep main-thread               lines that share          characters per                  canonical JSON,
+  user and                       message.id merge;        chunk, cut at the last          salted and hashed
+  assistant lines               each tool result is its   space or newline.               with prefix 0x00 .
+ only.                          own step.
+  5                                 6                                7
+
+  Tree                              Commit                           Room
+  RFC 9162 Merkle                   An empty seal                    When #pr-142
+  tree over all leaves,             commit carries the               opens, author-agent
+  inner nodes hashed                root, leaf count and             posts the seal line
+  with prefix 0x01 .                manifest hash as a               and manifest. Switch
+                                       the project-Seal:                timestamps it.
+                                    trailer.
+
+
+     stays on the author's machine             public: git and the Switch room
+
+
+RULES
+
+
+Exact construction
+Steps and files                                                    Hashes
+
+                                                                     # K: 32 random bytes, .git/flipside/<root>.key,
+A step's text is its text blocks verbatim, then each tool            mode 0600, never sent
+call as [tool Edit] plus the canonical JSON of its                   leaf = canonical_json({v, session, step, chunk,
+input. A tool result's text is its text content; an image                                    role, tools, files, tex
+                                                                     t})
+becomes [image sha256:…] .
+                                                                     salt = HMAC-SHA256(K, "flipside/salt/v1" ||
+                                                                                            canonical_json([session,
+                                                                     step, chunk]))
+files comes only from structured tool input:                         L(i) = SHA-256(0x00 || salt || leaf)
+file_path , notebook_path , path . Paths are repo-                   N     = SHA-256(0x01 || left || right)
+                                                                     split = largest power of two < n       # RFC 9162
+relative POSIX; anything outside the repo becomes                    §2.1.1
+<external> . A tool result inherits the files of its call            root = MTH(L(0) … L(n-1))
+through tool_use_id . Bash commands are sealed as                    manifest = canonical_json([leaf minus text, plus
+                                                                     i, for each leaf])
+text but tag no files.
+
+
+                                                                   Canonical JSON: sorted keys, no spaces, UTF-8,
+Thinking blocks are not sealed.                                    integers and strings only, so every implementation
+                                                                   produces the same bytes.
+
+
+WORKED EXAMPLE · REPRODUCE WITH PYTHON3 DOCS/SEAL/EXAMPLE.PY
+
+
+A five-step session
+The data team's agent adds CSV export and quietly raises a session timeout. These are real
+hashes, computed with a demo key of 32 zero bytes so anyone can reproduce them.
+
+
+ LEAF      STEP    ROLE         TOOLS      FILES                   TEXT                                        L(I)
+
+ 0         0       user         -          -                       Add CSV export to the reports page.         07b90a6b3a1b
+
+ 1         1       assistant    Edit           reports/export.py   Adding export_csv() to reports/export.py.   2682454629b0
+ LEAF      STEP         ROLE          TOOLS        FILES                      TEXT                                                  L(I)
+
+ 2         2            tool_result   Bash         -                          FAILED tests/test_export.py::test_export_csv -        2323720cacf6
+                                                                              SessionExpired
+
+ 3         3            assistant     Edit             auth/session.py        test_export_csv failed with SessionExpired;           f5161e4f4fab
+                                                                              raising SESSION_TTL to 86400 in
+                                                                              auth/session.py
+
+ 4         4            assistant     -            -                          CSV export works and the tests pass.                  a12cd9883008
+
+
+
+
+                                                                                                             root (in trailer)
+                                                                                                              50ab222b4bf9
+                                                         node 0-3
+                                                       d8e29eaa8765
+
+                    node 0-1 · proof[1]
+                          ce287db02804                                             node 2-3
+                                                                              4f8877e6872b
+
+
+
+
+               leaf 0                     leaf 1                leaf 2 · proof[0]        leaf 3 · disclosed                  leaf 4 · proof[2]
+          07b90a6b3a1b                2682454629b0                  2323720cacf6              f5161e4f4fab                       a12cd9883008
+
+        Solid red: hashed by the reviewer from the disclosed chunk.
+        Dashed: the 3 sibling hashes sent as the proof. Grey: never sent.
+
+
+
+Five leaves split 4 + 1, as RFC 9162 requires: the odd leaf is promoted, never duplicated. Because every leaf is
+salted, the dashed sibling hashes tell the reviewer nothing about the text of leaves 0, 1, 2 or 4.
+
+Written to git                                                                Disclosure sent after approval
+
+                                                                                   {"v":1, "commit":"a41b2c7…", "i":3, "n":5,
+     flipside: seal session
+                                                                                    "salt":"29c3111716183cdc…3aef2a",
+                                                                                    "leaf":{"chunk":0,"files":["auth/session.py"],
+     the project-Seal: v1 root=50ab222b4bf9c20399f20e3f3
+                                                                                            "role":"assistant","session":0,"step":
+     22f39841fa072c8ed4806e1faa890ff757c6f03 n=5 mani
+                                                                                   3,
+     fest=6311c5cd173fc97e4bf0fa30208a890aa52185ad684
+                                                                                            "text":"test_export_csv failed with …",
+     5bb9b08680bb1509e3060
+                                                                                            "tools":["Edit"],"v":1},
+                                                                                    "proof":["2323720cacf6…","ce287db02804…",
+                                                                                             "a12cd9883008…"]}
+ git commit --allow-empty --trailer (git 2.32 or
+later). --amend adds the trailer to HEAD instead, for a
+                                                                              The text field is the full chunk; it is shortened here
+branch that is not pushed yet.
+                                                                              only for width.
+
+
+REVIEWER SIDE
+
+
+flip verify checks, in order
+     flip verify --commit a41b2c7 --manifest manifest.json disclosure.json
+  1         NO_SEAL                               The named commit has no the project-Seal: trailer, or more than
+                                                  one.
+
+
+  2         WRONG_COMMIT                          The disclosure names a different commit from the question. A re-
+                                                  seal in a later commit cannot answer an earlier question.
+
+
+  3         NOT_IN_PR                             The commit is not an ancestor of, or equal to, the PR head (git
+                                                  merge-base --is-ancestor).
+
+  4         MANIFEST_HASH                         SHA-256 of the manifest does not match the trailer.
+
+
+  5         MANIFEST_MISMATCH                     The leaf's metadata differs from manifest entry i.
+
+
+  6         BAD_SIZE                              i   ≥ n, or the proof length is wrong for that index and size.
+  7         PROOF_FAIL                            Hashing up from the leaf (RFC 9162 §2.1.3.2) does not reach the
+                                                  root. A forged or edited chunk stops here.
+
+
+  ✓         OK                                    leaf 3 (step 3, chunk 0) against seal 50ab222 in commit
+                                                  a41b2c7
+
+
+The reviewer-agent then computes coverage itself from the public manifest, so it does not
+have to trust the author's count: 1 sealed step touched auth/session.py: 1
+disclosed, 0 withheld. On the author's side, flip prove refuses with
+SESSION_CHANGED if the session file's SHA-256 differs from the one recorded at seal time.
+
+
+THREATS
+
+
+What each rule defends
+ ATTACK                                                       STOPPED BY                                     RESULT
+
+ Edit a quote after sealing                                   Leaf hash and inclusion proof                   PROOF_FAIL
+
+ Edit the session, re-seal, answer again                      Questions pin the seal commit                   WRONG_COMMIT
+
+ Guess a short hidden chunk from sibling hashes               256-bit HMAC salt per leaf                     Guessing needs the salt
+
+ Pass an inner node off as a leaf                              0x00 / 0x01 prefixes                           PROOF_FAIL
+
+ Duplicate-last-leaf tree tricks                              RFC 9162 split, n in the trailer                BAD_SIZE or
+                                                                                                              PROOF_FAIL
+
+ Show one harmless step, hide three others on the same        Public manifest, reviewer-side coverage        Withheld steps listed
+ file
+
+ Backdate the seal                                            Switch room post timestamp, plus the           Two independent records
+                                                              push
+
+ Forge the session before sealing                             Not stopped. Out of scope, stated in Limits.
+The manifest is public, so it reveals the step count, roles, tool names, repo-relative paths and chunk counts
+(length to the nearest 300 characters). It never contains text.
+
+
+FOR APPROVAL
+
+
+Decisions
+ ID     CHOSEN                                            REJECTED, AND WHY
+
+ D1     One step per message; assistant blocks merge      One step per content block: splits the reasoning from the edit it explains and
+        by message.id                                     breaks the file check
+
+ D2     Thinking blocks not sealed                        Sealing them: often redacted or signed, and the most private part of the
+                                                          session
+
+ D3     Chunks of at most 300 characters, cut at          Fixed windows cut words mid-quote; sentence splitting depends on language
+        whitespace
+
+ D4     Metadata (step, tools, files) inside each leaf    Text-only leaves: the reviewer could not verify that the step touched the file
+
+ D5     Salts derived from one local key by HMAC          A stored random salt per leaf means thousands of secrets; no salt makes
+                                                          short chunks guessable
+
+ D6     RFC 9162 Merkle tree with SHA-256                 Duplicate-last-leaf trees: known mutation bug (CVE-2012-2459)
+
+ D7     Empty seal commit with a trailer; --amend         git notes are not pushed by default and GitHub hides them; amending by
+        opt-in                                            default rewrites pushed history
+
+ D8     Public manifest posted in the room, its hash in   Committing it adds a file to the PR the owning team merges
+        the trailer
+
+ D9     Verify against the commit the question names      Verifying against HEAD lets a re-seal win
+
+ D10    Python standard library only                      A Merkle package adds a dependency to the verification path
+
+ D11    Claude Code sessions in M1; Codex adapter         Both at once: two parsers before one works end to end
+        next
+
+
+
+
+GATES
+
+
+M1 is done when
+  G1             Inclusion proofs verify for every leaf of every tree size from 1 to 256. Prototype passes 1 to 69.
+
+
+
+  G2             Flipping any single bit of the text, salt, a sibling hash, the index, n or the root makes verify fail with the
+                 right code.
+
+
+
+  G3             The example on this page reproduces root 50ab222b… and manifest 6311c5cd… byte for byte.
+                 Prototype passes.
+
+
+
+  G4             Sealing a real Claude Code session twice with the same key gives the same root.
+  G5        End to end in git: an edited quote gives PROOF_FAIL ; a re-seal after the question gives
+             WRONG_COMMIT ; an edited session gives SESSION_CHANGED .
+
+
+
+  G6        ruff and mypy clean; make test green on two consecutive runs.
+
+
+
+
+   Approving this also changes the pitch
+    1. The coverage line counts steps, not leaves, and the reviewer-agent computes it from the manifest instead
+       of the author-agent.
+
+    2. The trailer goes on a dedicated seal commit, not on whatever the PR head commit is.
+
+    3. The seal line is also posted in #pr-142 when the room opens, which answers the Codex judge's "no
+       independent record" point.
+
+    4. The pitch example's seal id becomes 50ab222 , to match this page.
+
+
+
+
+the project · docs/seal/ · prototype math: docs/seal/example.py
+
+=== Submission Y
+# the project
+
+**A Switch room that will not let a team ship a broken submission.**
+Built for the Flip the Switch hackathon (WeMakeDevs x DevTools Academy x Switch AI) by Team AXA.
+
+> Demo video: _coming soon_ (this line gets the link before we submit)
+
+Teams lose contests and launches on avoidable misses: a README section nobody wrote, no licence, a
+secret in git history, a failing test, a video that is too long. Not on code. the project is a room in
+Discord where AI agents and people work through that checklist together, until a program says the
+project is ready.
+
+**The model proposes. Code decides.** Agents read rules, explain, fix and review. Every pass or fail
+comes from a deterministic checker with tests. "Ready" exists only when that checker says so, for the
+exact commit, under a check list a person approved. A person also approves every risky step.
+
+## Problem
+
+A submission is judged on a short list of things (a public repo, a README that explains the setup, a
+demo video, no leaked keys, tests that pass). Missing one costs more than a clever feature earns.
+Humans skim this list at midnight and miss things. A lone AI agent is worse: it says "all done" in
+confident prose, and nobody can tell which parts it actually checked.
+
+## What it does
+
+One Switch room, four agents, one human decision-maker (the Captain):
+
+1. **Scout** reads the contest rules and drafts a check list. The Captain approves it. The approval
+   is recorded with a fingerprint (a SHA-256 of the file), so nobody can quietly swap the list later.
+2. **Inspector** runs the checker and pastes its output. It cannot say "ready" on its own.
+3. **Fixer** fixes the red checks on a branch, one commit per check, and asks the Captain before any
+   risky step (rewrite history, push, delete). The question is a Switch permission card.
+4. **Reviewer** (read-only) reviews the fix and can score the project. Its score is advice only.
+5. When the Captain says "ship it", the Inspector asks the gate: `GATE OK` only if the last run is
+   READY for this exact commit, with a clean tree, a fresh result, and the approved fingerprint.
+   Then it writes `SUBMISSION.md` and a one-page `report.html`, and attaches both in the room.
+
+A sixth agent, **Spare**, waits outside the room. The "fresh agent test": invite it and watch it catch
+up from the room alone.
+
+## Why Switch is central
+
+Without Switch, the project is a script. With it, it is a team: several agents with different
+permissions in one conversation a person can read, join and overrule. The 14 Switch features we use,
+where each lives and which demo scene shows it, are in
+[`docs/SWITCH_FEATURES.md`](docs/SWITCH_FEATURES.md). The short version:
+
+| Switch feature | What it gives the project |
+|---|---|
+| Real chat app (Discord) | People and agents are teammates in one channel |
+| Group template | One import creates five agents, the room, roles, documents and a kickoff message |
+| Per-agent permissions and addressing | Inspector and Reviewer cannot edit files; only the owner's agents can instruct the Fixer |
+| Roles (one exclusive) | Exactly one agent may change the project at a time (`editor`) |
+| Room documents | The approved check list and its fingerprint live in the room, not on one laptop |
+| Permission cards | A person answers risky steps in the chat, and Switch records who answered |
+| Fresh-agent test | A new agent joins and catches up from the room alone |
+
+## Agents we connected
+
+All five run on **Claude Code**, on one Mac, started by Switch Console from one template
+([`templates/preflight.template.yaml`](templates/preflight.template.yaml)). The Reviewer prefers a
+second provider (Codex or OpenCode) for an independent opinion and falls back to Claude Code; this
+machine has only Claude Code, so it used the fallback.
+
+| Agent | Job | Who may address it | What it may not do |
+|---|---|---|---|
+| `pf-scout` | Reads rules, drafts the check list, records the approval | anyone in the room | edit files |
+| `pf-inspector` | Runs the checker, shows its output unchanged, runs the gate | anyone | write or edit files |
+| `pf-fixer` | Fixes red checks on a branch (holds the `editor` role) | the owner and the owner's agents | skip a permission card |
+| `pf-reviewer` | Reviews the fix, scores the project, holds the `judge` role | anyone | change anything, or approve anything |
+| `pf-spare` | Waits outside the room for the late-joiner test | anyone | (no background on purpose) |
+
+## How the channel is set up
+
+The room is mirrored into a Discord channel (`#preflight`). The template's `bridge` input finds the
+Discord connection by name, then falls back to the server's default chat app.
+
+To connect Discord to Switch (steps from the
+[Switch docs](https://docs.switchagents.ai/switch-rooms/deploy/messaging-apps/discord)):
+
+1. Discord Developer Portal: new application, add a bot, copy its token. Turn on the **Server
+   Members** and **Message Content** intents.
+2. Invite the bot with the scopes `bot` and `applications.commands` and the permissions View
+   Channels, Send Messages, Send Messages in Threads, Manage Webhooks, Manage Channels, Manage Roles,
+   Read Message History, Attach Files, Add Reactions.
+3. Copy your server's ID (Developer Mode on, right-click the server icon).
+4. Switch Console, your server, Messaging apps, Connect, Discord. Paste the token and the server ID.
+5. Link your own Discord account ("Link my account"). The template's `{$creator}` is the Captain,
+   and agents set to owner-only ignore an unlinked account.
+
+The Discord server and bot connection used for the demo were created on 3 Nov, before the start. See
+"Reused vs built" below.
+
+## Run it
+
+Needs: macOS, [Switch Console](https://docs.switchagents.ai/switch-rooms/getting-started/install-switch-console)
+0.40.x running a local server, Claude Code installed and signed in, `git`, Python 3.11 or newer, and a
+Discord connection as above. Tested on an Intel Mac with Switch Console 0.40.1.
+
+```sh
+git clone https://github.com/Asmit-Rai/switch-preflight
+cd switch-preflight
+sh scripts/setup-demo.sh          # makes ~/preflight-demo: the checker, the safety hook, a sample project
+```
+
+Then in Switch Console: **Templates, Import template**, paste
+`templates/preflight.template.yaml`, **Use**, keep the defaults, **Create all**. Open `#preflight` in
+Discord; the Inspector says hello and runs `kit/pf doctor`, which says whether this machine is ready.
+
+Then follow [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md). The first message is:
+
+> `@scout please draft our check list from the official contest rules, then ask me to approve it.`
+
+What `setup-demo.sh` installs, and why a person (not an agent) does it:
+
+- `kit/`: a clone of this repository, so every agent runs the same checker (`kit/pf`).
+- `.claude/settings.json`: Claude Code's auto mode refuses to run freshly downloaded code, so this
+  allows exactly one command (`kit/pf`) and registers the safety hook below. Agents never edit it.
+- `project/`: a sample submission with 6 planted defects (`scripts/reset-demo.sh` makes a fresh one).
+
+### Check your own project
+
+```sh
+kit/pf target https://github.com/owner/repo   # or a local folder, or `sample`; --show says what is loaded
+kit/pf doctor                                 # is this machine ready? one-line fix for each problem
+kit/pf run --project project --rules rules/approved.toml --html report.html   # a one-page report
+```
+
+In the room, ask `@fixer switch the project to <link>` (the Captain gets a permission card first).
+The same checks also run as a GitHub Action, so they can block a bad merge: see
+[`docs/FAQ.md`](docs/FAQ.md), question 6.
+
+### Try the checker alone (no Switch needed)
+
+```sh
+python3 examples/make_sample.py /tmp/sample
+python3 -m preflight run --project /tmp/sample --rules rules/flip-the-switch.toml --format table
+python3 -m unittest discover -s tests          # 240+ tests, all offline, about 70 seconds
+```
+
+## Architecture
+
+```mermaid
+flowchart LR
+  C["Captain and teammates<br/>(Discord)"] <-->|messages, approvals| R(("Switch room<br/>#preflight"))
+  R <--> S[Scout]
+  R <--> I[Inspector]
+  R <--> F[Fixer]
+  R <--> V[Reviewer]
+  S -->|draft, then approved check list<br/>+ SHA-256 fingerprint| K{{"kit/pf checker<br/>code decides"}}
+  I -->|run, verdict, pack| K
+  F -->|commits on a branch| P[("project/<br/>git repo")]
+  K -->|reads| P
+  K -->|"verdict.json<br/>(commit, ruleset hash)"| G[Gate]
+  G -->|GATE OK only if READY for this commit| SUB[SUBMISSION.md]
+  H["approval hook<br/>hooks/risky_git.py"] -.->|risky command?<br/>ask a person| F
+  H -.->|permission card| C
+```
+
+- **The checker** ([`preflight/`](preflight/README.md)): 14 check types (file, README headings,
+  secret scan over files and history, first commit after the start, public repo, links, video length,
+  a test command, ...), a gate, a pack writer and a linter. Standard library only.
+- **The gate** recomputes the verdict from the results (a hand-edited file is refused), requires the
+  commit to be HEAD, the tree to be clean, the result to be fresh, and the ruleset fingerprint to
+  match the one the Captain approved.
+- **The approval hook** ([`hooks/risky_git.py`](hooks/risky_git.py)) reads every shell command before
+  it runs and makes risky ones (git reset, rebase, push, rm, ...) ask a person, however they are
+  worded. It is a guard for an agent that is trying to follow the rules, not a sandbox.
+
+## What happened when we ran it
+
+On 4 Nov 2026 we ran the whole flow in Discord against the sample project. Each line below was checked
+against files and git, not only against what an agent said:
+
+- The Scout read the real rules pages and found the `/rules` page is only legal text. It reported 38
+  rules (5 checkable by code, 33 needing a person), marked license, README sections and links as
+  advisory because the official pages do not ask for them, and asked the Captain three questions. The
+  Captain made them required again. The approved list got a fingerprint; our own SHA-256 matched it.
+- The Inspector's table matched our own run of the checker line for line. Once it mistyped a number
+  when copying the output ("0 warn" for "1 warn"), then caught and corrected it in its next message.
+  Retyping is a real weakness of any model; see Limits.
+- The Fixer fixed the failing test by changing the code, not the test, and asked the Captain which
+  licence and copyright holder to use instead of guessing.
+- It asked to rewrite git history to remove a leaked token. The Captain tapped **Decline**: the
+  command did not run (checked on disk) and the Fixer reported which check stayed red because of it.
+  After the Captain changed their mind, a second card was **allowed once**, and the token was gone
+  from the branch history.
+- The Reviewer's findings made the Fixer add a follow-up commit. The Inspector then reported READY
+  for the final commit.
+- One thing went wrong, and we fixed it: the merge step (`git reset --hard`) ran with **no card**.
+  Our first permission rule only matched commands that start with `git reset`, and the Fixer wrote
+  `git -C /path reset`. Whether a card appeared had depended on how the agent worded the command. We
+  replaced the rule with the approval hook, which reads the command itself, and pinned it with 11
+  tests that cover many spellings.
+
+## Reused vs built during the hackathon
+
+Built after the hackathon opened (00:01 IST, 4 Nov 2026; the first commit is at 00:08): this
+repository, the checker, the rulesets, the sample project, the approval hook, the Switch template,
+the five agents, the room and the workflow. Every commit is dated after the start, and the checker's
+`first-commit-after-start` check proves it on this repository.
+
+Reused, and made before the start:
+
+- **Switch itself** (Switch Console, the Switch server) and **Claude Code**, as the rules allow.
+- **The Discord server and the "Agent Switch" bot connection** were created on 3 Nov, and a few
+  trial agents (Analyst, Planner, Executor, Reviewer, Tester, Advisor) were made that day. They are
+  not part of the project and are not in its room. Connecting a chat app is infrastructure, like
+  installing Switch Console; we are listing it so nobody has to guess.
+- Official Switch documentation and examples, which we read to write the template.
+
+## Limits
+
+- The Inspector retypes the checker's output into chat, and a model can mistype. The gate (`verdict`)
+  is code, so a typo cannot make a project ready. For the record, use the files the checker writes
+  itself (`report.html`, `SUBMISSION.md`), which the Inspector attaches to the room.
+- Switch Console 0.40 stores agent instructions exactly as written, so curly-brace placeholders are
+  not filled in for agents (they are for room instructions). The template is written around that.
+- A template cannot give agents edit rights on documents it seeds, so agents create the documents
+  they need (`rules-digest`, `checks`, `scorecard`).
+- The approval hook reads command text. It cannot see inside a script or `python3 -c` code.
+- A secret that was ever pushed is compromised. Purging history does not undo that; revoke the key.
+- We tested Discord and Claude Code on macOS. We did not test Slack, Teams or Mattermost.
+
+## More documents
+
+- [`docs/HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md): one page, in plain words
+- [`docs/FAQ.md`](docs/FAQ.md): which repo, how agents talk, proof, connectors, tools, DevOps
+- [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md): the exact messages to type, scene by scene
+- [`docs/SWITCH_FEATURES.md`](docs/SWITCH_FEATURES.md): every Switch feature we use and where
+- [`docs/SPEC.md`](docs/SPEC.md): the plan we wrote at the start
+- [`preflight/README.md`](preflight/README.md): the checker's guide (check types, exit codes, schema)
+
+## Team and licence
+
+Team AXA: Asmit Rai (team leader) and Aman Gupta. The submission is made by a person, as the rules
+require. This project was built with AI help (an AI assistant running Claude and several Claude Code
+sessions), as the rules allow.
+
+Released under the [MIT licence](LICENSE).
+
+=== Submission Z
+<p align="center">
+  <img src="web/src/app/icon.svg" alt="the project logo: a yellow project on a black square" width="112" height="112">
+</p>
+
+<h1 align="center">the project</h1>
+
+<p align="center">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black">
+  <img alt="Node.js 20+" src="https://img.shields.io/badge/Node.js-20%2B-5FA04E?logo=nodedotjs&logoColor=white">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-FFD60A">
+</p>
+
+**Your team writes the rules of your product in plain English, in chat. the project tries to break them on every pull request.**
+
+[Live site](https://project-rust.vercel.app) · [How it works](#how-it-works) · [Tech stack](#tech-stack) · [Architecture](#system-architecture) · [Run it locally](#run-the-landing-page-locally)
+
+Security scanners find SQL injection and XSS. They can't know that *a wallet can never go below $0*, *a promo code works once per customer*, or *a refund can never be more than the original charge*. Only your team knows those rules.
+
+the project is for engineering and product teams anywhere. It puts two AI agents and your team in one [Switch](https://docs.switchagents.ai) room, in the chat app you already use: Slack, Microsoft Teams, Discord, or Mattermost.
+
+- **`@project-red`** reads each pull request against your rules, writes an exploit for each rule, runs it in a sandbox, and posts the evidence.
+- **`@project-blue`** writes the fix. Red runs its exploit again against the fix.
+- **Your team** writes the rules and makes the final call on disputes. The room remembers every ruling.
+
+> **Status:** built for the **Flip the Switch** hackathon (WeMakeDevs × DevTools Academy × Switch, Nov 4–7, 2026). The landing page is live, and the full loop has run end to end on a real pull request: the watcher announced it, Red broke a rule, Blue fixed it, and Red confirmed the fix. See [Project status](#project-status).
+
+## How it works
+
+1. **Write a rule in chat.** One sentence that must always be true:
+   `@project-red rule: A refund can never be more than the original charge.`
+2. **Open a pull request.** the project reads the diff and finds the rules the change could affect.
+3. **Red tries to break them.** It writes an exploit for each rule, runs it in an isolated sandbox, and posts the requests and results in the room.
+4. **Blue fixes, your team decides.** Blue pushes a fix and a regression test to the pull request. Red runs the exploit again. A person on your team makes the final call, and the room saves the ruling so the project never flags that case again.
+
+### Example: PR #42
+
+| Time (UTC) | Who | What happens |
+|---|---|---|
+| 09:12 | Amara (product) | Writes rule 1: a refund can never be more than the original charge. |
+| 14:02 | Lucas (backend) | Opens PR #42, *Split refunds into partial payments*. |
+| 14:05 | `@project-red` | Sends 3 refunds of $1,500 at the same time against one $1,500 charge. All 3 succeed: **$4,500 refunded. Rule 1 broken.** |
+| 14:09 | `@project-blue` | Pushes a fix (lock the charge, check the refund total before saving) and a regression test. |
+| 14:11 | `@project-red` | Runs the exploit again: 1 refund succeeds, 2 are rejected with `409`. **Rule 1 holds.** |
+| 14:18 | Priya (engineering lead) | Rules that shipping fees count toward the total. the project saves the ruling. |
+| 14:22 | Aiko (reviewer) | Approves and merges. |
+
+The bug never reached production.
+
+## Tech stack
+
+### Languages
+
+| Language | Where it is used |
+|---|---|
+| TypeScript | Landing page (`web/`) and the demo wallet API (`demo-wallet/`) |
+| JavaScript (Node.js ES modules) | Agent tools: PR watcher, sandbox runner, exploits (`agents/`) |
+| SQL | Database schema and seed data (`demo-wallet/db/`, `web/db/`) |
+| CSS | Landing page styles, with Tailwind CSS (`web/src/app/globals.css`) |
+| YAML | Local Docker stack (`docker-compose.yml`) |
+
+### Stack
+
+| Part | Built with |
+|---|---|
+| Agents | [Claude Code](https://claude.com/claude-code) sessions (`@project-red`, `@project-blue`), run by [Switch Console](https://docs.switchagents.ai) |
+| Chat | Slack today, through Switch. Switch also connects Microsoft Teams, Discord, and Mattermost |
+| PR watcher and sandbox | Node.js 20+, the [GitHub CLI](https://cli.github.com) (`gh`), Git |
+| Demo wallet API | Node.js, [Hono](https://hono.dev), [Zod](https://zod.dev), `pg`, PostgreSQL; tests with the Node.js test runner and `tsx` |
+| Landing page | [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, Tailwind CSS 4, GSAP, Motion, React Bits effects |
+| Hosting | [Vercel](https://vercel.com) for the landing page; [Neon](https://neon.tech) Postgres for the old waitlist table |
+| Local stack (optional) | Docker Compose: PostgreSQL 18 and the demo wallet API on Node.js 22 |
+
+## System architecture
+
+the project has two parts: the **product**, which lives in your chat app and your Git host, and the **landing page**, which is a separate website.
+
+### Product
+
+```mermaid
+flowchart TB
+    humans["Your team<br/>engineers and product people"]
+    chat["Chat app<br/>Slack · Microsoft Teams · Discord · Mattermost"]
+
+    subgraph room["Switch room #project"]
+        direction LR
+        red["@project-red<br/>breaks rules"]
+        memory[("Rules and rulings<br/>room memory")]
+        blue["@project-blue<br/>writes fixes"]
+        red <--> memory <--> blue
+    end
+
+    gh["GitHub<br/>pull request"]
+
+    subgraph sandbox["Isolated sandbox"]
+        direction LR
+        app["PR build of the app<br/>demo: wallet API"]
+        db[("Postgres<br/>test data only")]
+        app --> db
+    end
+
+    humans <-->|"rules, evidence, rulings"| chat
+    chat <-->|"messages"| room
+    gh -->|"1 · PR opened or updated"| red
+    red -->|"2 · run exploits, re-test fixes"| app
+    blue -->|"3 · push fix + regression test"| gh
+```
+
+Both agents call the model provider you configure (Anthropic or OpenAI) with your own API key.
+
+| Component | Job | Status |
+|---|---|---|
+| Chat app | Where your team writes rules, reads evidence, and makes rulings. | Your existing workspace |
+| Switch room | Connects the agents to your chat app and keeps the room's memory of rules and rulings. | Setup guide in [agents/](agents/) |
+| `@project-red` | Maps the PR diff to rules, writes exploits, runs them in the sandbox, posts evidence. | Instructions and exploits built |
+| `@project-blue` | Writes the fix and a regression test, pushes them to the PR. | Instructions built |
+| Sandbox | Runs the PR's build on 127.0.0.1 against a freshly reset database. Exploits never touch production. | Built and tested |
+| Demo wallet API | A small payments app with four business rules, for the demo. Money is stored as integer cents. See [demo-wallet/](demo-wallet/). | Built |
+| Model providers | You bring your own Anthropic or OpenAI key. | Planned |
+
+### One pull request, step by step
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Team as Your team
+    participant Room as Switch room
+    participant Red as @project-red
+    participant Blue as @project-blue
+    participant GH as GitHub PR
+    participant SB as Sandbox
+
+    Team->>Room: rule: a refund can never be more than the charge
+    Room->>Red: save as rule 1
+    GH->>Red: PR #35;42 opened
+    Red->>Red: which rules can this diff affect?
+    Red->>SB: deploy PR build, send 3 parallel refunds
+    SB-->>Red: 3 x 201, $4,500 refunded
+    Red->>Room: rule 1 broken, with request log
+    Room->>Blue: fix rule 1 on PR #35;42
+    Blue->>GH: push fix + regression test
+    GH->>Red: PR #35;42 updated
+    Red->>SB: run the same exploit again
+    SB-->>Red: 1 x 201, 2 x 409
+    Red->>Room: rule 1 holds
+    Team->>Room: ruling: shipping counts toward the total
+    Room->>Red: ruling saved, never flag this case again
+```
+
+### Landing page (live)
+
+```mermaid
+flowchart LR
+    visitor["Visitor's browser"] -->|"HTTPS"| vercel["Vercel<br/>project-rust.vercel.app"]
+    subgraph vercel_box["Vercel project: project"]
+        page["Next.js 16 page<br/>prerendered, static"]
+        api["POST /api/waitlist<br/>serverless function"]
+    end
+    vercel --> page
+    vercel --> api
+    api -->|"@neondatabase/serverless<br/>over HTTPS"| neon[("Neon Postgres<br/>project-web · us-east-1<br/>table: waitlist")]
+    github["GitHub main branch"] -->|"push = production deploy"| vercel
+```
+
+- The page is prerendered at build time. Only the waitlist sign-up runs on the server.
+- Sign-ups are unique per email, whatever the letter case. A repeat sign-up is ignored, and the reply never reveals whether an address is already listed.
+- A hidden honeypot field filters simple bots.
+- Every push to `main` deploys to production. Other branches get preview deployments.
+
+## Project status
+
+| Part | Status |
+|---|---|
+| Landing page ([project-rust.vercel.app](https://project-rust.vercel.app)) | Live |
+| Waitlist (Neon) | Live |
+| Demo wallet API ([demo-wallet/](demo-wallet/)) | Built and tested |
+| Local Docker stack (`docker-compose.yml`) | Written, not yet run. Optional: the demo does not need it |
+| Agent tooling: instructions, exploits, PR watcher ([agents/](agents/)) | Built; exploits tested against a real bug |
+| `@project-red` and `@project-blue` running on Switch, in Slack | Running: rule 1 saved from Slack |
+| Sandbox runner | Built and tested |
+| Setup guide for the agents | [agents/README.md](agents/README.md) |
+| Full pull request round trip (watcher, Red, Blue, Red again) | Verified on a real pull request |
+
+## Repository layout
+
+```text
+project/
+├── web/                         Landing page (Next.js 16, Tailwind CSS 4)
+│   ├── src/app/                 Page, layout, icons, POST /api/waitlist
+│   ├── src/components/          Hero, nav, footer, and one file per section
+│   │   ├── sections/            The gap, how it works, the room, rules, FAQ, waitlist…
+│   │   └── reactbits/           Vendored React Bits effects (kept identical to upstream)
+│   ├── src/content/en.ts        Every user-facing string, ready for translation
+│   ├── db/waitlist.sql          Waitlist table and unique email index
+│   └── public/hero/             Hero video loop (MP4 + WebM) and poster
+├── demo-wallet/                 The app the project attacks in the demo (Node.js, Hono, Postgres)
+│   ├── src/app.ts               Routes and the four business-rule checks
+│   ├── test/rules.test.ts       Rule tests, including race attacks
+│   └── RULES.md                 The rules in plain English
+├── agents/                      project-red and project-blue: instructions, sandbox, exploits, PR watcher
+├── docker-compose.yml           Local Postgres + demo wallet API
+├── .env.example                 Every environment variable the project uses
+└── LICENSE                      MIT
+```
+
+## Run the landing page locally
+
+You need Node.js 20 or newer.
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+The waitlist works without a database. With no `DATABASE_URL`, sign-ups answer "Sign-ups aren't open yet". To store sign-ups locally:
+
+1. Create a Postgres database. [Neon](https://neon.tech) has a free tier.
+2. Run [`web/db/waitlist.sql`](web/db/waitlist.sql) against it.
+3. Put the connection string in `web/.env.local`:
+
+   ```bash
+   DATABASE_URL=postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require
+   ```
+
+Other commands, run from `web/`:
+
+| Command | What it does |
+|---|---|
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | ESLint |
+
+## Environment variables
+
+All of them are listed in [`.env.example`](.env.example). Never commit the real `.env` or `.env.local` files.
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `DATABASE_URL` | Landing page | Neon connection string for waitlist sign-ups |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | `docker-compose.yml` | Local Postgres for the demo wallet API |
+| `DEMO_API_PORT` | `docker-compose.yml` | Port for the demo wallet API on localhost |
+
+The demo wallet API also has its own [`demo-wallet/.env.example`](demo-wallet/.env.example) for running it without Docker (`DATABASE_URL`, `TEST_DATABASE_URL`, `PORT`).
+| `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` | Agents (planned) | Model providers. Bring your own keys. |
+| `GITHUB_TOKEN` | `@project-blue` (planned) | Pushes the fix and regression test to the PR |
+
+## Run the demo wallet API
+
+The app the project attacks in the demo. Full details are in [demo-wallet/README.md](demo-wallet/README.md).
+
+```bash
+docker compose up --build
+```
+
+Or without Docker, with any Postgres database:
+
+```bash
+cd demo-wallet
+npm install
+cp .env.example .env
+npm run db:setup
+npm run dev
+```
+
+The API runs on http://localhost:4000. `npm test` runs the rule tests, including race attacks that send many requests at the same moment.
+
+## Deploying the landing page
+
+The landing page runs on [Vercel](https://vercel.com):
+
+1. Import the repository and set the **root directory** to `web`. Vercel detects Next.js.
+2. Add `DATABASE_URL` for the production and preview environments.
+3. Push to `main` to deploy.
+
+## Writing good rules
+
+- **One sentence that must always be true.** "A promo code works once per customer."
+- **Describe behavior, not code.** Say what customers can and can't do, not how a function works inside.
+- **Use real numbers.** "A team on the Starter plan has at most 5 seats" is easier to test than "seat limits are enforced".
+
+Common first rules:
+
+| Area | Rule |
+|---|---|
+| Wallets | A wallet balance can never go below $0. |
+| Promo codes | A promo code works once per customer. |
+| Refunds | A refund can never be more than the original charge. |
+| Seats | A team on the Starter plan has at most 5 seats. |
+| Free trials | Each organization gets one free trial. |
+| Inventory | Stock can never go below zero. |
+
+## the project and security scanners
+
+the project does not replace your security scanner. Run both. Scanners find known patterns like SQL injection, XSS, and known CVEs. the project tests the rules that only your team knows, proves each break with a working exploit, and tests the fix again.
+
+## License
+
+[MIT](LICENSE)
+
+Score each submission on the four criteria (1-10) and give its weighted total. Then rank all four, best first, with one sentence on what separates first from second. Plain text, under 350 words. End with exactly one line: RANK: <letters best first>

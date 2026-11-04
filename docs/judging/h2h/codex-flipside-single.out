@@ -1,0 +1,19 @@
+Use of Switch: 8/10 — Rooms, ownership, addressing, and approvals are central to the design, but the key two-owner and approval-card flows are untested.
+
+Technical execution: 2/10 — Nothing is built or run, so cloning and reproducing the flow remain unproven.
+
+Creativity and impact: 7/10 — Reviewer access to an author’s session is a fresh angle, but the claimed review benefit exists only as a proposed fixture study.
+
+Presentation and documentation: 6/10 — The plan is unusually clear, but there is no built README or demo video.
+
+Weighted total: 5.85/10.
+
+Shortlist: No. The concept is promising, but the core flow and reproducibility are still plans rather than demonstrated work.
+
+Three biggest weaknesses, most costly first:
+
+1. Nothing is built, tested, or replayed. Implement the minimal two-owner flow, then publish a clean-clone replay with actual test and run results.
+2. The load-bearing Switch behavior is unverified. Run K1 and K2 against the stated versions; include a recorded approval-card flow and verify who can answer it before relying on that privacy guarantee.
+3. The impact evidence is prospective and narrow. Run the preregistered fixture study, publish the results and intervals, and keep fixture findings distinct from claims about real teams.
+
+Claim I doubt: That `flip disclose <hash>` produces a Switch approval card answerable only by the author. The plan marks K2 “not run,” and its fallback, `approve Q2`, would need its own tested identity and authorization checks.

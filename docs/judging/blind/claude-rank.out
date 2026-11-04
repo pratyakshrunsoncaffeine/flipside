@@ -1,0 +1,21 @@
+W
+Use of Switch 8, Technical 9, Creativity 7, Presentation 9. Weighted 8.20
+Switch is the only path from chat to export: it provides the room, the sender identity and the agent addressing, over the real WebSocket protocol. It does not use templates, roles or approval cards. The submission has passing CI, offline tests, a verification record, a demo video and pinned versions. The setup is long, and the Windows WSL workaround adds noise. Three-way invoice matching with an approval bound to an exact evidence digest is a real finance-team problem, but the idea is conventional.
+
+X
+Use of Switch 9, Technical 3, Creativity 9, Presentation 6. Weighted 6.90
+Switch is load-bearing. Scoped addressing between two owners and approval cards that only the author can answer are the core mechanism. The README shows Switch's own 403 refusals as evidence. Only the two kill tests pass. The seal, the verifier, the replay demo and the fixture runs are not built, so a judge cannot reproduce the product. The idea is the most original of the four. The spec is excellent, but there is no video, and the status table admits most of the work is undone.
+
+Y
+Use of Switch 9, Technical 8, Creativity 6, Presentation 7. Weighted 7.60
+Y uses the widest range of Switch features: a template, an exclusive editor role, room documents, permission cards, per-agent addressing and a fresh-agent test. It has a full run log, 240+ tests, a deterministic gate, and an honest account of a permission bypass and how they fixed it. The problem, a submission checklist, is narrow and close to the hackathon itself. The video is "coming soon".
+
+Z
+Use of Switch 5, Technical 5, Creativity 8, Presentation 6. Weighted 5.95
+Red-team agents that test business rules on each pull request is a fresh idea with clear value. Switch is mentioned, but the README does not explain which Switch features the agents use. Most of the documentation covers the landing page and the waitlist. The status claims conflict: the agents are "running", but the model keys are "planned", the env table is broken, and Docker was never run. There is no video.
+
+W ranks first because it is a finished, reproducible system with CI, video and verification evidence. Y has broader Switch use but a narrower idea and no video yet.
+
+The working directory suggests you may have written X, so to be clear: I scored only the written material, the same way for all four.
+
+RANK: WYXZ

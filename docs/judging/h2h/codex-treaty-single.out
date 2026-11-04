@@ -1,0 +1,19 @@
+Use of Switch: 7/10 — Linked rooms, team-scoped agents, and templates could make Switch central, but the key permissions and data flow are unproven.
+
+Technical execution: 2/10 — Nothing is built or run, so cloning and reproducing the workflow cannot yet be assessed.
+
+Creativity and impact: 7/10 — Cross-team migration gated on owner sign-off and evidence is a useful, specific workflow; its impact is not yet measured.
+
+Presentation and documentation: 3/10 — The plan is detailed, but there is no working README or demo video.
+
+Weighted total: 4.95/10 (0.30×7 + 0.25×2 + 0.25×7 + 0.20×3).
+
+Shortlist: No. The concept is promising, but the submission is still a plan with no runnable evidence.
+
+Three biggest weaknesses, most costly first:
+
+1. Nothing is built. Implement the end-to-end demo path, publish setup instructions, and show a clean clone-and-run reproduction.
+2. Switch’s role and privacy guarantees are asserted, not demonstrated. Show that team agents can access only their own repos and that only the fixed impact slot crosses room boundaries.
+3. The impact claim is unverified. Run the historical replay on named public repos and report missed consumers, false positives, and limitations.
+
+Claim I doubt: “only the slot crosses” between private rooms. Linked rooms and addressing policies may support coordination, but the plan does not show that they enforce field-level isolation or prevent other conversation content from being exposed.

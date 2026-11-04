@@ -1,0 +1,16 @@
+Use of Switch: 8/10 — The room, agent roles, permissions, approvals, and shared documents drive the workflow, though the checker can also run without Switch.
+
+Technical execution: 7/10 — The write-up gives reproducible setup steps and describes tests and safeguards, but the code and demo are unavailable to verify those claims.
+
+Creativity and impact: 8/10 — A human-approved, deterministic readiness gate addresses a practical team problem and gives agents distinct responsibilities.
+
+Presentation and documentation: 6/10 — The README is detailed and clear, but the demo video is still “coming soon,” leaving the core workflow unshown.
+
+Shortlist: Yes — The concept and documentation make a strong case, pending review of the code and demo.
+
+Three biggest weaknesses:
+1. No demo video is provided.
+2. Technical claims, including the tests and gate behavior, cannot be verified from the written material alone.
+3. The checker works without Switch, which weakens the claim that Switch is essential to the project.
+
+TOTAL: 7.4

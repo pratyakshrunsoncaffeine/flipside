@@ -1,0 +1,15 @@
+# agent board state (per clone)
+.board/
+# local Switch test users and keys
+killtests/.local-users.json
+.local-users.json
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+# seal keys never leave the author's machine (they live in .git/flipside/, listed here as a guard)
+*.flipkey
+*.egg-info/

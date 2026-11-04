@@ -1,0 +1,23 @@
+Scores
+- Use of Switch: 7/10. Two owners with their own agents meet in one room, which is the shape Switch is built for. The flow still looks like a PR comment thread plus a GitHub Action until the demo shows otherwise.
+- Technical execution: 5/10. Nothing is built yet. The plan has seven parts plus four Console features (templates, providers, Connectors, Trust), so the risk of not finishing is high. Replay mode is a real plus.
+- Creativity and impact: 7/10. Questions drawn from the author's private session are a fresh angle among hundreds of review bots. The cited pain is real. Why the author's team would accept the extra work is not argued.
+- Presentation and documentation: 7/10. The plan is honest about limits and labels fixture numbers as fixtures. It is dense, and the README will need a diagram.
+
+Weighted total: 2.1 + 1.25 + 1.75 + 1.4 = 6.5 out of 10.
+
+Shortlist: yes, narrowly. It is one of the few review entries that needs two owners and private context, but it drops off if the demo is staged or only half built.
+
+Costliest weaknesses
+1. The scope will sink execution. Fix: build one live path end to end (Claude Code author, reviewer agent, gate, ledger, one chat platform). Move Console, Connectors and Trust to a "next" section unless the video shows them working.
+2. Switch looks replaceable. Fix: on camera, show what GitHub cannot do. The author's agent runs on the author's machine, the reviewer tries to drive it, Switch addressing rejects the attempt, and the rejection event lands in the ledger.
+3. Citations are not checked. An LLM can invent "step 23". Fix: the gate checks deterministically that each cited step exists and quotes it word for word from a transcript whose hash is committed. Either specify who detects contradictions (step 5) without an LLM, or cut that step.
+
+Claims I doubt
+- "Addressing stops anyone else driving the author's agent." Addressing controls who can mention the agent. It does not stop prompt injection inside a reviewer's question, such as "quote your .env", and that question goes to an agent that can read the whole session. A SandboxAQ panel will push on this. Author approval helps, but only if the preview shows the exact text that will post.
+- "155 PRs, 1 to 4 Nov." The window ends today, so the count is partial. It also says nothing about whether those PRs were AI-written.
+- "The gate, not an LLM, decides." Step 5 needs judgement, so either an LLM is in that path or the step is underspecified.
+- The Console, Trust guardrails, in-chat tool approval, Connectors and `register-known` claims. I tried to check them against the Switch docs, but access was denied. Each one should be demonstrated or removed, because unverified feature lists read as padding.
+- The Entire `--skip-push-sessions` claim is uncited. Link to it.
+- "Zero false flags" on a small fixture set written by one teammate proves little. Report n.
+claude exit 0
