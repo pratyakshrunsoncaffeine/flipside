@@ -61,6 +61,7 @@ Stale on purpose:
 | SPEC clarifications C1 to C4 (lead, 4 Nov): floats allowed in step text only; `mentions` inherited by Bash results; step `cmd` by priority test > lint > build > other, `python3 -m` stripped; new check 0 `BAD_DISCLOSURE` | Real sessions have float tool inputs; consistency with `files` and `cmd`; malformed input needs its own code. C5 to C13 are recorded in `docs/seal/SPEC.md` |
 | `flip verify --bundle` clones a git bundle into a temp dir | G8 runs with no network and no Switch (also checked under `sandbox-exec` with network denied) |
 | Examples use the demo key (32 zero bytes) and a fixed git clock | The seal commit hash is the same on every machine |
+| Keep the name Flipside (4 Nov) | Public "flipside" repos (flashcards, games, a coin flip, a WoW addon, Flipside Crypto) share only the name, none the idea. A rename would change the `Flipside-Seal` trailer, SPEC, vectors, examples and the registered Switch agent names. Judges read the submission, not a name search |
 
 ## Dead ends
 
