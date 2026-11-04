@@ -96,6 +96,7 @@ def cmd_verify(a: argparse.Namespace) -> int:
 ROOM_COMMANDS = {
     "solo": ("flipside.room.solo", "M3: two owners on the local Switch server"),
     "replay": ("flipside.room.replay", "M2/M4: replay the CSV-export scenario"),
+    "agent": ("flipside.room.daemon", "run author-agent or reviewer-agent as a process"),
 }
 
 

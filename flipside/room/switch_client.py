@@ -28,6 +28,7 @@ from http.cookiejar import CookieJar
 from pathlib import Path
 from typing import Any
 
+from flipside.room.agents import write_atomic
 from flipside.room.protocol import Msg
 from flipside.room.transport import Forbidden, Outcome
 
@@ -160,29 +161,37 @@ class EventTap:
     def _save(self) -> None:
         with self._lock:
             state = {"addressed": self.addressed, "last_event_id": self.last_event_id}
-        self.cursor_path.write_text(json.dumps(state, sort_keys=True))
+        write_atomic(self.cursor_path, json.dumps(state, sort_keys=True))
 
     def _stream(self) -> None:
-        url = (
-            f"{self.base}/agents/{self.agent_id}/events?connection_id={self.connection_id}"
-            f"&scope=all&filter=all&start_from=head&rooms={','.join(self.rooms)}"
-        )
-        req = urllib.request.Request(url)
-        req.add_header("Authorization", f"Bearer {self.api_key}")
-        req.add_header("Accept", "text/event-stream")
-        if self.last_event_id:
-            req.add_header("Last-Event-ID", self.last_event_id)
-        try:
-            with urllib.request.urlopen(req, timeout=3600) as r:
-                self.opened.set()
-                for line in r:
-                    if self._stop.is_set():
-                        return
-                    self._line(line.decode(errors="replace").rstrip("\r\n"))
-        except Exception as e:  # recorded; the agent keeps working from the transcript
-            self.notes.append(f"event stream closed: {type(e).__name__}")
-        finally:
-            self.opened.set()
+        """Hold the event stream open, reconnecting with ``Last-Event-ID`` after a drop.
+
+        A restarted agent may find its rooms still claimed by the dead process's stream
+        until that stream's heartbeat expires (6 seconds), so opening is retried."""
+        while not self._stop.is_set():
+            url = (
+                f"{self.base}/agents/{self.agent_id}/events?connection_id={self.connection_id}"
+                f"&scope=all&filter=all&start_from=head&rooms={','.join(self.rooms)}"
+            )
+            req = urllib.request.Request(url)
+            req.add_header("Authorization", f"Bearer {self.api_key}")
+            req.add_header("Accept", "text/event-stream")
+            with self._lock:
+                last = self.last_event_id
+            if last:
+                req.add_header("Last-Event-ID", last)
+            try:
+                with urllib.request.urlopen(req, timeout=60) as r:
+                    self.opened.set()
+                    for line in r:
+                        if self._stop.is_set():
+                            return
+                        self._line(line.decode(errors="replace").rstrip("\r\n"))
+            except Exception as e:  # recorded; the agent keeps working from the transcript
+                note = f"event stream: {type(e).__name__} {getattr(e, 'code', '')}".strip()
+                if not self.notes or self.notes[-1] != note:
+                    self.notes.append(note)
+            self._stop.wait(1.0)
 
     def _line(self, s: str) -> None:
         if s.startswith("id:"):
@@ -241,14 +250,21 @@ class SwitchTransport:
         rooms: tuple[str, ...],
         session_id: str,
         cursor_path: Path,
+        listen: bool = True,
     ) -> None:
+        """``listen=False`` opens no event stream: the transport can post and read, but
+        reads carry no addressing decision. Use it for a second handle on an agent whose
+        process already holds the stream (Switch allows one stream per agent)."""
         self.base = base
         self.agent_id = agent_id
         self.name = name
         self.agent = Http(base, bearer=api_key)
         self.owner = owner
         self.session_id = session_id
-        self.tap = EventTap(base, agent_id, api_key, rooms, cursor_path).start()
+        self.listen = listen
+        self.tap = EventTap(base, agent_id, api_key, rooms, cursor_path)
+        if listen:
+            self.tap.start()
         self._cache: dict[str, dict[int, dict[str, Any]]] = {}
         self._started = False
 
@@ -257,7 +273,8 @@ class SwitchTransport:
         return f"agent:{self.agent_id}"
 
     def close(self) -> None:
-        self.tap.stop()
+        if self.listen:
+            self.tap.stop()
 
     def _fetch(self, room: str) -> list[dict[str, Any]]:
         """Every message in the room, oldest first, paging back only past what is cached."""
@@ -303,7 +320,7 @@ class SwitchTransport:
                 and m.addressed is None
                 and m.body.startswith(f"@{self.name}")
             ]
-            if not pending or time.monotonic() > deadline:
+            if not self.listen or not pending or time.monotonic() > deadline:
                 return msgs
             time.sleep(0.25)
 
