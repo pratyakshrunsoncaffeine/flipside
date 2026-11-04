@@ -21,6 +21,9 @@ g8: ## Offline check: q2-ok verifies OK, q2-forged gives PROOF_FAIL (no network,
 killtests: ## K1, K2 and K4 against the local Switch server; writes evidence/k1k2-*.log, k4-*.log
 	cd killtests && python3 k1_k2.py && python3 k4.py
 
+k3: ## K3: approval card in Slack; needs a Slack connection on the local server and SLACK_BOT_TOKEN_FILE
+	cd killtests && python3 k3.py
+
 replay-offline: ## M2: CSV-export scenario over FakeTransport (room lane)
 	$(PY) -m flipside.cli replay --offline
 

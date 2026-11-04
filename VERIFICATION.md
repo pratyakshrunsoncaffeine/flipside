@@ -78,13 +78,32 @@ The first `make solo-all` run (`evidence/solo-all-20261104T213925.log`) passed 6
 Restart test, in the same run: reviewer-agent was stopped and restarted before round 2, author-agent before round 3 (after its card was approved, before it disclosed).
 The log shows 0 duplicate agent posts, and the restarted author-agent disclosed the approved leaf once.
 
+## K3: the approval card in Slack
+
+`make k3` with `SLACK_BOT_TOKEN_FILE` set; 4/4 in `evidence/k3-20261105T005334.log`.
+Setup: a synthetic Slack workspace (Flipside, `T0CEY09M1LJ`), an app made from Switch's manifest without the `agent_view` block, Socket Mode, connected to the local server.
+The author's Switch account claimed the Slack user.
+
+| Check | Result |
+|---|---|
+| K3.a the author's private room is bridged to a private Slack channel | channel `C0CEGUSSJJ3` |
+| K3.b author-agent's card renders with Approve and Decline buttons | `evidence/k3-slack-card-20261105T005334-before.png` |
+| K3.c the reviewer cannot answer it | 403 `NOT_AUTHORIZED` |
+| K3.d the author presses Approve in Slack and author-agent receives `approve` | answered by the author's bridged Slack identity; `evidence/k3-slack-card-20261105T005334-after.png` |
+
+Earlier runs are kept.
+`k3-20261105T004827.log`: creating a bridged room needs `channel_type`.
+`k3-20261105T004840.log`: no live agent connection, so Switch showed "Host offline" and no buttons; stopped by hand.
+`k3-20261105T005115.log`: 3/4; K3.d expected a Switch user id, but a Slack press carries the bridged Slack identity.
+
 ## Demo video
 
 Not recorded yet; its SHA-256 goes here.
 
 ## Outside the checked scope
 
-- K3, Slack rendering of the approval card: not run; it needs a Slack workspace connected to the Switch server.
+- The full review over Slack: not run. Only the approval card was checked in Slack (K3 above).
+  Switch reports a Slack message as `kind: human` with no user id, and a Slack button press as `@switch-slack-<connection>-<slack username>:<server>`; Flipside's agents accept only `user:<switch id>`.
 - Two machines live (author and reviewer on different laptops): not run.
 - In fixtures, PR data (title, body, changed files, check runs) comes from each case's `case.json`; the GitHub reader ran on the sandbox PR and on team PRs #2 and #7.
 - All sessions and repos in `fixtures/` and `examples/` are synthetic.
