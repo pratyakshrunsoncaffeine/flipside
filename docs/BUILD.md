@@ -145,6 +145,10 @@ Parsers read only the JSON block, and accept a message only from the sender the 
 | `verdict` | reviewer-agent | `{"t":"verdict","v":1,"commit":"<sha>","q":1,"i":41,"code":"OK|PROOF_FAIL|…","ref":"<disclosure message id>","leaf":{…}}`; `leaf` only when `OK` |
 | `brief` | reviewer-agent, mentions the reviewer | `{"t":"brief","v":1,"commit":"<sha>","pr":142,"seal":"…","gaps":[…],"not_asked":[…],"coverage":[…],"contradictions":[…],"refused":[…]}` |
 
+Each `coverage` entry is `{"file","sealed","disclosed","not_disclosed":[[session,step],…],"by_mention","line"}`; `line` reads `auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)`.
+"Withheld" means only an author's decision: a `withheld` message (declined card, secret scan, changed session) and the brief's count of them.
+Coverage says "not disclosed" for every sealed step without a verified leaf, asked for or not.
+
 reviewer-agent posts one verdict per disclosure message, also after the brief, so a forged copy posted late is still refused in the room.
 `session_changed` is posted when the author approved a leaf but the session's sealed prefix no longer matches (F1), so no proof can be built.
 
@@ -359,7 +363,7 @@ Gates:
 2. Author runs `flip seal`, opens the PR; `#pr-142` opens; the seal line and manifest appear.
 3. reviewer-agent asks Q1 (`SCOPE` on `auth/session.py`); the author answers in their own words.
 4. reviewer-agent requests the edit step; the author's card shows the exact bytes; the author approves.
-5. Disclosure posts; verdict `OK`; coverage: 1 sealed step, 1 disclosed, 0 withheld.
+5. Disclosure posts; verdict `OK`; coverage: 1 sealed step, 1 disclosed, 0 not disclosed.
 6. Refusals, fast: the reviewer tags author-agent (Switch refuses); a free-text injection request is dropped; a forged disclosure gives `PROOF_FAIL`; the reviewer clicks the author's card (403).
 7. Brief posts; the reviewer is paged; close on "the rest of the session never left the author's laptop".
 8. End card: `make replay` and `flip verify examples/q2-ok.json`.

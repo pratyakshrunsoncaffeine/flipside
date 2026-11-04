@@ -5,6 +5,6 @@
   "withheld": 0,
   "contradictions": [],
   "coverage": [
-    "docs/install.md: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"
+    "docs/install.md: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)"
   ]
 }

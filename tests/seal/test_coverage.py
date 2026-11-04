@@ -43,26 +43,26 @@ MANIFEST = [
 def test_spec_example_line() -> None:
     fc = file_coverage(MANIFEST[:5], [1], F)
     assert format_line(fc) == (
-        f"{F}: 4 sealed steps, 1 disclosed, 3 withheld (steps 19, 23, 31); 2 by Bash mention"
+        f"{F}: 4 sealed steps, 1 disclosed, 3 not disclosed (steps 19, 23, 31); 2 by Bash mention"
     )
 
 
 def test_subagent_steps_are_labelled() -> None:
     fc = file_coverage(MANIFEST, [0, 2, 3, 4], F)
     assert (
-        format_line(fc) == f"{F}: 5 sealed steps, 4 disclosed, 1 withheld (step s1:2); "
+        format_line(fc) == f"{F}: 5 sealed steps, 4 disclosed, 1 not disclosed (step s1:2); "
         "2 by Bash mention"
     )
 
 
 def test_untouched_file_and_json() -> None:
     [fc] = coverage(MANIFEST, [], ["nope.py"])
-    assert format_line(fc) == "nope.py: 0 sealed steps, 0 disclosed, 0 withheld"
+    assert format_line(fc) == "nope.py: 0 sealed steps, 0 disclosed, 0 not disclosed"
     assert fc.to_json() == {
         "file": "nope.py",
         "sealed": 0,
         "disclosed": 0,
-        "withheld": [],
+        "not_disclosed": [],
         "by_mention": 0,
     }
 
@@ -71,4 +71,4 @@ def test_file_and_mention_on_same_step_counts_as_file() -> None:
     m = [entry(0, 1, [F], [F])]
     fc = file_coverage(m, [], F)
     assert fc.by_mention == 0 and len(fc.sealed) == 1
-    assert format_line(fc) == f"{F}: 1 sealed step, 0 disclosed, 1 withheld (step 1)"
+    assert format_line(fc) == f"{F}: 1 sealed step, 0 disclosed, 1 not disclosed (step 1)"

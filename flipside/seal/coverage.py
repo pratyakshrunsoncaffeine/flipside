@@ -18,7 +18,7 @@ class FileCoverage:
     file: str
     sealed: list[StepId]
     disclosed: list[StepId]
-    withheld: list[StepId]
+    not_disclosed: list[StepId]
     by_mention: int
 
     def to_json(self) -> dict[str, Any]:
@@ -26,7 +26,7 @@ class FileCoverage:
             "file": self.file,
             "sealed": len(self.sealed),
             "disclosed": len(self.disclosed),
-            "withheld": [list(s) for s in self.withheld],
+            "not_disclosed": [list(s) for s in self.not_disclosed],
             "by_mention": self.by_mention,
         }
 
@@ -71,17 +71,17 @@ def coverage(
 
 
 def format_line(fc: FileCoverage) -> str:
-    """``auth/session.py: 4 sealed steps, 1 disclosed, 3 withheld (steps 19, 23, 31); 2 by
+    """``auth/session.py: 4 sealed steps, 1 disclosed, 3 not disclosed (steps 19, 23, 31); 2 by
     Bash mention``."""
     word = "step" if len(fc.sealed) == 1 else "steps"
     line = (
         f"{fc.file}: {len(fc.sealed)} sealed {word}, {len(fc.disclosed)} disclosed, "
-        f"{len(fc.withheld)} withheld"
+        f"{len(fc.not_disclosed)} not disclosed"
     )
-    if fc.withheld:
+    if fc.not_disclosed:
         line += (
-            f" ({'step' if len(fc.withheld) == 1 else 'steps'} "
-            f"{', '.join(step_label(s) for s in fc.withheld)})"
+            f" ({'step' if len(fc.not_disclosed) == 1 else 'steps'} "
+            f"{', '.join(step_label(s) for s in fc.not_disclosed)})"
         )
     if fc.by_mention:
         line += f"; {fc.by_mention} by Bash mention"

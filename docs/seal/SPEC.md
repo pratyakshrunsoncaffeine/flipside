@@ -167,17 +167,19 @@ Exit code 0 on OK, 2 on any refusal, 1 on usage or I/O errors.
 Computed from the manifest alone, by the side that benefits from it.
 For a file F, the touching steps are those with F in `files` or `mentions`.
 A step counts as disclosed when at least one of its leaves verified OK.
+Every other touching step is not disclosed, whether nobody asked for it or the author declined it.
+"Withheld" is used only for an author's decision (`withheld` message), never for coverage.
 The line reads:
 
 ```
-auth/session.py: 4 sealed steps, 1 disclosed, 3 withheld (steps 19, 23, 31); 2 by Bash mention
+auth/session.py: 4 sealed steps, 1 disclosed, 3 not disclosed (steps 19, 23, 31); 2 by Bash mention
 ```
 
 ## Leaf selection (F5)
 
 The reviewer's agent names the leaves it wants, from the manifest.
 The author can approve or withhold each one.
-A withheld leaf is posted as withheld and counted in coverage.
+A withheld leaf is posted as withheld; coverage counts its step as not disclosed.
 The author may also offer extra leaves; they verify the same way.
 
 ## Threats
@@ -189,7 +191,7 @@ The author may also offer extra leaves; they verify the same way.
 | Guess a short hidden chunk from sibling hashes | 256-bit HMAC salt per leaf | Needs the salt |
 | Pass an inner node off as a leaf | `0x00` / `0x01` prefixes | `PROOF_FAIL` |
 | Duplicate-last-leaf tricks | RFC 9162 split, `n` in the trailer | `BAD_SIZE` or `PROOF_FAIL` |
-| Hide other steps on the same file | Public manifest, reviewer-side coverage, `mentions` | Withheld steps listed |
+| Hide other steps on the same file | Public manifest, reviewer-side coverage, `mentions` | Undisclosed steps listed |
 | Pick only flattering quotes | Reviewer names the leaves (F5) | Refusals counted |
 | Hide subagent edits | Subagent transcripts sealed (F3) | Steps appear in the manifest |
 | Backdate the seal | Switch room timestamp plus git push | Two records |

@@ -128,7 +128,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 - Work done outside the agent has no session evidence; the `UNSEALED` gap asks about it.
 - The manifest is public: step count, roles, tool names, repo paths, chunk counts, command classes and test outcomes.
   It never holds text.
-- A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was withheld.
+- A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was not disclosed.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
 - Not yet checked: Slack rendering of the approval card, and author and reviewer on two machines.

@@ -139,8 +139,8 @@ def csv_export() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 0,
         "contradictions": [],
         "coverage": [
-            "auth/session.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)",
-            "reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
+            "auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)",
+            "reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
         ],
         "dropped_requests": 1,
         "switch_refusals": 1,
@@ -202,8 +202,8 @@ def disabled_test() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 0,
         "contradictions": ["C-TESTS"],
         "coverage": [
-            "reports/render.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
-            "tests/test_render.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)",
+            "reports/render.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
+            "tests/test_render.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)",
         ],
     }
     return s, case, expected
@@ -245,8 +245,9 @@ def widened_cors() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 0,
         "contradictions": [],
         "coverage": [
-            "api/routes.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
-            "config/cors.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6); 2 by Bash mention",
+            "api/routes.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
+            "config/cors.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6); "
+            "2 by Bash mention",
         ],
     }
     return s, case, expected
@@ -296,8 +297,8 @@ def new_dependency() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 0,
         "contradictions": [],
         "coverage": [
-            "requirements.txt: 2 sealed steps, 1 disclosed, 1 withheld (step 4)",
-            "uploads/dates.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
+            "requirements.txt: 2 sealed steps, 1 disclosed, 1 not disclosed (step 4)",
+            "uploads/dates.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
         ],
     }
     return s, case, expected
@@ -328,7 +329,7 @@ def honest_docs() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "verdicts": {},
         "withheld": 0,
         "contradictions": [],
-        "coverage": ["docs/install.md: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"],
+        "coverage": ["docs/install.md: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)"],
     }
     return s, case, expected
 
@@ -380,8 +381,8 @@ def honest_subagent() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 0,
         "contradictions": [],
         "coverage": [
-            "reports/page.py: 2 sealed steps, 0 disclosed, 2 withheld (steps s1:1, s1:2)",
-            "reports/query.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
+            "reports/page.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps s1:1, s1:2)",
+            "reports/query.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
         ],
     }
     return s, case, expected, sub  # type: ignore[return-value]
@@ -408,8 +409,8 @@ def misleading_quote() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 1,
         "contradictions": [],
         "coverage": [
-            "auth/session.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 5, 6)",
-            "reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
+            "auth/session.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 5, 6)",
+            "reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
         ],
     }
     return s, case, expected
@@ -438,8 +439,8 @@ def reseal_after_questions() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "withheld": 1,
         "contradictions": [],
         "coverage": [
-            "auth/session.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 5, 6)",
-            "reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
+            "auth/session.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 5, 6)",
+            "reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
         ],
     }
     return s, case, expected
@@ -482,7 +483,7 @@ def honest_rejected_rerun() -> tuple[Session, dict[str, Any], dict[str, Any]]:
         "verdicts": {},
         "withheld": 0,
         "contradictions": [],
-        "coverage": ["cli/main.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"],
+        "coverage": ["cli/main.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)"],
     }
     return s, case, expected
 

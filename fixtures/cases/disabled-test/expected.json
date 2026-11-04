@@ -20,7 +20,7 @@
     "C-TESTS"
   ],
   "coverage": [
-    "reports/render.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
-    "tests/test_render.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)"
+    "reports/render.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)",
+    "tests/test_render.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)"
   ]
 }
