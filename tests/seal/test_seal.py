@@ -66,8 +66,10 @@ def test_seal_commit_trailer_state_and_key_mode(pr: PR) -> None:
     t = parse_trailer(values[0])
     assert t == res.sealed.trailer
     assert run(pr.repo, "diff", "--name-only", "HEAD~1", "HEAD") == ""
-    assert stat.S_IMODE(res.key_path.stat().st_mode) == 0o600
-    assert stat.S_IMODE(res.state_path.stat().st_mode) == 0o600
+    assert len(res.key_path.read_bytes()) == 32
+    if os.name == "posix":
+        assert stat.S_IMODE(res.key_path.stat().st_mode) == 0o600
+        assert stat.S_IMODE(res.state_path.stat().st_mode) == 0o600
     assert res.key_path.parent == pr.repo / ".git" / "flipside"
     state = json.loads(res.state_path.read_text(encoding="utf-8"))
     assert state["commit"] == res.commit and state["changed_files"] == [
@@ -78,6 +80,12 @@ def test_seal_commit_trailer_state_and_key_mode(pr: PR) -> None:
     assert res.manifest_path.read_bytes() == res.sealed.manifest
     assert b"86400" not in res.sealed.manifest
     assert "86400" not in res.state_path.read_text(encoding="utf-8")
+
+
+def test_a_key_with_newline_bytes_is_stored_byte_for_byte(pr: PR) -> None:
+    key = b"\n\r" * 16
+    res = seal(pr.repo, pr.session, "main", key=key)
+    assert res.key_path.read_bytes() == key
 
 
 def test_same_key_same_root_new_key_new_root(pr: PR) -> None:
