@@ -4,6 +4,10 @@ Recorded 4 Nov 2026, 21:15 IST, updated 22:10 IST, by the lead's agent on the le
 Machine: macOS 26.1, Python 3.12.2 (uv), git 2.50.1, local Switch server switch-core 0.31.0 at `http://127.0.0.1:52370`.
 Every line below is backed by a command that passed or an evidence file in `evidence/`.
 
+Windows offline update: 5 Nov 2026, run started 00:22:30 IST, by Pratyaksh's Codex on Pratyaksh's machine.
+Fresh remote clone of main at `44852e64d44893210112fc647e1e32aa4de2193d`, Python 3.12.6, offline gates, Windows, no make.
+The Windows offline counts are pinned to that tested commit; the CI rows below describe the current workflow.
+
 ## Test counts
 
 | OS | Command | Result |
@@ -12,11 +16,17 @@ Every line below is backed by a command that passed or an evidence file in `evid
 | Ubuntu | `.github/workflows/ci.yml` on every PR | Green (required job) |
 | Windows | `.github/workflows/ci.yml` on every PR | Green since PR #7; reported without blocking |
 | macOS | `.github/workflows/ci.yml` on pushes to `main` | Runs on `main` only: GitHub cancelled PR macOS jobs for lack of runners |
+| Windows, Python 3.12.6, offline, no make | Exact `uv` equivalents in `evidence/m4-20261105T002230.log` | Ruff check/format and strict mypy (default and win32) pass; 328 passed and 2 skipped, twice |
 
 ## Clean clone
 
 A fresh `git clone` of branch `m3-live-switch` into a temp directory, then `uv sync --frozen`, `make lint`, `make test`, `make g8`, `make replay-offline` and `make fixtures`: all exit 0, 228 passed, 8/8 fixtures match.
-The second-machine run (M4 gate, the teammate's laptop) is not done yet.
+The second-machine offline checks pass on Windows from a fresh remote clone of main at `44852e6`; evidence is `evidence/m4-20261105T002230.log`.
+The two full test runs took 160.51 and 158.89 seconds, each with 328 passed and 2 skipped.
+Make is absent, so the exact command argv for `uv sync --frozen`, ruff check/format, strict mypy (default and win32), both pytest runs, both G8 outcomes, offline replay and all nine fixtures were run directly and are preserved in the log.
+The G8 original returns `OK` with exit 0; the forged quote returns `PROOF_FAIL` with exit 2.
+Pytest uses separate short temporary directories to avoid Windows path-length failures in the synthetic home/session tests.
+There is no Switch endpoint on this Windows machine; the live replay portion of M4 remains open.
 
 ## Gates
 
@@ -28,6 +38,7 @@ The second-machine run (M4 gate, the teammate's laptop) is not done yet.
 | M2: offline flow | `make replay-offline` | `evidence/replay-offline-csv-export-20261104T205047.log` |
 | M3: live flow, twice, four refusals, restart | `make solo` | `evidence/solo-csv-export-20261104T210302.log`, `evidence/solo-csv-export-20261104T210641.log` |
 | M4: live replay on this machine | `make replay` | `evidence/replay-switch-csv-export-20261104T210939.log` |
+| M4 partial: second-machine offline gates, Windows, no make; two full test passes, G8, replay-offline, fixtures 9/9 | Exact `uv` argv in the log | `evidence/m4-20261105T002230.log`; live replay remains open |
 | M3 with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
 | All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
 | All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
