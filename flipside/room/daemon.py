@@ -84,8 +84,10 @@ def check_config(cfg: dict[str, Any]) -> None:
 
 
 def load_config(path: Path) -> dict[str, Any]:
+    """Read an agent config. On POSIX it must be mode 0600; Windows has no mode bits
+    (access is by ACL), so the check applies only where the mode means something."""
     mode = stat.S_IMODE(path.stat().st_mode)
-    if mode & 0o077:
+    if os.name == "posix" and mode & 0o077:
         raise SystemExit(f"{path} must not be readable by others (mode {mode:o}); chmod 600")
     cfg: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     try:
@@ -126,6 +128,7 @@ def pr_data(cfg: dict[str, Any]) -> PRData:
         author=p["author"],
         files=tuple(p["files"]),
         checks=tuple(CheckRun(c["name"], c.get("conclusion")) for c in p.get("checks", [])),
+        changed_lines=int(p["changed_lines"]) if "changed_lines" in p else None,
     )
 
 

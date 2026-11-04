@@ -10,7 +10,7 @@ import re
 import subprocess
 from collections.abc import Callable, Sequence
 
-from flipside.room.rules import CheckRun, PRData
+from flipside.room.rules import CheckRun, PRData, is_lockfile
 
 Runner = Callable[[Sequence[str]], str]
 _SLUG = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
@@ -44,8 +44,25 @@ def fetch_pr(slug: str, number: int, run: Runner = gh) -> PRData:
     pr = json.loads(run(["api", f"repos/{slug}/pulls/{number}"]))
     if not isinstance(pr, dict) or "head" not in pr:
         raise GitHubError(f"unexpected PR response for {slug}#{number}")
-    files = _lines(
-        run(["api", "--paginate", f"repos/{slug}/pulls/{number}/files", "--jq", ".[].filename"])
+    changed = [
+        json.loads(x)
+        for x in _lines(
+            run(
+                [
+                    "api",
+                    "--paginate",
+                    f"repos/{slug}/pulls/{number}/files",
+                    "--jq",
+                    ".[] | {filename, additions, deletions}",
+                ]
+            )
+        )
+    ]
+    files = [str(f["filename"]) for f in changed]
+    lines = sum(
+        int(f.get("additions") or 0) + int(f.get("deletions") or 0)
+        for f in changed
+        if not is_lockfile(str(f["filename"]))
     )
     sha = pr["head"]["sha"]
     checks = [
@@ -69,6 +86,7 @@ def fetch_pr(slug: str, number: int, run: Runner = gh) -> PRData:
         author=str((pr.get("user") or {}).get("login") or ""),
         files=tuple(files),
         checks=tuple(CheckRun(str(c["name"]), c.get("conclusion")) for c in checks),
+        changed_lines=lines,
     )
 
 

@@ -8,13 +8,21 @@ on:
 permissions:
   contents: read
 
+# Ubuntu must pass. Windows reports without blocking until the Windows fixes land.
+# macOS runs on pushes to main only: GitHub cancels PR jobs when no macOS runner is free,
+# and every PR is also checked on macOS locally.
 jobs:
   check:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: ${{ github.event_name == 'push' && fromJSON('["ubuntu-latest", "windows-latest", "macos-latest"]') || fromJSON('["ubuntu-latest", "windows-latest"]') }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.os != 'ubuntu-latest' }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
