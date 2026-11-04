@@ -13,9 +13,11 @@ it must be mode 0600 and is never printed. Keys:
   ``pr`` (PR data: number, title, body, author, files, checks) or ``github`` (owner/repo)
   with ``pr_number``.
 - author: ``private``, ``reviewer_agent``, ``author_user``, ``author_name``; optional
-  ``root`` and ``commit`` (default: the newest seal commit in ``base_ref``..HEAD).
-- reviewer: ``head``, ``base_ref``, ``author_agent``, ``author_agent_name``, ``pr_author``,
-  ``reviewer_name``; optional ``timeout`` (default ``FLIP_ANSWER_TIMEOUT`` or 30 minutes).
+  ``root`` and ``commit`` (default: the newest seal commit in ``base_ref``..HEAD, with
+  ``base_ref`` defaulting to ``origin/main``).
+- reviewer: ``author_agent``, ``author_agent_name``, ``pr_author``, ``reviewer_name``;
+  optional ``head`` (default: the PR's head commit from GitHub), ``base_ref`` (default
+  ``origin/main``) and ``timeout`` (default ``FLIP_ANSWER_TIMEOUT`` or 30 minutes).
 """
 
 import argparse
@@ -105,7 +107,7 @@ def author(cfg: dict[str, Any]) -> tuple[AuthorAgent, SwitchTransport]:
     repo = Path(cfg["repo"])
     commit, root = cfg.get("commit"), cfg.get("root")
     if not commit:
-        commit = find_seal(repo, cfg.get("base_ref", "main"), "HEAD")
+        commit = find_seal(repo, cfg.get("base_ref", "origin/main"), "HEAD")
         if commit is None:
             raise SystemExit("no Flipside-Seal commit on this branch; run flip seal first")
         trailer = parse_trailer(trailer_values(repo, commit)[0])
@@ -132,7 +134,19 @@ def author(cfg: dict[str, Any]) -> tuple[AuthorAgent, SwitchTransport]:
     return agent, t
 
 
+def reviewer_head(cfg: dict[str, Any]) -> str:
+    """The PR head the reviewer checks: ``head``, else the PR's head commit on GitHub."""
+    if cfg.get("head"):
+        return str(cfg["head"])
+    if "github" in cfg:
+        from flipside.room.github import head_sha
+
+        return head_sha(cfg["github"], int(cfg["pr_number"]))
+    raise SystemExit("reviewer config needs head, or github and pr_number")
+
+
 def reviewer(cfg: dict[str, Any]) -> tuple[ReviewerAgent, SwitchTransport]:
+    head = reviewer_head(cfg)
     t = transport(cfg, (cfg["shared"],))
     timeout = cfg.get("timeout")
     agent = ReviewerAgent(
@@ -141,8 +155,8 @@ def reviewer(cfg: dict[str, Any]) -> tuple[ReviewerAgent, SwitchTransport]:
             pr=pr_data(cfg),
             shared=cfg["shared"],
             repo=Path(cfg["repo"]),
-            head=cfg["head"],
-            base=cfg["base_ref"],
+            head=head,
+            base=cfg.get("base_ref", "origin/main"),
             author_agent=cfg["author_agent"],
             author_agent_name=cfg["author_agent_name"],
             pr_author=cfg["pr_author"],
