@@ -7,7 +7,7 @@ from typing import Any
 from flipside.room import replay
 from flipside.room.agents import AuthorAgent, AuthorConfig, ReviewerAgent, ReviewerConfig
 from flipside.room.protocol import decode
-from flipside.room.scenario import World, load_case, materialize
+from flipside.room.scenario import World, load_case, materialize, reseal
 from flipside.room.transport import FakeSwitch, FakeTransport, Rule
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -148,3 +148,24 @@ def test_secret_leaf_is_withheld_without_a_card(tmp_path: Path) -> None:
     assert [w["reason"] for w in withheld] == ["secret_scan"]
     assert hub.cards == {}
     assert all("Zx9q2LmP7vR4tY8kW3nB" not in m.body for m in hub.messages)
+
+
+def test_restart_after_the_session_was_rewritten_withholds_instead_of_crashing(
+    tmp_path: Path,
+) -> None:
+    case = load_case(ROOT / "fixtures" / "cases" / "reseal-after-questions")
+    world = materialize(case, tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    hub = s["hub"]
+    s["author"]().step()
+    s["reviewer"]().step()
+    old, new = case.raw["reseal_after_questions"]
+    reseal(world, old, new)
+    fresh = s["author"]()
+    fresh.step()
+    fresh.step()
+    out = [
+        o for m in hub.messages if (o := decode(m.body)) and o["t"] in ("withheld", "disclosure")
+    ]
+    assert [(o["t"], o.get("reason")) for o in out] == [("withheld", "session_changed")]
+    assert types(hub).count("seal") == 1

@@ -31,7 +31,15 @@ from flipside.room.transport import Transport
 from flipside.seal.canon import canon
 from flipside.seal.git import git, parse_trailer, trailer_values
 from flipside.seal.manifest import ManifestError, load_manifest
-from flipside.seal.prove import ProveError, Rebuilt, disclosure, leaf_secret_hits, rebuild
+from flipside.seal.prove import (
+    ProveError,
+    Rebuilt,
+    disclosure,
+    leaf_secret_hits,
+    load_state,
+    rebuild,
+)
+from flipside.seal.seal import state_dir
 from flipside.seal.verify import verify
 
 Log = Callable[[str], None]
@@ -127,9 +135,20 @@ class AuthorAgent:
 
     @property
     def rebuilt(self) -> Rebuilt:
+        """Every leaf, rebuilt from the session. Raises ProveError(SESSION_CHANGED) when the
+        sealed part of the session no longer matches; nothing else in step() needs it."""
         if self._rebuilt is None:
             self._rebuilt = rebuild(self.cfg.repo, self.cfg.root)
         return self._rebuilt
+
+    @property
+    def manifest(self) -> bytes:
+        """The public manifest stored at seal time; readable even if the session changed."""
+        return (state_dir(self.cfg.repo) / f"{self.cfg.root}.manifest.json").read_bytes()
+
+    @property
+    def n(self) -> int:
+        return int(load_state(self.cfg.repo, self.cfg.root)["n"])
 
     def roles(self) -> dict[str, str]:
         return {AUTHOR_AGENT: self.t.me, REVIEWER_AGENT: self.cfg.reviewer_agent}
@@ -147,7 +166,7 @@ class AuthorAgent:
             for o in mine
             if o["t"] in ("disclosure", "withheld") and o.get("commit") == self.cfg.commit
         }
-        n = self.rebuilt.sealed.n
+        n = self.n
         for m in msgs:
             for q, i in self.wanted(m, n):
                 if (q, i) in done or card_id(self.cfg.commit, q, i) in self.cards:
@@ -184,7 +203,7 @@ class AuthorAgent:
         (every chunk of main-session step t) or ``@<agent> offer Q<k> leaf <i>``.
         Only the author's own messages that Switch delivered as addressed count."""
         out: list[tuple[int, int]] = []
-        leaves = self.rebuilt.sealed.leaves
+        leaves = load_manifest(self.manifest)
         for m in self.t.read(self.cfg.private):
             if m.sender != self.cfg.author_user or m.addressed is False:
                 continue
@@ -225,20 +244,20 @@ class AuthorAgent:
         return [(req.q, i) for i in req.leaves]
 
     def publish_seal(self) -> None:
-        sealed = self.rebuilt.sealed
-        uri = self.t.upload(self.cfg.shared, "manifest.json", sealed.manifest)
+        manifest, n = self.manifest, self.n
+        uri = self.t.upload(self.cfg.shared, "manifest.json", manifest)
         obj = {
             "t": "seal",
             "v": 1,
             "pr": self.cfg.pr,
             "commit": self.cfg.commit,
             "root": self.cfg.root,
-            "n": sealed.n,
-            "manifest": sealed.manifest_sha256,
+            "n": n,
+            "manifest": hashlib.sha256(manifest).hexdigest(),
             "mxc": uri,
         }
         line = (
-            f"Seal for PR #{self.cfg.pr} · root {_short(self.cfg.root)} · {sealed.n} "
+            f"Seal for PR #{self.cfg.pr} · root {_short(self.cfg.root)} · {n} "
             f"leaves · commit {_short(self.cfg.commit)} · manifest attached"
         )
         mid = self.t.post(self.cfg.shared, encode(line, obj))
@@ -246,7 +265,12 @@ class AuthorAgent:
 
     def consider(self, q: int, i: int) -> int:
         """Secret-scan leaf i, then withhold it or open the author's approval card."""
-        hits = leaf_secret_hits(self.rebuilt, i)
+        try:
+            hits = leaf_secret_hits(self.rebuilt, i)
+        except ProveError as e:
+            self.log(f"author-agent cannot rebuild leaf {i}: {e}")
+            self.withhold(q, i, "session_changed")
+            return 1
         if hits:
             self.withhold(q, i, "secret_scan")
             return 1
