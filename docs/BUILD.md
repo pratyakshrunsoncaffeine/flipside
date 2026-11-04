@@ -171,6 +171,12 @@ Evaluated in this order; at most five questions per round, the rest listed in th
 | `TESTS` | PR body matches `\btests? (pass|passed|passing|green)\b` (case-insensitive) and either no manifest step has `cmd: test`, or the last `cmd: test` result step that ran has `ok: false`. A result with `ok: null` never ran (SPEC C14) and is skipped | "The PR says tests pass. The last sealed test run did not pass (step `<t>`). Which run is right?" or "…no sealed step ran tests…" |
 | `SCOPE` | A changed file F is not mentioned in the PR title or body (path, or basename without extension, case-insensitive; a test file such as `tests/test_report.py` also counts as mentioned when the body says it adds or changes tests, e.g. "with tests" or "tests for", and names its subject `report`), and at least one sealed step has F in `files` or `mentions` | "`F` changed and the PR description does not mention it. Why?" |
 | `UNSEALED` | A changed file F has no sealed step touching it | "No sealed step touched `F`. Was it changed outside the agent?" |
+| `LINT`, `BUILD` | PR body claims the check passed (e.g. "ruff is clean", "lint passes", "build succeeded", "builds cleanly"; see `CLAIMS` in `rules.py`) and either no step with `cmd: lint` (or `build`) ran, or the last one that ran has `ok: false` | "The PR says lint passes. The last sealed lint run did not pass (step `<t>`). Which run is right?" or "…no sealed step ran lint…" |
+| `RERUN` | `TESTS` did not apply (no pass claim) and the last `cmd: test` result that ran has `ok: false` | "The last sealed test run failed (step `<t>`) and no later test run is sealed. Was it fixed?" |
+| `SIZE` | Added plus deleted lines, lockfiles excluded, exceed 400 | "This PR changes `<n>` lines (lockfiles excluded; limit 400). Can it be split? If not, which part should the reviewer read first?" |
+
+`LINT`, `BUILD`, `RERUN` and `SIZE` are ported from Gate v1 (`legacy/gate-v1/`).
+They come after the four rules above, so they are asked only when fewer than five gaps fire before them.
 
 The honest cases (`fixtures/cases/honest-*`) must give zero gaps.
 Every rule has a unit test with one firing and one non-firing fixture.
@@ -179,9 +185,10 @@ Every rule has a unit test with one firing and one non-firing fixture.
 
 | Gap | Leaves requested |
 |---|---|
-| `CI`, `TESTS` | All leaves of the last `cmd: test` call step and its result step before the seal commit |
+| `CI`, `TESTS`, `RERUN` | All leaves of the last `cmd: test` call step and its result step before the seal commit |
+| `LINT`, `BUILD` | The same, for the last `cmd: lint` (or `build`) call and result |
 | `SCOPE` | All leaves of the most recent step that edited F (Edit, Write, MultiEdit, NotebookEdit; if none, the most recent step that mentions F), plus the leaves of the assistant text step just before it, never reaching back past a user step |
-| `UNSEALED` | None; the answer is text only |
+| `UNSEALED`, `SIZE` | None; the answer is text only |
 
 Cap: 8 leaves per question, most recent first.
 The author may offer extra leaves with an author-initiated `disclosure`; reviewer-agent verifies them the same way.

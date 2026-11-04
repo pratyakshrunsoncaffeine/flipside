@@ -8,8 +8,43 @@ from dataclasses import dataclass, field
 from typing import Any
 
 MAX_QUESTIONS = 5
+MAX_LINES = 400
 EDIT_TOOLS = frozenset({"Edit", "Write", "MultiEdit", "NotebookEdit"})
+LOCKFILES = frozenset(
+    {
+        "package-lock.json",
+        "yarn.lock",
+        "pnpm-lock.yaml",
+        "poetry.lock",
+        "uv.lock",
+        "Cargo.lock",
+        "Gemfile.lock",
+        "go.sum",
+        "composer.lock",
+        "Pipfile.lock",
+    }
+)
 _TESTS_PASS = re.compile(r"\btests? (pass|passed|passing|green)\b", re.I)
+# Claims that a lint or build check passed, phrased tightly so prose such as "a build step
+# that passes flags" never matches: a false gap on an honest PR is the worst bug.
+CLAIMS = (
+    (
+        "lint",
+        re.compile(
+            r"\b(lint|linting|linter|ruff|mypy|eslint|flake8)( checks?)? (is |are )?"
+            r"(passes|passed|passing|clean|green)\b",
+            re.I,
+        ),
+    ),
+    (
+        "build",
+        re.compile(
+            r"\bbuild (is )?(passes|passed|passing|clean|green|succeeds|succeeded)\b"
+            r"|\bbuilds (cleanly|successfully)\b",
+            re.I,
+        ),
+    ),
+)
 _ANSWER_PASS = re.compile(r"\b(pass|passed|green)\b", re.I)
 _FAIL_TEXT = re.compile(r"FAILED|Error:|(?i:exit code [1-9])")
 
@@ -32,6 +67,12 @@ class PRData:
     author: str
     files: tuple[str, ...]
     checks: tuple[CheckRun, ...] = ()
+    changed_lines: int | None = None
+    """Added plus deleted lines, lockfiles excluded; None when the reader does not know."""
+
+
+def is_lockfile(path: str) -> bool:
+    return posixpath.basename(path) in LOCKFILES
 
 
 @dataclass(frozen=True)
@@ -104,27 +145,49 @@ def never_ran(entry: dict[str, Any]) -> bool:
     )
 
 
-def _last_test_result(steps: dict[StepId, list[dict[str, Any]]]) -> StepId | None:
-    """The latest sealed test result that actually ran."""
+def _last_result(steps: dict[StepId, list[dict[str, Any]]], cmd: str = "test") -> StepId | None:
+    """The latest sealed result of a ``cmd`` class (test, lint, build) that actually ran."""
     found = [
         k
         for k, es in steps.items()
-        if es[0]["role"] == "tool_result" and es[0]["cmd"] == "test" and not never_ran(es[0])
+        if es[0]["role"] == "tool_result" and es[0]["cmd"] == cmd and not never_ran(es[0])
     ]
     return max(found) if found else None
 
 
+def _claim_gaps(pr: PRData, steps: dict[StepId, list[dict[str, Any]]]) -> list[Gap]:
+    """LINT and BUILD: the PR says the check passed, and no sealed run of it ran or the last
+    one failed. TESTS covers tests with its own wording."""
+    out = []
+    for cmd, claim in CLAIMS:
+        if not claim.search(pr.body):
+            continue
+        last = _last_result(steps, cmd)
+        if last is None:
+            text = f"The PR says {cmd} passes. No sealed step ran {cmd}. Which run is right?"
+            out.append(Gap(cmd.upper(), text))
+        elif steps[last][0]["ok"] is False:
+            text = (
+                f"The PR says {cmd} passes. The last sealed {cmd} run did not pass "
+                f"(step `{last[1]}`). Which run is right?"
+            )
+            out.append(Gap(cmd.upper(), text, step=last))
+    return out
+
+
 def gaps(pr: PRData, manifest: Sequence[dict[str, Any]] | None) -> list[Gap]:
-    """All gaps, in rule order CI, TESTS, SCOPE, UNSEALED. A PR with no seal gets
-    ``manifest=None``: CI and TESTS-by-text still apply, file rules use no evidence."""
+    """All gaps, in rule order CI, TESTS, SCOPE, UNSEALED, LINT, BUILD, RERUN, SIZE. A PR with
+    no seal gets ``manifest=None``: CI, SIZE and the pass claims still apply, file rules use
+    no evidence."""
     steps = steps_of(manifest or [])
     out = [
         Gap("CI", f"Check `{c.name}` failed on the sealed commit. What happened?", check=c.name)
         for c in pr.checks
         if c.conclusion == "failure"
     ]
-    if _TESTS_PASS.search(pr.body):
-        last = _last_test_result(steps)
+    tests_claimed = bool(_TESTS_PASS.search(pr.body))
+    if tests_claimed:
+        last = _last_result(steps)
         if last is None:
             out.append(
                 Gap(
@@ -158,6 +221,26 @@ def gaps(pr: PRData, manifest: Sequence[dict[str, Any]] | None) -> list[Gap]:
                     file=f,
                 )
             )
+    out += _claim_gaps(pr, steps)
+    last_test = _last_result(steps)
+    if not tests_claimed and last_test is not None and steps[last_test][0]["ok"] is False:
+        out.append(
+            Gap(
+                "RERUN",
+                f"The last sealed test run failed (step `{last_test[1]}`) and no later test "
+                "run is sealed. Was it fixed?",
+                step=last_test,
+            )
+        )
+    if pr.changed_lines is not None and pr.changed_lines > MAX_LINES:
+        out.append(
+            Gap(
+                "SIZE",
+                f"This PR changes {pr.changed_lines} lines (lockfiles excluded; limit "
+                f"{MAX_LINES}). Can it be split? If not, which part should the reviewer read "
+                "first?",
+            )
+        )
     return out
 
 
@@ -179,8 +262,10 @@ def select(gap: Gap, manifest: Sequence[dict[str, Any]]) -> Selection:
     """Leaves requested for a gap (docs/BUILD.md 7.3)."""
     steps = steps_of(manifest)
     order = sorted(steps)
-    if gap.kind in ("CI", "TESTS"):
-        result = _last_test_result(steps)
+    run_class = {"CI": "test", "TESTS": "test", "RERUN": "test", "LINT": "lint", "BUILD": "build"}
+    if gap.kind in run_class:
+        cmd = run_class[gap.kind]
+        result = _last_result(steps, cmd)
         if result is None:
             return Selection()
         calls = [
@@ -189,7 +274,7 @@ def select(gap: Gap, manifest: Sequence[dict[str, Any]]) -> Selection:
             if k < result
             and k[0] == result[0]
             and steps[k][0]["role"] == "assistant"
-            and steps[k][0]["cmd"] == "test"
+            and steps[k][0]["cmd"] == cmd
         ]
         ids = [*calls[-1:], result]
         return Selection(_cap(_leaves(steps, ids)))
