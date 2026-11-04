@@ -1,0 +1,1 @@
+{"hidden": ["auth/token.py"], "questions": [["SCOPE", "auth/token.py"]], "verdicts": {"OK": 1, "PROOF_FAIL": 1}, "withheld": 0, "contradictions": [], "duplicates": [], "switch_refusals": 1, "dropped_requests": 1, "card_403": 1}
