@@ -1,4 +1,17 @@
-# Codex Windows baseline
+# Windows validation
+
+## Current status
+
+On 5 Nov 2026, a fresh Windows clone of main at `44852e6` passed the offline gates with no make installed.
+Ruff check/format and strict mypy (default and win32) passed.
+The full test suite passed twice: 328 passed and 2 skipped per run.
+Both G8 checks, offline replay and all nine existing fixtures passed.
+The exact commands and actual output are in [the Windows evidence log](../evidence/m4-20261105T002230.log), with scope recorded in [VERIFICATION.md](../VERIFICATION.md).
+Set B separately passed twice from its fresh branch clone after merging that main commit, with the original expectations unchanged.
+PRs #5 and #6 are merged.
+Live Switch replay remains open because this Windows machine has no Switch endpoint.
+
+## Historical baselines
 
 Recorded 4 Nov 2026 IST against PR #2 base `f14aead` in an isolated worktree.
 This records the baseline before the lead's pending Windows fixes.
