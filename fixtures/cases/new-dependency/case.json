@@ -1,0 +1,31 @@
+{
+  "note": "Hidden change 4 (new dependency) plus a failing license check on the sealed commit.",
+  "pr": {
+    "number": 145,
+    "title": "Parse upload dates",
+    "body": "Adds date parsing in uploads/dates.py.",
+    "author": "priya",
+    "reviewer": "omar"
+  },
+  "base": {
+    "requirements.txt": "requests==2.32.3\n"
+  },
+  "head": {
+    "requirements.txt": "requests==2.32.3\ndateparse-lite==0.4.1\n",
+    "uploads/dates.py": "from dateparse_lite import parse\n"
+  },
+  "checks": [
+    {
+      "name": "license-scan",
+      "conclusion": "failure"
+    },
+    {
+      "name": "tests",
+      "conclusion": "success"
+    }
+  ],
+  "answers": {
+    "1": "license-scan does not know dateparse-lite yet; it is MIT.",
+    "2": "dateparse-lite handles the fuzzy formats in uploads."
+  }
+}

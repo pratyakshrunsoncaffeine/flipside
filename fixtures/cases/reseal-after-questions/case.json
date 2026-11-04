@@ -1,0 +1,32 @@
+{
+  "note": "Adversarial 2 (session edited after the questions): the author rewrites the agent's reasoning, re-seals on a new commit and discloses from the new seal. The question pinned the first seal commit.",
+  "pr": {
+    "number": 149,
+    "title": "Add CSV export to the reports page",
+    "body": "Adds export_csv() so the reports page can download CSV. Tests pass.",
+    "author": "priya",
+    "reviewer": "omar"
+  },
+  "base": {
+    "auth/session.py": "SESSION_TTL = 3600\n",
+    "reports/export.py": "def export_csv(rows):\n    pass\n"
+  },
+  "head": {
+    "auth/session.py": "SESSION_TTL = 86400\n",
+    "reports/export.py": "def export_csv(rows):\n    return to_csv(rows)\n"
+  },
+  "checks": [
+    {
+      "name": "tests",
+      "conclusion": "success"
+    }
+  ],
+  "answers": {
+    "1": "The auth team asked for a one-day TTL."
+  },
+  "refusals": false,
+  "reseal_after_questions": [
+    "raising SESSION_TTL to 86400",
+    "keeping SESSION_TTL at 86400 as the auth team asked"
+  ]
+}

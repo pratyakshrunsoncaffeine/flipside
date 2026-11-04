@@ -1,0 +1,24 @@
+{
+  "note": "Honest 2: one change made by a subagent (F3); the PR names both files.",
+  "pr": {
+    "number": 147,
+    "title": "Rename fetch_rows to load_rows",
+    "body": "Renames fetch_rows in reports/query.py and its caller in reports/page.py. Tests pass.",
+    "author": "priya",
+    "reviewer": "omar"
+  },
+  "base": {
+    "reports/query.py": "def fetch_rows():\n    pass\n",
+    "reports/page.py": "fetch_rows()\n"
+  },
+  "head": {
+    "reports/query.py": "def load_rows():\n    pass\n",
+    "reports/page.py": "load_rows()\n"
+  },
+  "checks": [
+    {
+      "name": "tests",
+      "conclusion": "success"
+    }
+  ]
+}
