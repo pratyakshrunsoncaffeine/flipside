@@ -47,6 +47,7 @@ class Result:
     refusals: Refusals
     rounds: int
     false_approvals: int = 0
+    attack_ids: frozenset[str] = frozenset()
 
     def summary(self) -> dict[str, Any]:
         b = self.brief or {}
@@ -63,6 +64,7 @@ class Result:
             "dropped_requests": len(self.refusals.dropped_request),
             "switch_refusals": len(self.refusals.switch_refusal),
             "card_403": len(self.refusals.card_403),
+            "duplicates": duplicates(self.transcript, self.attack_ids),
         }
 
 
@@ -127,6 +129,7 @@ class Script:
                     bad,
                 ),
             )
+            self.attack_ids.add(mid)
             self.log(f"script: reviewer-agent posted an injection request {mid}")
             acts += 1
         raw = self.world.case.raw
@@ -221,14 +224,20 @@ def play(
     log: Log,
     max_rounds: int = 60,
     pause: float = 0.0,
+    restart: Callable[[int, AuthorAgent, ReviewerAgent], tuple[AuthorAgent, ReviewerAgent]]
+    | None = None,
 ) -> Result:
     """Step author-agent, reviewer-agent and the humans until the brief is posted and the
-    script is idle, or ``max_rounds`` passes."""
+    script is idle, or ``max_rounds`` passes. ``restart`` may replace either agent with a
+    fresh process-equivalent before a round (the M3 restart test)."""
     rounds = 0
     brief: dict[str, Any] | None = None
     idle = 0
     while rounds < max_rounds:
         rounds += 1
+        if restart is not None:
+            author, reviewer = restart(rounds, author, reviewer)
+            script.author, script.reviewer = author, reviewer
         acts = author.step()
         acts += script.step(read_all())
         acts += reviewer.step()
@@ -263,7 +272,42 @@ def play(
         and o.get("ref") in script.attack_ids
     )
     rows = [{"id": m.id, "seq": m.seq, "sender": m.sender_name, "body": m.body} for m in transcript]
-    return Result(rows, brief, script.refusals, rounds, false_ok)
+    return Result(rows, brief, script.refusals, rounds, false_ok, frozenset(script.attack_ids))
+
+
+def post_key(sender: str, obj: dict[str, Any]) -> tuple[Any, ...]:
+    """What makes an agent post unique: a second post with the same key is a duplicate."""
+    t = obj["t"]
+    if t in ("seal", "questions", "brief"):
+        return (sender, t, obj.get("commit"))
+    if t == "request":
+        return (sender, t, obj.get("commit"), obj.get("q"))
+    if t == "verdict":
+        return (sender, t, obj.get("ref"))
+    return (
+        sender,
+        t,
+        obj.get("commit"),
+        obj.get("q"),
+        obj.get("i"),
+        obj.get("leaf", {}).get("text"),
+    )
+
+
+def duplicates(rows: list[dict[str, Any]], attacks: frozenset[str] = frozenset()) -> list[str]:
+    """Message ids of agent posts that repeat an earlier post's key. The script's attack
+    posts (forged, injected, re-sealed) are deliberate copies and are skipped."""
+    seen: set[tuple[Any, ...]] = set()
+    out = []
+    for r in rows:
+        o = decode(r["body"])
+        if o is None or r["id"] in attacks:
+            continue
+        k = post_key(r["sender"], o)
+        if k in seen:
+            out.append(r["id"])
+        seen.add(k)
+    return out
 
 
 def compare(summary: dict[str, Any], expected: dict[str, Any]) -> list[str]:

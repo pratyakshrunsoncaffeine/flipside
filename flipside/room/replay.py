@@ -12,13 +12,14 @@ import importlib
 import json
 import tempfile
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from flipside.room.agents import AuthorAgent, AuthorConfig, ReviewerAgent, ReviewerConfig
-from flipside.room.run import Result, Script, compare, play
+from flipside.room.run import Log, Result, Script, compare, play
 from flipside.room.scenario import World, load_case, materialize
-from flipside.room.transport import FakeSwitch, FakeTransport, Rule
+from flipside.room.transport import FakeSwitch, FakeTransport, Rule, Transport
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CASE = ROOT / "fixtures" / "cases" / "csv-export"
@@ -47,11 +48,74 @@ class FakeClock:
         return self.now
 
 
-def run_offline(world: World, log: Callable[[str], None], work: Path) -> Result:
+@dataclass
+class Cast:
+    """Who is who in one run: Switch sender ids, display names and the two rooms."""
+
+    author_u: str
+    reviewer_u: str
+    a_agent: str
+    r_agent: str
+    shared: str
+    private: str
+    author_name: str
+    reviewer_name: str
+
+
+def author_agent(world: World, t: Transport, cast: Cast, work: Path, log: Log) -> AuthorAgent:
+    return AuthorAgent(
+        t,
+        AuthorConfig(
+            pr=world.pr.number,
+            shared=cast.shared,
+            private=cast.private,
+            repo=world.author_repo,
+            root=world.root or "",
+            commit=world.commit or "",
+            reviewer_agent=cast.r_agent,
+            author_user=cast.author_u,
+            author_name=cast.author_name,
+            state_path=work / "author-agent.json",
+        ),
+        log=log,
+    )
+
+
+def reviewer_agent(
+    world: World, t: Transport, cast: Cast, log: Log, clock: Callable[[], float]
+) -> ReviewerAgent:
+    return ReviewerAgent(
+        t,
+        ReviewerConfig(
+            pr=world.pr,
+            shared=cast.shared,
+            repo=world.reviewer_repo,
+            head=world.head,
+            base=world.base,
+            author_agent=cast.a_agent,
+            author_agent_name=AUTHOR_AGENT_NAME,
+            pr_author=cast.author_u,
+            reviewer_name=cast.reviewer_name,
+            timeout=float(world.case.raw.get("timeout", 1800)),
+        ),
+        log=log,
+        clock=clock,
+    )
+
+
+def idle_without_seal(world: World, author: AuthorAgent) -> AuthorAgent:
+    """A case with no seal commit: author-agent never posts (the UNSEALED path)."""
+    if not world.commit:
+        author.step = lambda: 0  # type: ignore[method-assign]
+    return author
+
+
+def run_offline(world: World, log: Log, work: Path) -> Result:
     case = world.case
     hub = FakeSwitch()
-    author_u = hub.user("u-author", case.pr["author"])
-    reviewer_u = hub.user("u-reviewer", case.pr.get("reviewer", "reviewer"))
+    author_name, reviewer_name = case.pr["author"], case.pr.get("reviewer", "reviewer")
+    author_u = hub.user("u-author", author_name)
+    reviewer_u = hub.user("u-reviewer", reviewer_name)
     a_agent = hub.agent("a-author", AUTHOR_AGENT_NAME, author_u)
     r_agent = hub.agent("a-reviewer", REVIEWER_AGENT_NAME, reviewer_u)
     shared = hub.room(f"pr-{world.pr.number}", [author_u, reviewer_u, a_agent, r_agent])
@@ -65,59 +129,16 @@ def run_offline(world: World, log: Callable[[str], None], work: Path) -> Result:
         f"offline Switch: rooms {shared} (shared) and {private} (author only); author-agent "
         "policy: owner, owner's agents, reviewer-agent in the shared room"
     )
+    cast = Cast(author_u, reviewer_u, a_agent, r_agent, shared, private, author_name, reviewer_name)
     at, rt = FakeTransport(hub, a_agent), FakeTransport(hub, r_agent)
-    author = AuthorAgent(
-        at,
-        AuthorConfig(
-            pr=world.pr.number,
-            shared=shared,
-            private=private,
-            repo=world.author_repo,
-            root=world.root or "",
-            commit=world.commit or "",
-            reviewer_agent=r_agent,
-            author_user=author_u,
-            author_name=case.pr["author"],
-            state_path=work / "author-agent.json",
-        ),
-        log=log,
-    )
-    reviewer = ReviewerAgent(
-        rt,
-        ReviewerConfig(
-            pr=world.pr,
-            shared=shared,
-            repo=world.reviewer_repo,
-            head=world.head,
-            base=world.base,
-            author_agent=a_agent,
-            author_agent_name=AUTHOR_AGENT_NAME,
-            pr_author=author_u,
-            reviewer_name=case.pr.get("reviewer", "reviewer"),
-            timeout=float(case.raw.get("timeout", 1800)),
-        ),
-        log=log,
-        clock=FakeClock(),
-    )
-    script = Script(
-        world,
-        FakeHumans(hub, {"author": author_u, "reviewer": reviewer_u}),
-        author,
-        reviewer,
-        at,
-        rt,
-        shared,
-        AUTHOR_AGENT_NAME,
-        log,
-    )
-    if not world.commit:
-        author_steps = author.step
-        author.step = lambda: 0  # type: ignore[method-assign]
-        del author_steps
+    author = idle_without_seal(world, author_agent(world, at, cast, work, log))
+    reviewer = reviewer_agent(world, rt, cast, log, FakeClock())
+    humans = FakeHumans(hub, {"author": author_u, "reviewer": reviewer_u})
+    script = Script(world, humans, author, reviewer, at, rt, shared, AUTHOR_AGENT_NAME, log)
     return play(world, author, reviewer, script, lambda: hub.read(author_u, shared), log)
 
 
-def report(result: Result, expected: dict[str, Any], log: Callable[[str], None]) -> list[str]:
+def report(result: Result, expected: dict[str, Any], log: Log) -> list[str]:
     log("--- transcript")
     for row in result.transcript:
         first = row["body"].splitlines()[0] if row["body"] else ""
