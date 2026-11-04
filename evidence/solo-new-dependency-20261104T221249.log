@@ -1,0 +1,68 @@
+22:12:49 case new-dependency: PR #145 'Parse upload dates'; seal commit a467f1893dff67702789b1ee26c7c6137952f33e
+22:12:50 Switch http://127.0.0.1:52370: author Author user a4690271-4320-44a1-984f-459e4765d85a, reviewer Reviewer user 54b7b256-242d-4154-b7de-838e15260380; author-agent 5557b586-915a-429c-9bb1-8d73cec90e33, reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60
+22:12:50 reviewer opened #pr-145 5fbaaade-51f6-45f4-9b77-608a78e53da7 and added the author and author-agent; author opened #pr-145-author 65a74cf6-abd2-4d3f-8051-00e16dc8cfea; author-agent policy: owner, owner's agents, reviewer-agent in #pr-145 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-145
+22:12:50 author-agent process started (pid 57011)
+22:12:50 reviewer-agent process started (pid 57012)
+22:13:01 restart: reviewer-agent process killed with SIGKILL (pid 57012)
+22:13:01 reviewer-agent process started (pid 57724)
+22:13:01 author posted sw_6e0a1c3bcc444dcfab0bc0fdaae79dc3: Q1: license-scan does not know dateparse-lite yet; it is MIT.
+22:13:01 author posted sw_397e8a4c1dab41d4a08ab9c1972f464a: Q2: dateparse-lite handles the fuzzy formats in uploads.
+22:13:09 restart: author-agent process killed with SIGKILL (pid 57011)
+22:13:09 author-agent process started (pid 58348)
+22:13:09 author answered card 3112c1c5: approve
+22:13:09 author answered card 73db238e: approve
+22:13:09 author answered card 6fe72d1f: approve
+22:13:36 author-agent process exited with 0
+22:13:36 reviewer-agent process exited with 0
+22:13:36 [author-agent] 22:12:51 flipside-author-agent started (pid 57011)
+22:13:36 [author-agent] 22:12:59 author-agent posted seal sw_f2743b3d9045448fb1f3ef4803d8b379
+22:13:36 [author-agent] 22:13:08 author-agent opened card 3112c1c5 for Q1 leaf 6
+22:13:36 [author-agent] 22:13:08 author-agent opened card 73db238e for Q1 leaf 5
+22:13:36 [author-agent] 22:13:08 author-agent opened card 6fe72d1f for Q2 leaf 3
+22:13:36 [author-agent] 22:13:10 flipside-author-agent started (pid 58348)
+22:13:36 [author-agent] 22:13:18 author-agent posted disclosure sw_8da0d63f4a844ff9a3624bb7c73fb086 for Q1 leaf 6
+22:13:36 [author-agent] 22:13:18 author-agent posted disclosure sw_bc32199ab00b4798b82203f2a654ad63 for Q1 leaf 5
+22:13:36 [author-agent] 22:13:18 author-agent posted disclosure sw_40aa9ea69f224711a8ca98bcb78f43a2 for Q2 leaf 3
+22:13:36 [author-agent] 22:13:36 flipside-author-agent stopped
+22:13:36 [reviewer-agent] 22:12:51 flipside-reviewer-agent started (pid 57012)
+22:13:36 [reviewer-agent] 22:13:00 reviewer-agent posted questions sw_1ce1105becf64e0b81e9504bbd6758b2: Q1 CI license-scan; Q2 SCOPE requirements.txt
+22:13:36 [reviewer-agent] 22:13:00 reviewer-agent posted request sw_4e960bda428d4520bb2b728bd2986a2e for Q1: leaves [6, 5]
+22:13:36 [reviewer-agent] 22:13:00 reviewer-agent posted request sw_05813f721a694803b43ba74935498053 for Q2: leaves [3]
+22:13:36 [reviewer-agent] 22:13:01 flipside-reviewer-agent started (pid 57724)
+22:13:36 [reviewer-agent] 22:13:18 reviewer-agent posted verdict sw_39daccbb309c40018633acc5f36d91b9: Q1 leaf 6 OK
+22:13:36 [reviewer-agent] 22:13:19 reviewer-agent posted verdict sw_65a3d6b6837045d993f28f09196b6553: Q1 leaf 5 OK
+22:13:36 [reviewer-agent] 22:13:19 reviewer-agent posted verdict sw_ba88aa903a5c4581b86b67c3dca46054: Q2 leaf 3 OK
+22:13:36 [reviewer-agent] 22:13:19 reviewer-agent posted brief sw_e003d48ee3ab486bb9202c2bbda1a4ce: @Reviewer Brief for PR #145: 2 questions, 2 answered, 3 leaves verified, 0 withheld, 0 refused, 0 contradictions
+22:13:36 [reviewer-agent] 22:13:19   coverage requirements.txt: 2 sealed steps, 1 disclosed, 1 withheld (step 4)
+22:13:36 [reviewer-agent] 22:13:19   coverage uploads/dates.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)
+22:13:36 [reviewer-agent] 22:13:36 flipside-reviewer-agent stopped
+22:13:36 Switch message ids: sw_31778993899b4f5f8062b1af165ae524, sw_a14326972dad4537bd6586ddc378b848, sw_6d51eb46f9544868a5b4b9103929c726, sw_442ded9983d044e3a23050a607144f04, sw_f2743b3d9045448fb1f3ef4803d8b379, sw_1ce1105becf64e0b81e9504bbd6758b2, sw_4e960bda428d4520bb2b728bd2986a2e, sw_05813f721a694803b43ba74935498053, sw_6e0a1c3bcc444dcfab0bc0fdaae79dc3, sw_397e8a4c1dab41d4a08ab9c1972f464a, sw_8da0d63f4a844ff9a3624bb7c73fb086, sw_bc32199ab00b4798b82203f2a654ad63, sw_40aa9ea69f224711a8ca98bcb78f43a2, sw_39daccbb309c40018633acc5f36d91b9, sw_65a3d6b6837045d993f28f09196b6553, sw_ba88aa903a5c4581b86b67c3dca46054, sw_e003d48ee3ab486bb9202c2bbda1a4ce
+22:13:36 elapsed 47 s
+22:13:36 --- transcript
+22:13:36 sw_31778993899b4f5f8062b1af165ae524 flipside-reviewer-agent: Hi! I'm flipside-reviewer-agent — how can I help?
+22:13:36 sw_a14326972dad4537bd6586ddc378b848 flipside-author-agent: Hi! I'm flipside-author-agent — how can I help?
+22:13:36 sw_6d51eb46f9544868a5b4b9103929c726 flipside-reviewer-agent: @flipside-author-agent I don't have a session connected to this room right now, but I do have other session(s) connected to **pr-148**. Either ask me in one of those rooms to come here, or start a new session connected to this room — my operator should run:
+22:13:36 sw_442ded9983d044e3a23050a607144f04 flipside-author-agent: manifest.json
+22:13:36 sw_f2743b3d9045448fb1f3ef4803d8b379 flipside-author-agent: Seal for PR #145 · root 3885c78 · 8 leaves · commit a467f18 · manifest attached
+22:13:36 sw_1ce1105becf64e0b81e9504bbd6758b2 flipside-reviewer-agent: 2 questions for PR #145 (sealed: root 3885c78, 8 leaves, commit a467f18); answer each as Q<k>: in your own words
+22:13:36 sw_4e960bda428d4520bb2b728bd2986a2e flipside-reviewer-agent: @flipside-author-agent Q1 · requesting leaves 6, 5 · commit a467f18
+22:13:36 sw_05813f721a694803b43ba74935498053 flipside-reviewer-agent: @flipside-author-agent Q2 · requesting leaves 3 · commit a467f18
+22:13:36 sw_6e0a1c3bcc444dcfab0bc0fdaae79dc3 Author: Q1: license-scan does not know dateparse-lite yet; it is MIT.
+22:13:36 sw_397e8a4c1dab41d4a08ab9c1972f464a Author: Q2: dateparse-lite handles the fuzzy formats in uploads.
+22:13:36 sw_8da0d63f4a844ff9a3624bb7c73fb086 flipside-author-agent: Q1 · step 6, chunk 0 · approved by @Author · proof against seal 3885c78 (commit a467f18)
+22:13:36 sw_bc32199ab00b4798b82203f2a654ad63 flipside-author-agent: Q1 · step 5, chunk 0 · approved by @Author · proof against seal 3885c78 (commit a467f18)
+22:13:36 sw_40aa9ea69f224711a8ca98bcb78f43a2 flipside-author-agent: Q2 · step 3, chunk 0 · approved by @Author · proof against seal 3885c78 (commit a467f18)
+22:13:36 sw_39daccbb309c40018633acc5f36d91b9 flipside-reviewer-agent: Q1 · leaf 6 · OK leaf 6 (session 0, step 6, chunk 0) against seal 3885c78 in commit a467f18
+22:13:36 sw_65a3d6b6837045d993f28f09196b6553 flipside-reviewer-agent: Q1 · leaf 5 · OK leaf 5 (session 0, step 5, chunk 0) against seal 3885c78 in commit a467f18
+22:13:36 sw_ba88aa903a5c4581b86b67c3dca46054 flipside-reviewer-agent: Q2 · leaf 3 · OK leaf 3 (session 0, step 3, chunk 0) against seal 3885c78 in commit a467f18
+22:13:36 sw_e003d48ee3ab486bb9202c2bbda1a4ce flipside-reviewer-agent: @Reviewer Brief for PR #145: 2 questions, 2 answered, 3 leaves verified, 0 withheld, 0 refused, 0 contradictions
+22:13:36 --- refusals
+22:13:36 Switch refusal (reviewer tags author-agent): 0
+22:13:36 free-text request dropped: 0
+22:13:36 forged disclosure refused: 0
+22:13:36 reviewer answers the card (403): 0
+22:13:36 --- summary {"card_403": 0, "contradictions": [], "coverage": ["requirements.txt: 2 sealed steps, 1 disclosed, 1 withheld (step 4)", "uploads/dates.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"], "dropped_requests": 0, "duplicates": [], "questions": [["CI", "license-scan"], ["SCOPE", "requirements.txt"]], "switch_refusals": 0, "verdicts": {"OK": 3}, "withheld": 0}
+22:13:36 duplicate agent posts: 0
+22:13:36 agent processes killed and restarted: 2
+22:13:36 agent step errors: 0
+22:13:36 RESULT PASS new-dependency (switch, 19 rounds)

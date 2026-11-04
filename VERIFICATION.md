@@ -28,7 +28,8 @@ The second-machine run (M4 gate, the teammate's laptop) is not done yet.
 | M4: live replay on this machine | `make replay` | `evidence/replay-switch-csv-export-20261104T210939.log` |
 | M3 with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
 | All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
-| M5: 8 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
+| All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
+| M5: 9 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
 
 Two earlier `make solo` runs are kept as they ran:
 - `evidence/solo-csv-export-20261104T205555.log` failed: the duplicate check counted the scripted injection request as a repeat of the real request.
@@ -75,3 +76,7 @@ Not recorded yet; its SHA-256 goes here.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room (`users: "*"`): Switch matches people by a member client id that the gateway does not expose.
   Only the author and the reviewer are members, and reviewer-agent acts only on answers from the PR author's sender id.
 - `make replay` used the already-running local server, not a fresh one.
+
+`evidence/solo-all-20261104T221502.log` passed 9/9 but is not gate evidence.
+It started after the C14 fix and before C15 and the `PreToolUse:` prefix, and the fixtures were regenerated while it ran.
+The two runs above use the committed code.
