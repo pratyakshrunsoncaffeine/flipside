@@ -7,6 +7,8 @@ without duplicate posts. Every decision is deterministic Python; no LLM.
 
 import hashlib
 import json
+import os
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -33,6 +35,38 @@ from flipside.seal.prove import ProveError, Rebuilt, disclosure, leaf_secret_hit
 from flipside.seal.verify import verify
 
 Log = Callable[[str], None]
+AUTHOR_AGENT_NAME, REVIEWER_AGENT_NAME = "flipside-author-agent", "flipside-reviewer-agent"
+DEFAULT_TIMEOUT = 1800.0
+_OFFER = re.compile(r"^@\S+\s+offer\s+Q(\d+)\s+(step|leaf)\s+(\d+)\s*$")
+
+
+def default_timeout() -> float:
+    """The page-rule timeout in seconds: ``FLIP_ANSWER_TIMEOUT`` or 30 minutes."""
+    raw = os.environ.get("FLIP_ANSWER_TIMEOUT", "").strip()
+    if not raw:
+        return DEFAULT_TIMEOUT
+    value = float(raw)
+    if value <= 0:
+        raise ValueError(f"FLIP_ANSWER_TIMEOUT must be positive, got {raw!r}")
+    return value
+
+
+def write_atomic(path: Path, text: str) -> None:
+    """Replace ``path`` in one step, so a killed process never leaves half a file."""
+    tmp = path.with_name(f".{path.name}.tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
+
+
+def find_seal(repo: Path, base: str, head: str) -> str | None:
+    """The newest commit in base..head with exactly one valid Flipside-Seal trailer."""
+    for sha in git(repo, "rev-list", f"{base}..{head}").split():
+        values = trailer_values(repo, sha)
+        if len(values) == 1 and parse_trailer(values[0]):
+            return sha
+    return None
+
+
 APPROVE = ("approve", "accept")
 
 
@@ -57,6 +91,7 @@ class AuthorConfig:
     author_user: str
     author_name: str
     state_path: Path | None = None
+    agent_name: str = AUTHOR_AGENT_NAME
 
 
 @dataclass
@@ -79,14 +114,15 @@ class AuthorAgent:
 
     def _save(self) -> None:
         if self.cfg.state_path:
-            self.cfg.state_path.write_text(
+            write_atomic(
+                self.cfg.state_path,
                 json.dumps(
                     {
                         "cards": {k: list(v) for k, v in self.cards.items()},
                         "dropped": sorted(self.dropped),
                     },
                     sort_keys=True,
-                )
+                ),
             )
 
     @property
@@ -119,6 +155,12 @@ class AuthorAgent:
                 acts += self.consider(q, i)
                 if card_id(self.cfg.commit, q, i) not in self.cards:
                     done.add((q, i))
+        for q, i in self.owner_offers():
+            if (q, i) in done or card_id(self.cfg.commit, q, i) in self.cards:
+                continue
+            acts += self.consider(q, i)
+            if card_id(self.cfg.commit, q, i) not in self.cards:
+                done.add((q, i))
         for oc in self.t.outcomes():
             if oc.card not in self.cards:
                 continue
@@ -136,6 +178,29 @@ class AuthorAgent:
             acts += 1
         self._save()
         return acts
+
+    def owner_offers(self) -> list[tuple[int, int]]:
+        """Leaves the author offers in their private room: ``@<agent> offer Q<k> step <t>``
+        (every chunk of main-session step t) or ``@<agent> offer Q<k> leaf <i>``.
+        Only the author's own messages that Switch delivered as addressed count."""
+        out: list[tuple[int, int]] = []
+        leaves = self.rebuilt.sealed.leaves
+        for m in self.t.read(self.cfg.private):
+            if m.sender != self.cfg.author_user or m.addressed is False:
+                continue
+            if not m.body.startswith(f"@{self.cfg.agent_name} "):
+                continue
+            hit = _OFFER.match(m.body.strip())
+            if not hit:
+                continue
+            q, kind, k = int(hit.group(1)), hit.group(2), int(hit.group(3))
+            if kind == "leaf":
+                out += [(q, k)] if 0 <= k < len(leaves) else []
+            else:
+                out += [
+                    (q, i) for i, lf in enumerate(leaves) if lf["session"] == 0 and lf["step"] == k
+                ]
+        return out
 
     def wanted(self, m: Msg, n: int) -> list[tuple[int, int]]:
         """Leaves a message validly requests. Logs and drops everything else once."""
@@ -178,11 +243,6 @@ class AuthorAgent:
         )
         mid = self.t.post(self.cfg.shared, encode(line, obj))
         self.log(f"author-agent posted seal {mid}")
-
-    def offer(self, q: int, i: int) -> None:
-        """The author offers an extra leaf for question q; it goes through a card too."""
-        self.consider(q, i)
-        self._save()
 
     def consider(self, q: int, i: int) -> int:
         """Secret-scan leaf i, then withhold it or open the author's approval card."""
@@ -239,7 +299,7 @@ class ReviewerConfig:
     author_agent_name: str
     pr_author: str
     reviewer_name: str
-    timeout: float = 1800.0
+    timeout: float = DEFAULT_TIMEOUT
 
 
 @dataclass
@@ -266,12 +326,7 @@ class ReviewerAgent:
 
     def seal_commit(self) -> str | None:
         """The newest commit in base..head with exactly one valid Flipside-Seal trailer."""
-        out = git(self.cfg.repo, "rev-list", f"{self.cfg.base}..{self.cfg.head}")
-        for sha in out.split():
-            values = trailer_values(self.cfg.repo, sha)
-            if len(values) == 1 and parse_trailer(values[0]):
-                return sha
-        return None
+        return find_seal(self.cfg.repo, self.cfg.base, self.cfg.head)
 
     def open_round(self, msgs: list[Msg]) -> _Round | None:
         """Wait for the seal message that matches the trailer; check the manifest hash."""

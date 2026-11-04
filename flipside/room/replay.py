@@ -12,18 +12,25 @@ import importlib
 import json
 import tempfile
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from flipside.room.agents import AuthorAgent, AuthorConfig, ReviewerAgent, ReviewerConfig
-from flipside.room.run import Log, Result, Script, compare, play
+from flipside.room.agents import (
+    AUTHOR_AGENT_NAME,
+    REVIEWER_AGENT_NAME,
+    AuthorAgent,
+    AuthorConfig,
+    ReviewerAgent,
+    ReviewerConfig,
+    default_timeout,
+)
+from flipside.room.run import Card, Cast, Log, Result, Script, compare, play
 from flipside.room.scenario import World, load_case, materialize
 from flipside.room.transport import FakeSwitch, FakeTransport, Rule, Transport
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CASE = ROOT / "fixtures" / "cases" / "csv-export"
-AUTHOR_AGENT_NAME, REVIEWER_AGENT_NAME = "flipside-author-agent", "flipside-reviewer-agent"
+__all__ = ["AUTHOR_AGENT_NAME", "REVIEWER_AGENT_NAME", "case_timeout", "run_offline"]
 
 
 class FakeHumans:
@@ -32,6 +39,9 @@ class FakeHumans:
 
     def say(self, who: str, room: str, body: str, mention_agent: str | None = None) -> str:
         return self.hub.post(self.ids[who], room, body)
+
+    def pending_cards(self, who: str) -> list[Card]:
+        return [Card(k, c.title) for k, c in self.hub.pending(self.ids[who])]
 
     def answer_card(self, who: str, card: str, answer: str) -> None:
         self.hub.answer(self.ids[who], card, answer)
@@ -48,18 +58,10 @@ class FakeClock:
         return self.now
 
 
-@dataclass
-class Cast:
-    """Who is who in one run: Switch sender ids, display names and the two rooms."""
-
-    author_u: str
-    reviewer_u: str
-    a_agent: str
-    r_agent: str
-    shared: str
-    private: str
-    author_name: str
-    reviewer_name: str
+def case_timeout(world: World) -> float:
+    """The case's own page-rule timeout, else ``FLIP_ANSWER_TIMEOUT``, else 30 minutes."""
+    raw = world.case.raw.get("timeout")
+    return float(raw) if raw is not None else default_timeout()
 
 
 def author_agent(world: World, t: Transport, cast: Cast, work: Path, log: Log) -> AuthorAgent:
@@ -96,7 +98,7 @@ def reviewer_agent(
             author_agent_name=AUTHOR_AGENT_NAME,
             pr_author=cast.author_u,
             reviewer_name=cast.reviewer_name,
-            timeout=float(world.case.raw.get("timeout", 1800)),
+            timeout=case_timeout(world),
         ),
         log=log,
         clock=clock,
@@ -134,8 +136,16 @@ def run_offline(world: World, log: Log, work: Path) -> Result:
     author = idle_without_seal(world, author_agent(world, at, cast, work, log))
     reviewer = reviewer_agent(world, rt, cast, log, FakeClock())
     humans = FakeHumans(hub, {"author": author_u, "reviewer": reviewer_u})
-    script = Script(world, humans, author, reviewer, at, rt, shared, AUTHOR_AGENT_NAME, log)
-    return play(world, author, reviewer, script, lambda: hub.read(author_u, shared), log)
+    script = Script(world, humans, cast, at, rt, AUTHOR_AGENT_NAME, log)
+    return play(
+        world,
+        script,
+        lambda: hub.read(author_u, shared),
+        log,
+        author_step=author.step,
+        reviewer_step=reviewer.step,
+        dropped=lambda: sorted(author.dropped),
+    )
 
 
 def report(result: Result, expected: dict[str, Any], log: Log) -> list[str]:

@@ -192,6 +192,14 @@ class FakeSwitch:
         if c.answer is None:
             c.answer, c.answered_by = answer, user
 
+    def pending(self, user: str) -> list[tuple[str, "_Card"]]:
+        """Open cards of the agents ``user`` owns, as their client lists them."""
+        return [
+            (k, c)
+            for k, c in self.cards.items()
+            if c.answer is None and self.agents[c.agent].owner == user
+        ]
+
     def outcomes(self, agent: str) -> list[Outcome]:
         return [
             Outcome(k, c.answer, c.answered_by or "")
