@@ -48,5 +48,8 @@ def test_new_user_is_created_with_a_private_creds_file(
     monkeypatch.setattr(Http, "get", lambda self, path: [] if "users" in path else {"id": "u1"})
     solo.person(admin, "http://fake", "reviewer")
     assert admin.created == ["reviewer@flipside.local"] and logins == ["reviewer@flipside.local"]
-    assert json.loads(creds.read_text())["reviewer"]["email"] == "reviewer@flipside.local"
+    assert (
+        json.loads(creds.read_text(encoding="utf-8"))["reviewer"]["email"]
+        == "reviewer@flipside.local"
+    )
     assert creds.stat().st_mode & 0o777 == 0o600

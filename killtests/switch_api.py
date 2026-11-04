@@ -1,4 +1,5 @@
 """Minimal client for a local Switch server (switch-core 0.31.0), used by the kill tests."""
+
 from __future__ import annotations
 
 import json
@@ -11,12 +12,15 @@ import uuid
 from http.cookiejar import CookieJar
 
 BASE = os.environ.get("SWITCH_BASE", "http://127.0.0.1:52370")
-ENV_FILE = pathlib.Path.home() / "Library/Application Support/switchdash/local-switch-server/native/run/switch-core.env"
+ENV_FILE = (
+    pathlib.Path.home()
+    / "Library/Application Support/switchdash/local-switch-server/native/run/switch-core.env"
+)
 
 
 def console_env() -> dict[str, str]:
     out = {}
-    for line in ENV_FILE.read_text().splitlines():
+    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
         if "=" in line and not line.startswith("#"):
             k, v = line.split("=", 1)
             out[k] = v

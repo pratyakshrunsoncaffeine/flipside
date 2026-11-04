@@ -125,21 +125,27 @@ def build(out: Path) -> dict[str, Any]:
         git(repo, "init", "-q", "-b", "main")
         (repo / "auth").mkdir()
         (repo / "reports").mkdir()
-        (repo / "auth" / "session.py").write_text("SESSION_TTL = 3600\n")
-        (repo / "reports" / "export.py").write_text("def export_csv(rows):\n    pass\n")
+        (repo / "auth" / "session.py").write_text(
+            "SESSION_TTL = 3600\n", encoding="utf-8", newline=""
+        )
+        (repo / "reports" / "export.py").write_text(
+            "def export_csv(rows):\n    pass\n", encoding="utf-8", newline=""
+        )
         git(repo, "add", ".")
         git(repo, "commit", "-q", "-m", "Reports page")
         git(repo, "checkout", "-q", "-b", "csv-export")
-        (repo / "auth" / "session.py").write_text("SESSION_TTL = 86400\n")
+        (repo / "auth" / "session.py").write_text(
+            "SESSION_TTL = 86400\n", encoding="utf-8", newline=""
+        )
         (repo / "reports" / "export.py").write_text(
-            "def export_csv(rows):\n    return to_csv(rows)\n"
+            "def export_csv(rows):\n    return to_csv(rows)\n", encoding="utf-8", newline=""
         )
         git(repo, "commit", "-q", "-am", "Add CSV export to the reports page")
 
         session_text = "".join(json.dumps(x, ensure_ascii=False) + "\n" for x in session_lines())
         session = Path(tmp) / "claude" / "session.jsonl"
         session.parent.mkdir()
-        session.write_text(session_text)
+        session.write_text(session_text, encoding="utf-8", newline="")
         res = seal(repo, session, "main", key=DEMO_KEY)
         assert res.commit
         leaves = res.sealed.leaves
@@ -155,11 +161,11 @@ def build(out: Path) -> dict[str, Any]:
         forged["leaf"]["text"] = forged["leaf"]["text"].replace("86400", "3600")
 
         out.mkdir(parents=True, exist_ok=True)
-        (out / "session.jsonl").write_text(session_text)
+        (out / "session.jsonl").write_text(session_text, encoding="utf-8", newline="")
         (out / "manifest.json").write_bytes(res.sealed.manifest)
         (out / "q2-ok.json").write_bytes(canon(ok) + b"\n")
         (out / "q2-forged.json").write_bytes(canon(forged) + b"\n")
-        (out / "commit.txt").write_text(res.commit + "\n")
+        (out / "commit.txt").write_text(res.commit + "\n", encoding="utf-8", newline="")
         bundle = out / "seal.bundle"
         bundle.unlink(missing_ok=True)
         git(repo, "bundle", "create", "-q", str(bundle), "HEAD", "csv-export", "main")

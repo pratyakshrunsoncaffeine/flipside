@@ -125,17 +125,17 @@ def test_secret_leaf_is_withheld_without_a_card(tmp_path: Path) -> None:
     case = load_case(CSV)
     work = tmp_path / "case"
     work.mkdir()
-    raw = json.loads((CSV / "case.json").read_text())
-    (work / "case.json").write_text(json.dumps(raw))
+    raw = json.loads((CSV / "case.json").read_text(encoding="utf-8"))
+    (work / "case.json").write_text(json.dumps(raw), encoding="utf-8", newline="")
     text = (
         (CSV / "session.jsonl")
-        .read_text()
+        .read_text(encoding="utf-8")
         .replace(
             "raising SESSION_TTL to 86400",
             "raising SESSION_TTL to 86400; DB_PASSWORD=Zx9q2LmP7vR4tY8kW3nB",
         )
     )
-    (work / "session.jsonl").write_text(text)
+    (work / "session.jsonl").write_text(text, encoding="utf-8", newline="")
     world = materialize(load_case(work), tmp_path / "w")
     assert case.name == "csv-export"
     s = setup(world, tmp_path, Clock())

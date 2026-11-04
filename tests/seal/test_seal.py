@@ -67,7 +67,7 @@ def test_seal_commit_trailer_state_and_key_mode(pr: PR) -> None:
     assert stat.S_IMODE(res.key_path.stat().st_mode) == 0o600
     assert stat.S_IMODE(res.state_path.stat().st_mode) == 0o600
     assert res.key_path.parent == pr.repo / ".git" / "flipside"
-    state = json.loads(res.state_path.read_text())
+    state = json.loads(res.state_path.read_text(encoding="utf-8"))
     assert state["commit"] == res.commit and state["changed_files"] == [
         "auth/session.py",
         "reports/export.py",
@@ -75,7 +75,7 @@ def test_seal_commit_trailer_state_and_key_mode(pr: PR) -> None:
     assert state["sessions"][0]["length"] == pr.session.stat().st_size
     assert res.manifest_path.read_bytes() == res.sealed.manifest
     assert b"86400" not in res.sealed.manifest
-    assert "86400" not in res.state_path.read_text()
+    assert "86400" not in res.state_path.read_text(encoding="utf-8")
 
 
 def test_same_key_same_root_new_key_new_root(pr: PR) -> None:
@@ -88,7 +88,7 @@ def test_same_key_same_root_new_key_new_root(pr: PR) -> None:
 
 
 def test_staged_changes_refuse(pr: PR) -> None:
-    (pr.repo / "new.txt").write_text("x")
+    (pr.repo / "new.txt").write_text("x", encoding="utf-8", newline="")
     run(pr.repo, "add", "new.txt")
     with pytest.raises(SealError, match="staged"):
         seal(pr.repo, pr.session, "main")
@@ -179,7 +179,7 @@ def test_seal_from_session_with_partial_last_line(pr: PR) -> None:
     with pr.session.open("ab") as fh:
         fh.write(b'{"type":"user","message":{"content":"half')
     res = seal(pr.repo, pr.session, "main", commit=False)
-    state = json.loads(res.state_path.read_text())
+    state = json.loads(res.state_path.read_text(encoding="utf-8"))
     assert state["sessions"][0]["length"] == len(pr.builder.text().encode())
     assert all("half" not in lf["text"] for lf in res.sealed.leaves)
 

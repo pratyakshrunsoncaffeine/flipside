@@ -114,7 +114,7 @@ def load_creds(path: Path, key: str) -> dict[str, str]:
     mode = stat.S_IMODE(path.stat().st_mode)
     if mode & 0o077:
         raise SetupError(f"{path} must not be readable by others (mode {mode:o}); chmod 600")
-    creds = json.loads(path.read_text())
+    creds = json.loads(path.read_text(encoding="utf-8"))
     if key not in creds:
         raise SetupError(f"{path} has no entry {key!r}")
     c: dict[str, str] = creds[key]
@@ -166,7 +166,7 @@ def setup_author_finish(a: argparse.Namespace, http: Http | None = None) -> str:
     """Step 3: set author-agent's policy from the reviewer's join line, complete the config."""
     j = parse_join(a.join, "reviewer")
     out = Path(a.out)
-    cfg = json.loads(out.read_text())
+    cfg = json.loads(out.read_text(encoding="utf-8"))
     if int(j["pr"]) != int(cfg["pr_number"]):
         raise SetupError(f"join line is for PR #{j['pr']}, config is for PR #{cfg['pr_number']}")
     h = http or login(cfg["base"], Path(cfg["owner_creds"]), cfg["owner_key"])[0]
@@ -189,7 +189,7 @@ def pr_source(a: argparse.Namespace) -> dict[str, Any]:
         return {"github": a.github, **({"head": a.head} if a.head else {})}
     if not a.head:
         raise SetupError("--pr-json needs --head (the PR head commit)")
-    pr = json.loads(Path(a.pr_json).read_text())
+    pr = json.loads(Path(a.pr_json).read_text(encoding="utf-8"))
     missing = [k for k in ("number", "title", "body", "author", "files") if k not in pr]
     if missing:
         raise SetupError(f"{a.pr_json} is missing: {', '.join(missing)}")

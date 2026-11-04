@@ -279,7 +279,7 @@ def test_thinking_only_message_is_an_empty_step() -> None:
 def test_persisted_output_pointer_is_replaced(tmp_path: Path) -> None:
     tr = tmp_path / "sess" / "tool-results"
     tr.mkdir(parents=True)
-    (tr / "abc.txt").write_text("FULL OUTPUT", encoding="utf-8")
+    (tr / "abc.txt").write_text("FULL OUTPUT", encoding="utf-8", newline="")
     pointer = (
         f"<persisted-output>\nOutput too large (31.3KB). Full output saved to: "
         f"{tr / 'abc.txt'}\n\nPreview (first 2KB):\nFULL\n</persisted-output>"
@@ -295,7 +295,7 @@ def test_persisted_output_pointer_is_replaced(tmp_path: Path) -> None:
 
 def test_pointer_outside_tool_results_dir_is_not_followed(tmp_path: Path) -> None:
     other = tmp_path / "secret.txt"
-    other.write_text("SECRET", encoding="utf-8")
+    other.write_text("SECRET", encoding="utf-8", newline="")
     pointer = f"<persisted-output>\nFull output saved to: {other}\n</persisted-output>"
     b = SessionBuilder(REPO)
     b.result("t1", pointer)

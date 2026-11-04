@@ -31,12 +31,12 @@ def test_seal_prove_verify_end_to_end(pr: PR, tmp_path: Path) -> None:
     manifest = s.stdout.split("manifest ")[-1].strip()
     assert run(pr.repo, "rev-parse", "HEAD").strip() == commit
 
-    man = json.loads(Path(manifest).read_text())
+    man = json.loads(Path(manifest).read_text(encoding="utf-8"))
     i = next(e["i"] for e in man if "auth/session.py" in e["files"] and e["role"] == "assistant")
     p = flip("prove", "--root", root, "--leaf", str(i), cwd=pr.repo)
     assert p.returncode == 0, p.stderr
     disc = tmp_path / "q1.json"
-    disc.write_text(p.stdout)
+    disc.write_text(p.stdout, encoding="utf-8", newline="")
 
     v = flip("verify", "--commit", commit, "--manifest", manifest, str(disc), cwd=pr.repo)
     assert v.returncode == 0, v.stdout + v.stderr
@@ -44,7 +44,7 @@ def test_seal_prove_verify_end_to_end(pr: PR, tmp_path: Path) -> None:
 
     d = json.loads(p.stdout)
     d["leaf"]["text"] = d["leaf"]["text"].replace("86400", "3600")
-    disc.write_text(json.dumps(d))
+    disc.write_text(json.dumps(d), encoding="utf-8", newline="")
     v = flip("verify", "--commit", commit, "--manifest", manifest, str(disc), cwd=pr.repo)
     assert v.returncode == 2 and v.stdout.startswith("PROOF_FAIL")
 
@@ -75,7 +75,11 @@ def test_prove_refuses_secret_leaf(pr: PR) -> None:
 def test_prove_session_changed_exit_2(pr: PR) -> None:
     s = flip("seal", "--base", "main", "--session", str(pr.session), cwd=pr.repo)
     root = s.stdout.split("root=")[1].split()[0]
-    pr.session.write_text(pr.session.read_text().replace("CSV", "XLS", 1))
+    pr.session.write_text(
+        pr.session.read_text(encoding="utf-8").replace("CSV", "XLS", 1),
+        encoding="utf-8",
+        newline="",
+    )
     p = flip("prove", "--root", root, "--leaf", "0", cwd=pr.repo)
     assert p.returncode == 2 and "SESSION_CHANGED" in p.stderr
 

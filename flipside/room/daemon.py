@@ -87,7 +87,7 @@ def load_config(path: Path) -> dict[str, Any]:
     mode = stat.S_IMODE(path.stat().st_mode)
     if mode & 0o077:
         raise SystemExit(f"{path} must not be readable by others (mode {mode:o}); chmod 600")
-    cfg: dict[str, Any] = json.loads(path.read_text())
+    cfg: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     try:
         check_config(cfg)
     except ValueError as e:
@@ -98,13 +98,13 @@ def load_config(path: Path) -> dict[str, Any]:
 def write_config(path: Path, cfg: dict[str, Any]) -> None:
     """Write an agent config readable only by its owner."""
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w") as f:
+    with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
         json.dump(cfg, f, sort_keys=True, indent=1)
     os.chmod(path, 0o600)
 
 
 def owner_session(cfg: dict[str, Any]) -> Http:
-    creds = json.loads(Path(cfg["owner_creds"]).read_text())[cfg["owner_key"]]
+    creds = json.loads(Path(cfg["owner_creds"]).read_text(encoding="utf-8"))[cfg["owner_key"]]
     h = Http(cfg["base"])
     h.login(creds["email"], creds["password"])
     return h

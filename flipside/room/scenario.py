@@ -45,7 +45,7 @@ class Case:
     @property
     def expected(self) -> dict[str, Any]:
         f = self.path / "expected.json"
-        e: dict[str, Any] = json.loads(f.read_text()) if f.exists() else {}
+        e: dict[str, Any] = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
         return e
 
     @property
@@ -58,7 +58,7 @@ class Case:
 
 
 def load_case(path: Path) -> Case:
-    return Case(path.name, path, json.loads((path / "case.json").read_text()))
+    return Case(path.name, path, json.loads((path / "case.json").read_text(encoding="utf-8")))
 
 
 @dataclass
@@ -80,10 +80,10 @@ class World:
 
 def reseal(world: World, old: str, new: str) -> tuple[str, str]:
     """Adversary: rewrite the sealed session, seal again on a new commit, and push it."""
-    text = world.session.read_text()
+    text = world.session.read_text(encoding="utf-8")
     if old not in text:
         raise ValueError("reseal: text to replace is not in the session")
-    world.session.write_text(text.replace(old, new))
+    world.session.write_text(text.replace(old, new), encoding="utf-8", newline="")
     with git_env():
         res = seal(world.author_repo, world.session, "main", key=DEMO_KEY)
         branch = f"pr-{world.pr.number}"
@@ -120,7 +120,7 @@ def _write(repo: Path, files: dict[str, str | None]) -> None:
             p.unlink(missing_ok=True)
             continue
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(text)
+        p.write_text(text, encoding="utf-8", newline="")
 
 
 def materialize(case: Case, work: Path) -> World:

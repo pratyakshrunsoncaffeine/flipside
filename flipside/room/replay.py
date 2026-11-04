@@ -214,7 +214,9 @@ def fixtures_report(out: Path) -> int:
                 *rows,
                 "",
             ]
-        )
+        ),
+        encoding="utf-8",
+        newline="",
     )
     print(f"wrote {out.relative_to(ROOT)}; {len(cases) - failures}/{len(cases)} match")
     return 0 if failures == 0 else 1
@@ -256,6 +258,6 @@ def main(argv: list[str]) -> int:
     log(f"RESULT {'PASS' if ok else 'FAIL'} {case.name} ({mode}, {result.rounds} rounds)")
     if not a.no_evidence:
         log_path.parent.mkdir(exist_ok=True)
-        log_path.write_text("\n".join(lines) + "\n")
+        log_path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="")
         print(f"evidence {log_path.relative_to(ROOT)}")
     return 0 if ok else 1

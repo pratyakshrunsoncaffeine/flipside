@@ -16,7 +16,11 @@ def git_env(
 ) -> Iterator[None]:
     home = tmp_path_factory.mktemp("home")
     cfg = home / "gitconfig"
-    cfg.write_text("[init]\n\tdefaultBranch = main\n[commit]\n\tgpgsign = false\n")
+    cfg.write_text(
+        "[init]\n\tdefaultBranch = main\n[commit]\n\tgpgsign = false\n",
+        encoding="utf-8",
+        newline="",
+    )
     monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(cfg))
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
     for who in ("AUTHOR", "COMMITTER"):
@@ -88,13 +92,17 @@ def make_pr(root: Path) -> PR:
     run(repo, "init", "-q", "-b", "main")
     (repo / "auth").mkdir()
     (repo / "reports").mkdir()
-    (repo / "auth" / "session.py").write_text("SESSION_TTL = 3600\n")
-    (repo / "reports" / "export.py").write_text("def export_csv(rows):\n    pass\n")
+    (repo / "auth" / "session.py").write_text("SESSION_TTL = 3600\n", encoding="utf-8", newline="")
+    (repo / "reports" / "export.py").write_text(
+        "def export_csv(rows):\n    pass\n", encoding="utf-8", newline=""
+    )
     run(repo, "add", ".")
     run(repo, "commit", "-q", "-m", "base")
     run(repo, "checkout", "-q", "-b", "csv-export")
-    (repo / "auth" / "session.py").write_text("SESSION_TTL = 86400\n")
-    (repo / "reports" / "export.py").write_text("def export_csv(rows):\n    return 1\n")
+    (repo / "auth" / "session.py").write_text("SESSION_TTL = 86400\n", encoding="utf-8", newline="")
+    (repo / "reports" / "export.py").write_text(
+        "def export_csv(rows):\n    return 1\n", encoding="utf-8", newline=""
+    )
     run(repo, "commit", "-q", "-am", "CSV export")
     b = csv_export_session(repo)
     session = b.write(root / "claude" / "projects" / "p" / "sess-1.jsonl")

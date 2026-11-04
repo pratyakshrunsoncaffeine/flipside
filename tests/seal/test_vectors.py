@@ -26,7 +26,7 @@ def test_g3_example_reproduces_vector_byte_for_byte() -> None:
 
 
 def test_g3_flipside_reproduces_vector() -> None:
-    v = json.loads(VECTOR.read_text())
+    v = json.loads(VECTOR.read_text(encoding="utf-8"))
     texts = [
         "Add CSV export to the reports page.",
         "Adding export_csv() to reports/export.py.",
@@ -60,5 +60,5 @@ def test_g3_flipside_reproduces_vector() -> None:
 
 
 def test_vector_disclosure_is_canonical_json_safe() -> None:
-    d = json.loads(VECTOR.read_text())["disclosure"]
+    d = json.loads(VECTOR.read_text(encoding="utf-8"))["disclosure"]
     assert canon(d)

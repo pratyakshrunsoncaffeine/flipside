@@ -144,7 +144,7 @@ class EventTap:
 
     def __post_init__(self) -> None:
         if self.cursor_path.exists():
-            raw = json.loads(self.cursor_path.read_text())
+            raw = json.loads(self.cursor_path.read_text(encoding="utf-8"))
             self.addressed = {str(k): bool(v) for k, v in raw.get("addressed", {}).items()}
             self.last_event_id = raw.get("last_event_id")
 

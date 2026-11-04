@@ -53,7 +53,7 @@ def base_url() -> str:
 def admin_login(base: str) -> Http:
     path = Path(os.environ.get("FLIP_SWITCH_ENV", str(CONSOLE_ENV)))
     env = {}
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if "=" in line and not line.startswith("#"):
             k, v = line.split("=", 1)
             env[k.strip()] = v.strip()
@@ -67,7 +67,7 @@ def person(admin: Http, base: str, role: str) -> tuple[Http, str, str]:
 
     Agent names are unique on a Switch server, so the same two users own the two agents in
     the kill tests and in every solo run. Returns the session, the user id and the name."""
-    creds = json.loads(CREDS.read_text()) if CREDS.exists() else {}
+    creds = json.loads(CREDS.read_text(encoding="utf-8")) if CREDS.exists() else {}
     existing = {u["email"] for u in admin.get("/gateway/users")}
     if role not in creds:
         email = f"{role}@flipside.local"
@@ -81,7 +81,7 @@ def person(admin: Http, base: str, role: str) -> tuple[Http, str, str]:
             "password": secrets.token_urlsafe(18),
             "name": role.capitalize(),
         }
-        CREDS.write_text(json.dumps(creds))
+        CREDS.write_text(json.dumps(creds), encoding="utf-8", newline="")
         os.chmod(CREDS, 0o600)
     c = creds[role]
     if c["email"] not in existing:
@@ -296,7 +296,7 @@ class Agents:
 
     def output(self, role: str) -> list[str]:
         path = self.work / f"{role}-agent.log"
-        return path.read_text().splitlines() if path.exists() else []
+        return path.read_text(encoding="utf-8").splitlines() if path.exists() else []
 
 
 def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Result:
@@ -342,7 +342,11 @@ def run_switch(world: World, log: Log, work: Path, restarts: bool = True) -> Res
 
     def dropped() -> list[str]:
         state = work / "author-agent.json"
-        return list(json.loads(state.read_text()).get("dropped", [])) if state.exists() else []
+        return (
+            list(json.loads(state.read_text(encoding="utf-8")).get("dropped", []))
+            if state.exists()
+            else []
+        )
 
     if world.commit:
         agents.start("author")
@@ -409,7 +413,7 @@ def run_case(case_dir: Path, restarts: bool) -> tuple[bool, str]:
     )
     log(f"RESULT {'PASS' if ok else 'FAIL'} {case.name} (switch, {result.rounds} rounds)")
     log_path.parent.mkdir(exist_ok=True)
-    log_path.write_text("\n".join(lines) + "\n")
+    log_path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="")
     print(f"evidence {log_path.relative_to(ROOT)}")
     return ok, log_path.name
 
@@ -429,6 +433,10 @@ def main(argv: list[str]) -> int:
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
     summary = ROOT / "evidence" / f"solo-all-{stamp}.log"
     passed = sum(r.startswith("PASS") for r in rows)
-    summary.write_text("\n".join([*rows, f"RESULT {passed}/{len(rows)} cases pass live"]) + "\n")
-    print(summary.read_text(), end="")
+    summary.write_text(
+        "\n".join([*rows, f"RESULT {passed}/{len(rows)} cases pass live"]) + "\n",
+        encoding="utf-8",
+        newline="",
+    )
+    print(summary.read_text(encoding="utf-8"), end="")
     return 0 if passed == len(rows) else 1

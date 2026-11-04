@@ -10,7 +10,7 @@ EX = ROOT / "examples"
 
 
 def flip_verify(disclosure: str) -> subprocess.CompletedProcess[str]:
-    commit = (EX / "commit.txt").read_text().strip()
+    commit = (EX / "commit.txt").read_text(encoding="utf-8").strip()
     return subprocess.run(
         [
             sys.executable,

@@ -56,7 +56,9 @@ def fake(monkeypatch: pytest.MonkeyPatch) -> type[FakeSwitch]:
 
 def ns(tmp: Path, **kw: Any) -> argparse.Namespace:
     creds = tmp / "creds.json"
-    creds.write_text(json.dumps({"me": {"email": "me@x", "password": "pw"}}))
+    creds.write_text(
+        json.dumps({"me": {"email": "me@x", "password": "pw"}}), encoding="utf-8", newline=""
+    )
     os.chmod(creds, 0o600)
     base = dict(
         base="http://switch",
@@ -97,7 +99,10 @@ def test_three_steps_give_two_complete_private_configs(
     fake: type[FakeSwitch], tmp_path: Path
 ) -> None:
     a_out, r_out, line_a, line_r = three_steps(tmp_path)
-    a, r = json.loads(a_out.read_text()), json.loads(r_out.read_text())
+    a, r = (
+        json.loads(a_out.read_text(encoding="utf-8")),
+        json.loads(r_out.read_text(encoding="utf-8")),
+    )
     check_config(a)
     check_config(r)
     assert mode(a_out) == 0o600 and mode(r_out) == 0o600
@@ -162,7 +167,9 @@ def test_wrong_pr_join_line_is_refused(fake: type[FakeSwitch], tmp_path: Path) -
 
 def test_creds_readable_by_others_is_refused(tmp_path: Path) -> None:
     creds = tmp_path / "c.json"
-    creds.write_text(json.dumps({"me": {"email": "e", "password": "p"}}))
+    creds.write_text(
+        json.dumps({"me": {"email": "e", "password": "p"}}), encoding="utf-8", newline=""
+    )
     os.chmod(creds, 0o644)
     with pytest.raises(setup.SetupError, match="chmod 600"):
         setup.load_creds(creds, "me")
@@ -180,7 +187,7 @@ def test_check_config_names_missing_keys(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="role must be"):
         check_config({"role": "x"})
     p = tmp_path / "bad.json"
-    p.write_text(json.dumps({"role": "reviewer"}))
+    p.write_text(json.dumps({"role": "reviewer"}), encoding="utf-8", newline="")
     os.chmod(p, 0o600)
     with pytest.raises(SystemExit, match="missing"):
         load_config(p)
@@ -230,7 +237,11 @@ def test_render_multiline() -> None:
 
 def test_pr_source_github_or_pr_json(tmp_path: Path) -> None:
     pr = tmp_path / "pr.json"
-    pr.write_text(json.dumps({"number": 5, "title": "t", "body": "b", "author": "a", "files": []}))
+    pr.write_text(
+        json.dumps({"number": 5, "title": "t", "body": "b", "author": "a", "files": []}),
+        encoding="utf-8",
+        newline="",
+    )
     assert setup.pr_source(ns(tmp_path, pr=5, github="o/r")) == {"github": "o/r"}
     got = setup.pr_source(ns(tmp_path, pr=5, pr_json=str(pr), head="abc"))
     assert got["head"] == "abc" and got["pr"]["number"] == 5

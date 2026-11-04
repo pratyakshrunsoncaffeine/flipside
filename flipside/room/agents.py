@@ -62,7 +62,7 @@ def default_timeout() -> float:
 def write_atomic(path: Path, text: str) -> None:
     """Replace ``path`` in one step, so a killed process never leaves half a file."""
     tmp = path.with_name(f".{path.name}.tmp")
-    tmp.write_text(text)
+    tmp.write_text(text, encoding="utf-8", newline="")
     os.replace(tmp, path)
 
 
@@ -117,7 +117,7 @@ class AuthorAgent:
 
     def __post_init__(self) -> None:
         if self.cfg.state_path and self.cfg.state_path.exists():
-            raw = json.loads(self.cfg.state_path.read_text())
+            raw = json.loads(self.cfg.state_path.read_text(encoding="utf-8"))
             self.cards = {
                 k: int(v[-1] if isinstance(v, list) else v) for k, v in raw.get("cards", {}).items()
             }

@@ -234,9 +234,11 @@ def test_g5_edited_quote_resealed_and_edited_session(sealed: tuple[PR, SealResul
     forged["leaf"]["text"] = forged["leaf"]["text"].replace("86400", "3600")
     assert verify(pr.repo, forged, manifest, commit=question_commit).code == "PROOF_FAIL"
 
-    text_now = pr.session.read_text()
+    text_now = pr.session.read_text(encoding="utf-8")
     pr.session.write_text(
-        text_now.replace("raising SESSION_TTL to 86400", "keeping SESSION_TTL at 3600")
+        text_now.replace("raising SESSION_TTL to 86400", "keeping SESSION_TTL at 3600"),
+        encoding="utf-8",
+        newline="",
     )
     with pytest.raises(ProveError) as e:
         prove(pr.repo, res.sealed.root.hex(), i)
@@ -266,14 +268,14 @@ def test_tool_results_file_change_is_session_changed(pr: PR) -> None:
     tr = pr.session.with_suffix("") / "tool-results"
     tr.mkdir(parents=True)
     big = tr / "big.txt"
-    big.write_text("FULL OUTPUT")
+    big.write_text("FULL OUTPUT", encoding="utf-8", newline="")
     pr.builder.assistant(tool("t8", "Bash", command="cat log"))
     pr.builder.result("t8", f"<persisted-output>\nFull output saved to: {big}\n</persisted-output>")
     pr.builder.write(pr.session)
     res = seal(pr.repo, pr.session, "main")
     assert any(lf["text"] == "FULL OUTPUT" for lf in res.sealed.leaves)
     prove(pr.repo, res.sealed.root.hex(), 0)
-    big.write_text("CHANGED")
+    big.write_text("CHANGED", encoding="utf-8", newline="")
     with pytest.raises(ProveError) as e:
         prove(pr.repo, res.sealed.root.hex(), 0)
     assert e.value.code == "SESSION_CHANGED"
@@ -332,6 +334,6 @@ def test_secret_split_across_chunks_is_caught(pr: PR) -> None:
 
 def test_state_holds_no_text(sealed: tuple[PR, SealResult]) -> None:
     _, res = sealed
-    body = res.state_path.read_text()
+    body = res.state_path.read_text(encoding="utf-8")
     assert "SessionExpired" not in body and "CSV export" not in body
     assert Path(json.loads(body)["sessions"][0]["path"]).name == "sess-1.jsonl"

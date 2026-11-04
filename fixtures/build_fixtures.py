@@ -511,13 +511,13 @@ def build(out: Path) -> list[str]:
         s, case, expected = got[0], got[1], got[2]
         d = out / name
         d.mkdir(parents=True, exist_ok=True)
-        (d / "session.jsonl").write_text(s.jsonl())
+        (d / "session.jsonl").write_text(s.jsonl(), encoding="utf-8", newline="")
         if len(got) > 3:
             sub = d / "session" / "subagents"
             sub.mkdir(parents=True, exist_ok=True)
-            (sub / "agent-a1.jsonl").write_text(got[3].jsonl())
-        (d / "case.json").write_text(dump(case))
-        (d / "expected.json").write_text(dump(expected))
+            (sub / "agent-a1.jsonl").write_text(got[3].jsonl(), encoding="utf-8", newline="")
+        (d / "case.json").write_text(dump(case), encoding="utf-8", newline="")
+        (d / "expected.json").write_text(dump(expected), encoding="utf-8", newline="")
         names.append(name)
     return names
 
