@@ -5,14 +5,38 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+# Ubuntu must pass. Windows reports without blocking until the Windows fixes land.
+# macOS runs on pushes to main only: GitHub cancels PR jobs when no macOS runner is free,
+# and every PR is also checked on macOS locally.
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ github.event_name == 'push' && fromJSON('["ubuntu-latest", "windows-latest", "macos-latest"]') || fromJSON('["ubuntu-latest", "windows-latest"]') }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.os != 'ubuntu-latest' }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - run: ruff check .
-      - run: python -m pytest -q
+      - name: Install dev tools
+        run: uv sync --frozen
+      - name: Lint
+        run: make lint
+      - name: Test
+        run: make test
+      - name: G8 offline verify
+        run: make g8
+      - name: Offline replay and fixtures
+        run: |
+          make replay-offline
+          make fixtures

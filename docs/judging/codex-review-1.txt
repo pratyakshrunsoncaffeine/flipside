@@ -1,0 +1,16 @@
+1. Use of Switch — 7/10: Rooms, roles, templates, and multiple agents fit the workflow, but a chat-platform bot could approximate much of it.
+2. Technical execution — 2/10: Nothing is built; replay, approvals, integrations, and reproducibility are promises, not demonstrated.
+3. Creativity and impact — 6/10: Cross-team review of an author’s agent context is a real problem, but the plan doesn’t establish that its answers are trustworthy.
+4. Presentation and documentation — 4/10: The plan is readable, but there is no demo video or README showing the system working.
+
+Weighted total: 4.9/10.
+
+Shortlist: No. The idea has a plausible Switch fit, but this is an unbuilt plan whose central trust mechanism and live workflow remain unproven.
+
+Three biggest weaknesses, most costly first:
+
+1. No working artifact. Build and document one reproducible end-to-end PR review, including a replay fixture and a demo showing both teams’ agents in a Switch room.
+2. Weak evidence guarantees. Define how an answer is tied to an actual session step, how contradictions are detected, and what the reviewer can safely infer; demonstrate this with adversarial and honest fixtures.
+3. Switch’s necessity is asserted, not shown. Demonstrate a live flow with distinct owners and agents, and identify which access controls or shared-room behavior a plain bot or CI job cannot provide.
+
+Claim I doubt: “The author's agent reading the session is gated by Switch's in-chat approval for tool calls; each answer is previewed before it posts.” The plan doesn’t show that Switch supports this specific per-answer disclosure gate; its general support for agent roles and shared rooms doesn’t establish that. [Switch README](https://github.com/sandbox-quantum/switch/blob/main/README.md)

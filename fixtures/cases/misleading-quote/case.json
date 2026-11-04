@@ -1,0 +1,37 @@
+{
+  "note": "Adversarial 1 (valid but misleading quote): the author declines the requested edit step and offers the harmless prompt leaf instead. It verifies OK; the brief still shows the withheld edit step.",
+  "pr": {
+    "number": 148,
+    "title": "Add CSV export to the reports page",
+    "body": "Adds export_csv() so the reports page can download CSV. Tests pass.",
+    "author": "priya",
+    "reviewer": "omar"
+  },
+  "base": {
+    "auth/session.py": "SESSION_TTL = 3600\n",
+    "reports/export.py": "def export_csv(rows):\n    pass\n"
+  },
+  "head": {
+    "auth/session.py": "SESSION_TTL = 86400\n",
+    "reports/export.py": "def export_csv(rows):\n    return to_csv(rows)\n"
+  },
+  "checks": [
+    {
+      "name": "tests",
+      "conclusion": "success"
+    }
+  ],
+  "answers": {
+    "1": "Only CSV export was asked for, see the prompt."
+  },
+  "refusals": false,
+  "decline_steps": [
+    5
+  ],
+  "offer": [
+    {
+      "q": 1,
+      "step": 0
+    }
+  ]
+}

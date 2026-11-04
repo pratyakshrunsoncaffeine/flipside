@@ -1,0 +1,19 @@
+Use of Switch: 9/10 — Scoped addressing, ownership and approval cards are central; remove Switch and the two-party workflow loses its access controls.
+
+Technical execution: 4/10 — K1/K2 are reported as passing, but the seal, checks, replay, Slack flow and fixture study are still unbuilt.
+
+Creativity and impact: 8/10 — Letting a team question another team’s agent without exposing the full session addresses a real review problem.
+
+Presentation and documentation: 5/10 — The plan is unusually clear, but there is no working demo or completed README yet.
+
+Weighted total: 6.7/10.
+
+Shortlist: No. The concept is promising, but nearly all of the product and the demo remain unbuilt, so the key trust and reproducibility claims are unproven.
+
+Three biggest weaknesses:
+
+1. Most of the product is only planned. Build and demonstrate one end-to-end path: seal a session, ask a question, approve a quote, verify its proof, and replay it from a clean setup.
+2. The seal does not establish that the session is genuine or unchanged before the PR opens. Bind the seal to an independently recorded PR event, such as a signed service timestamp, and document who can create or replace that record.
+3. The deterministic checks establish that a quote exists and a tool call touched the named file, not that the quote answers the question or supports the code change. Add adversarial fixtures for misleading but valid quotes and report false approvals alongside false flags.
+
+Claim I doubt: “Each answer is a quote from the session that wrote [the change].” The plan explicitly allows a forged session before the PR opens, and the commit trailer alone does not prove which session produced the code. The seal can verify consistency with a committed transcript, not authorship or provenance.

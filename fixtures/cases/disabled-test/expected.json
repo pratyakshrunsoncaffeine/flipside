@@ -1,0 +1,26 @@
+{
+  "hidden": [
+    "tests/test_render.py"
+  ],
+  "questions": [
+    [
+      "TESTS",
+      null
+    ],
+    [
+      "SCOPE",
+      "tests/test_render.py"
+    ]
+  ],
+  "verdicts": {
+    "OK": 3
+  },
+  "withheld": 0,
+  "contradictions": [
+    "C-TESTS"
+  ],
+  "coverage": [
+    "reports/render.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)",
+    "tests/test_render.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)"
+  ]
+}

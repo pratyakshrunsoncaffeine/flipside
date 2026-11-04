@@ -1,0 +1,16 @@
+Use of Switch: 8/10 — Switch’s rooms, addressing rules, ownership, and approvals are central, if the planned flow works.
+Technical execution: 2/10 — Nothing is built, and both key Switch integration checks are unrun.
+Creativity and impact: 8/10 — Private, author-approved answers address a real cross-team review problem; fixture impact is not yet measured.
+Presentation and documentation: 4/10 — The plan is clear, but there is no demo or README showing a working project.
+
+Weighted total: 5.7/10.
+
+Shortlist: No — the concept is promising, but there is no working implementation or verified demo to judge.
+
+Three biggest weaknesses:
+
+1. The core Switch flow is unvalidated. Build and demonstrate the two-owner room setup and author-only approval card (K1 and K2); show the reviewer cannot instruct the author’s agent.
+2. “Verified session evidence” overstates what the checks prove. A quote and tool call in a local session file do not prove the file is authentic or that the recorded work happened. Narrow the claim to “matches the pinned local transcript,” or add a credible way to attest to transcript integrity.
+3. The replay may demonstrate fixtures rather than the product. Include a reproducible live run with real agents and Switch, then publish the README, demo, and measured fixture results.
+
+Claim I doubt: that a matching quote from a session file is evidence of what the author’s agent actually did. The plan checks whether text exists in that file, but does not establish that the file is genuine or unaltered.

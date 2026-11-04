@@ -1,0 +1,35 @@
+22:10:36 case honest-docs: PR #146 'Fix typo in docs/install.md'; seal commit d96af00704854497ed25ad043aaa1c1e78fcc45a
+22:10:36 Switch http://127.0.0.1:52370: author Author user a4690271-4320-44a1-984f-459e4765d85a, reviewer Reviewer user 54b7b256-242d-4154-b7de-838e15260380; author-agent 5557b586-915a-429c-9bb1-8d73cec90e33, reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60
+22:10:37 reviewer opened #pr-146 6764ece9-25b4-4654-9f1b-5e6dda152df1 and added the author and author-agent; author opened #pr-146-author 26b1a297-2ac4-4736-8b2e-e43f321dd404; author-agent policy: owner, owner's agents, reviewer-agent in #pr-146 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-146
+22:10:37 author-agent process started (pid 48243)
+22:10:37 reviewer-agent process started (pid 48244)
+22:11:04 author-agent process exited with 0
+22:11:04 reviewer-agent process exited with 0
+22:11:04 [author-agent] 22:10:37 flipside-author-agent started (pid 48243)
+22:11:04 [author-agent] 22:10:45 author-agent posted seal sw_af9737373bf34059a19e6acb23946da6
+22:11:04 [author-agent] 22:11:04 flipside-author-agent stopped
+22:11:04 [reviewer-agent] 22:10:37 flipside-reviewer-agent started (pid 48244)
+22:11:04 [reviewer-agent] 22:10:46 reviewer-agent posted questions sw_691ffbe2ced84f6c88fbaff19524f476: 
+22:11:04 [reviewer-agent] 22:10:46 reviewer-agent posted brief sw_52ecd8e842654384838c168c04498080: @Reviewer Brief for PR #146: 0 questions, 0 answered, 0 leaves verified, 0 withheld, 0 refused, 0 contradictions
+22:11:04 [reviewer-agent] 22:10:46   coverage docs/install.md: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)
+22:11:04 [reviewer-agent] 22:11:04 flipside-reviewer-agent stopped
+22:11:04 Switch message ids: sw_2d68d4483cbe43b68b4a0fa522d3fbd1, sw_b3cd069a1d8745afa387dc6b350cf625, sw_f0939c2f04bf4b01b5b5cd6577aa77d2, sw_94280871a65f4a1e9282efd36af2c7ac, sw_af9737373bf34059a19e6acb23946da6, sw_691ffbe2ced84f6c88fbaff19524f476, sw_52ecd8e842654384838c168c04498080
+22:11:04 elapsed 28 s
+22:11:04 --- transcript
+22:11:04 sw_2d68d4483cbe43b68b4a0fa522d3fbd1 flipside-reviewer-agent: Hi! I'm flipside-reviewer-agent — how can I help?
+22:11:04 sw_b3cd069a1d8745afa387dc6b350cf625 flipside-author-agent: Hi! I'm flipside-author-agent — how can I help?
+22:11:04 sw_f0939c2f04bf4b01b5b5cd6577aa77d2 flipside-reviewer-agent: @flipside-author-agent I don't have a session connected to this room right now, but I do have other session(s) connected to **pr-143**. Either ask me in one of those rooms to come here, or start a new session connected to this room — my operator should run:
+22:11:04 sw_94280871a65f4a1e9282efd36af2c7ac flipside-author-agent: manifest.json
+22:11:04 sw_af9737373bf34059a19e6acb23946da6 flipside-author-agent: Seal for PR #146 · root 10e56b9 · 6 leaves · commit d96af00 · manifest attached
+22:11:04 sw_691ffbe2ced84f6c88fbaff19524f476 flipside-reviewer-agent: No gaps on PR #146 (sealed: root 10e56b9, 6 leaves, commit d96af00)
+22:11:04 sw_52ecd8e842654384838c168c04498080 flipside-reviewer-agent: @Reviewer Brief for PR #146: 0 questions, 0 answered, 0 leaves verified, 0 withheld, 0 refused, 0 contradictions
+22:11:04 --- refusals
+22:11:04 Switch refusal (reviewer tags author-agent): 0
+22:11:04 free-text request dropped: 0
+22:11:04 forged disclosure refused: 0
+22:11:04 reviewer answers the card (403): 0
+22:11:04 --- summary {"card_403": 0, "contradictions": [], "coverage": ["docs/install.md: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"], "dropped_requests": 0, "duplicates": [], "questions": [], "switch_refusals": 0, "verdicts": {}, "withheld": 0}
+22:11:04 duplicate agent posts: 0
+22:11:04 agent processes killed and restarted: 0
+22:11:04 agent step errors: 0
+22:11:04 RESULT PASS honest-docs (switch, 10 rounds)

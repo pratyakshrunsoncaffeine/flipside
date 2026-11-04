@@ -1,0 +1,68 @@
+22:49:20 case disabled-test: PR #143 'Faster monthly report rendering'; seal commit d5439d4ec1bde00a4dc2c89bb3c7dd5ddf1c7491
+22:49:21 Switch http://127.0.0.1:52370: author Author user a4690271-4320-44a1-984f-459e4765d85a, reviewer Reviewer user 54b7b256-242d-4154-b7de-838e15260380; author-agent 5557b586-915a-429c-9bb1-8d73cec90e33, reviewer-agent 94bc7c57-d9af-458f-94e4-1321d1ebbb60
+22:49:22 reviewer opened #pr-143 4460b2cc-437a-48f7-8904-787bd6c297c3 and added the author and author-agent; author opened #pr-143-author f59b751d-a5bb-47cd-9af5-d9e0a96c4aad; author-agent policy: owner, owner's agents, reviewer-agent in #pr-143 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-143
+22:49:22 author-agent process started (pid 11650)
+22:49:22 reviewer-agent process started (pid 11652)
+22:49:31 author posted sw_53f20e21ebcd4b3dab573964be9301d2: Q1: They passed on my machine.
+22:49:31 author posted sw_d13dfeca09214fcdb62ccc21d616dddb: Q2: test_render_order was flaky, so it is skipped for now.
+22:49:32 restart: reviewer-agent process killed with SIGKILL (pid 11652)
+22:49:32 reviewer-agent process started (pid 12358)
+22:49:41 restart: author-agent process killed with SIGKILL (pid 11650)
+22:49:41 author-agent process started (pid 12887)
+22:49:41 author answered card a8033afe: approve
+22:49:41 author answered card 9c15e67c: approve
+22:49:41 author answered card 5fe3960d: approve
+22:50:08 author-agent process exited with 0
+22:50:08 reviewer-agent process exited with 0
+22:50:08 [author-agent] 22:49:22 flipside-author-agent started (pid 11650)
+22:50:08 [author-agent] 22:49:30 author-agent posted seal sw_371a3b1364474d5c8c6613e4febaf2be
+22:50:08 [author-agent] 22:49:40 author-agent opened card a8033afe for leaf 4 (first asked in Q1)
+22:50:08 [author-agent] 22:49:40 author-agent opened card 9c15e67c for leaf 3 (first asked in Q1)
+22:50:08 [author-agent] 22:49:40 author-agent opened card 5fe3960d for leaf 5 (first asked in Q2)
+22:50:08 [author-agent] 22:49:41 flipside-author-agent started (pid 12887)
+22:50:08 [author-agent] 22:49:50 author-agent posted disclosure sw_f20e050df4f24512b1ac3417924eb9e2 for Q1 leaf 4
+22:50:08 [author-agent] 22:49:50 author-agent posted disclosure sw_0562685f7d4549a18a804921ae2303c0 for Q1 leaf 3
+22:50:08 [author-agent] 22:49:50 author-agent posted disclosure sw_cb8cd7c6c5904b7384be487eba4bc7ce for Q2 leaf 5
+22:50:08 [author-agent] 22:50:08 flipside-author-agent stopped
+22:50:08 [reviewer-agent] 22:49:22 flipside-reviewer-agent started (pid 11652)
+22:50:08 [reviewer-agent] 22:49:31 reviewer-agent posted questions sw_a86d02ef4ee245f0945fe4f5739b70f2: Q1 TESTS; Q2 SCOPE tests/test_render.py
+22:50:08 [reviewer-agent] 22:49:31 reviewer-agent posted request sw_d7e52835a51a49f48c8d740162c872c2 for Q1: leaves [4, 3]
+22:50:08 [reviewer-agent] 22:49:31 reviewer-agent posted request sw_a3b99b1e8d3e45b29752e3860134e3f2 for Q2: leaves [5]
+22:50:08 [reviewer-agent] 22:49:33 flipside-reviewer-agent started (pid 12358)
+22:50:08 [reviewer-agent] 22:49:50 reviewer-agent posted verdict sw_a830dd0972f24e6390f5bc69bbc8115f: Q1 leaf 4 OK
+22:50:08 [reviewer-agent] 22:49:51 reviewer-agent posted verdict sw_db0ca0be6be848e9996e7fcf9a015b8a: Q1 leaf 3 OK
+22:50:08 [reviewer-agent] 22:49:51 reviewer-agent posted verdict sw_6b24fc9f447c4b3197eab5bff56285b3: Q2 leaf 5 OK
+22:50:08 [reviewer-agent] 22:49:51 reviewer-agent posted brief sw_34410acde8a944918b7045ef6a2e30a6: @Reviewer Brief for PR #143: 2 questions, 2 answered, 3 leaves verified, 0 withheld, 0 refused, 1 contradiction
+22:50:08 [reviewer-agent] 22:49:51   coverage reports/render.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)
+22:50:08 [reviewer-agent] 22:49:51   coverage tests/test_render.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)
+22:50:08 [reviewer-agent] 22:50:08 flipside-reviewer-agent stopped
+22:50:08 Switch message ids: sw_a4da957c679944b189323aa4f2563032, sw_1d30c960e33c464fa10e1ce982a42756, sw_61f289b4a46341ff93c366b448e8c709, sw_b2707da480b746a184793e5ef1b9ee5b, sw_371a3b1364474d5c8c6613e4febaf2be, sw_a86d02ef4ee245f0945fe4f5739b70f2, sw_d7e52835a51a49f48c8d740162c872c2, sw_a3b99b1e8d3e45b29752e3860134e3f2, sw_53f20e21ebcd4b3dab573964be9301d2, sw_d13dfeca09214fcdb62ccc21d616dddb, sw_f20e050df4f24512b1ac3417924eb9e2, sw_0562685f7d4549a18a804921ae2303c0, sw_cb8cd7c6c5904b7384be487eba4bc7ce, sw_a830dd0972f24e6390f5bc69bbc8115f, sw_db0ca0be6be848e9996e7fcf9a015b8a, sw_6b24fc9f447c4b3197eab5bff56285b3, sw_34410acde8a944918b7045ef6a2e30a6
+22:50:08 elapsed 48 s
+22:50:08 --- transcript
+22:50:08 sw_a4da957c679944b189323aa4f2563032 flipside-reviewer-agent: Hi! I'm flipside-reviewer-agent — how can I help?
+22:50:08 sw_1d30c960e33c464fa10e1ce982a42756 flipside-author-agent: Hi! I'm flipside-author-agent — how can I help?
+22:50:08 sw_61f289b4a46341ff93c366b448e8c709 flipside-reviewer-agent: @flipside-author-agent I don't have a session connected to this room right now, but I do have other session(s) connected to **pr-142**. Either ask me in one of those rooms to come here, or start a new session connected to this room — my operator should run:
+22:50:08 sw_b2707da480b746a184793e5ef1b9ee5b flipside-author-agent: manifest.json
+22:50:08 sw_371a3b1364474d5c8c6613e4febaf2be flipside-author-agent: Seal for PR #143 · root 77b6239 · 8 leaves · commit d5439d4 · manifest attached
+22:50:08 sw_a86d02ef4ee245f0945fe4f5739b70f2 flipside-reviewer-agent: 2 questions for PR #143 (sealed: root 77b6239, 8 leaves, commit d5439d4); answer each as Q<k>: in your own words
+22:50:08 sw_d7e52835a51a49f48c8d740162c872c2 flipside-reviewer-agent: @flipside-author-agent Q1 · requesting leaves 4, 3 · commit d5439d4
+22:50:08 sw_a3b99b1e8d3e45b29752e3860134e3f2 flipside-reviewer-agent: @flipside-author-agent Q2 · requesting leaves 5 · commit d5439d4
+22:50:08 sw_53f20e21ebcd4b3dab573964be9301d2 Author: Q1: They passed on my machine.
+22:50:08 sw_d13dfeca09214fcdb62ccc21d616dddb Author: Q2: test_render_order was flaky, so it is skipped for now.
+22:50:08 sw_f20e050df4f24512b1ac3417924eb9e2 flipside-author-agent: Q1 · step 4, chunk 0 · approved by @Author · proof against seal 77b6239 (commit d5439d4)
+22:50:08 sw_0562685f7d4549a18a804921ae2303c0 flipside-author-agent: Q1 · step 3, chunk 0 · approved by @Author · proof against seal 77b6239 (commit d5439d4)
+22:50:08 sw_cb8cd7c6c5904b7384be487eba4bc7ce flipside-author-agent: Q2 · step 5, chunk 0 · approved by @Author · proof against seal 77b6239 (commit d5439d4)
+22:50:08 sw_a830dd0972f24e6390f5bc69bbc8115f flipside-reviewer-agent: Q1 · leaf 4 · OK leaf 4 (session 0, step 4, chunk 0) against seal 77b6239 in commit d5439d4
+22:50:08 sw_db0ca0be6be848e9996e7fcf9a015b8a flipside-reviewer-agent: Q1 · leaf 3 · OK leaf 3 (session 0, step 3, chunk 0) against seal 77b6239 in commit d5439d4
+22:50:08 sw_6b24fc9f447c4b3197eab5bff56285b3 flipside-reviewer-agent: Q2 · leaf 5 · OK leaf 5 (session 0, step 5, chunk 0) against seal 77b6239 in commit d5439d4
+22:50:08 sw_34410acde8a944918b7045ef6a2e30a6 flipside-reviewer-agent: @Reviewer Brief for PR #143: 2 questions, 2 answered, 3 leaves verified, 0 withheld, 0 refused, 1 contradiction
+22:50:08 --- refusals
+22:50:08 Switch refusal (reviewer tags author-agent): 0
+22:50:08 free-text request dropped: 0
+22:50:08 forged disclosure refused: 0
+22:50:08 reviewer answers the card (403): 0
+22:50:08 --- summary {"card_403": 0, "contradictions": ["C-TESTS"], "coverage": ["reports/render.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)", "tests/test_render.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)"], "dropped_requests": 0, "duplicates": [], "questions": [["TESTS", null], ["SCOPE", "tests/test_render.py"]], "switch_refusals": 0, "verdicts": {"OK": 3}, "withheld": 0}
+22:50:08 duplicate agent posts: 0
+22:50:08 agent processes killed and restarted: 2
+22:50:08 agent step errors: 0
+22:50:08 RESULT PASS disabled-test (switch, 19 rounds)

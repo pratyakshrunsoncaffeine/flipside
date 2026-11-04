@@ -1,92 +1,88 @@
-# Team rules for every agent
+# Flipside: rules for every agent
 
-Claude Code reads this file through `CLAUDE.md`. Codex and other agents read it directly.
-New to the repo? Read [WORKTOGETHER.md](WORKTOGETHER.md) first: the plan, the team, setup, and the task list.
+Flipside is our entry for Flip the Switch (Track 01, Business workflow), 4 to 7 Nov 2026 IST.
+Read, in order: this file, `HANDOFF.md` (current state), `docs/BUILD.md` (what to build and the gates), and `docs/seal/SPEC.md` before touching `flipside/seal/`.
 
-## 1. The project
+## 1. The board (pinned GitHub issue)
 
-Gate+ is a Flip the Switch hackathon entry (Nov 4-7 2026, Track 01).
-It holds AI-written PRs in a Switch room until the human author answers gap questions.
-The reviewer's own agent checks the answers against quotes from the author's sealed Claude Code session, and the rest of the session stays on the author's machine.
-Design, message formats and build plan: [docs/design.md](docs/design.md).
-Switch endpoints the client relies on, with source references: [docs/switch-protocol.md](docs/switch-protocol.md).
+Every agent reads and posts on the pinned "Message Board" issue with `tools/board` (needs only `gh`, logged in).
+Set `BOARD_ISSUE` if the board is not issue #1.
 
-### Key terms
-
-- **Gap:** a mismatch between the PR description, the session and CI, posted as one numbered question.
-- **Contradiction:** an answer claiming something ran or passed when the latest related run in the session failed. Blocks the gate.
-- **Unverified:** a run claim with no matching run in the session. Shown to the reviewer, never blocks.
-- **Seal:** a salted RFC 9162 Merkle root over the session, written into an empty commit as a `Flipside-Seal:` trailer.
-- **Manifest:** public metadata per leaf (step, role, tools, files), never text. Its hash is in the trailer.
-- **Disclosure:** one leaf, its salt and its inclusion proof, posted only after the author approves.
-
-### Conventions
-
-- No LLM in the gap, contradiction, seal or verify path. Same inputs, same output.
-- A false flag on an honest PR is the worst bug. `fixtures/honest` must stay at zero gaps.
-- Python standard library only at runtime. `pytest` and `ruff` for development.
-- Domain objects are frozen dataclasses. `Gate.answer` returns a new gate.
-- Never commit credentials, tokens, `.board/` or `.ogate/` state.
-
-### Run the checks
-
-```bash
-pip install -e ".[dev]"
-ruff check .
-python -m pytest -q
-```
-
-Both must pass before every push. CI runs the same two commands on every PR.
-
-## 2. The board (pinned GitHub issue)
-
-Every agent reads and posts on the pinned "Message Board" issue via `tools/board` (needs only `bash` and `gh`, logged in). Set `BOARD_ISSUE` if it is not issue #1.
-
-- Start every post with `[<human>'s <agent>]`, e.g. `[Pratyaksh's Claude]`. Keep it short: what changed, which files or contracts, what you need, from whom.
+- Start every post with `[<human>'s <agent>]`, e.g. `[Aarav's Claude]`. Keep it short: what changed, which files or contracts, what you need, from whom.
 - Mention by handle:
 
   | Agent | Sign | Mention | Runs as GitHub login |
   |---|---|---|---|
-  | Pratyaksh's Claude (lead) | `[Pratyaksh's Claude]` | `@pratyaksh-claude` | `@pratyakshrunsoncaffeine` |
-  | Aarav's Claude | `[Aarav's Claude]` | `@kadoo69` | `@kadoo69` |
-  | Pratyaksh's Codex | `[Pratyaksh's Codex]` | `@pratyaksh-codex` | `@pratyakshrunsoncaffeine` |
+  | Pratyaksh's Claude (lead) | `[Pratyaksh's Claude]` | `@pratyaksh-claude` | `pratyakshrunsoncaffeine` |
+  | Aarav's Claude | `[Aarav's Claude]` | `@kadoo69` | `kadoo69` |
+  | Pratyaksh's Codex | `[Pratyaksh's Codex]` | `@pratyaksh-codex` | `pratyakshrunsoncaffeine` |
 
   `@pratyakshrunsoncaffeine` reaches both of Pratyaksh's agents; `@all` reaches everyone.
-- Pratyaksh's two agents share one GitHub login, so each sets its own sign and handle before using the board, for example `export BOARD_SIGN="Pratyaksh's Codex" BOARD_HANDLE=pratyaksh-codex`. Then `unread` hides only that agent's own posts, and `post` refuses any other sign.
-- **Mentions you or `@all`:** act on it and reply promptly.
-- **Not addressed to you:** still read it. Reassess your own work only if it is affected (a contract, a file you own, something already done). Do not redo finished work, and do not reply just to acknowledge.
-- Before editing another teammate's files, ask for a handoff on the board and wait for the owner or the team lead.
+  Pratyaksh's two agents share one login, so each sets `BOARD_SIGN` and `BOARD_HANDLE` before using the board (Claude Code: in `.claude/settings.local.json`, git-ignored).
+- **Mentions you or `@all`:** act on it and reply.
+- **Not addressed to you:** read it. Reassess your work only if it touches a contract, a file you own, or something already done. Do not reply just to acknowledge.
+- Before editing another lane's files, ask on the board and wait for the owner or the lead.
+- Post when a milestone gate goes green, with the command and the evidence file.
 
-Commands: `tools/board unread` (new posts, marks read; flags MENTION), `tools/board read -n 20`, `tools/board post "[Name's Agent] text"` (or pipe stdin), `tools/board wait` (blocks until someone else posts), `tools/board whoami`.
-Polling costs about one API call per 30 s, so the team stays under GitHub's rate limit.
+Commands: `tools/board unread` (new posts, marks read, flags MENTION), `tools/board read -n 20`, `tools/board post "[Name's Agent] text"`, `tools/board wait` (blocks until someone else posts), `tools/board whoami`.
 
-**Stay in the loop:**
+Stay in the loop:
+- Claude Code: the hooks in `.claude/settings.json` show unread posts at session start and on every prompt. Keep one background `tools/board wait` running and re-arm it after each wake.
+- Other agents: run `tools/board unread` at task start, before each commit, and after merges.
 
-- Claude Code: the committed hooks (`.claude/settings.json`) show unread posts at session start and on every prompt. Keep one background `tools/board wait` running and re-arm it after each wake.
-- Codex and other agents: run `tools/board unread` at task start, before each commit, and after merges. Codex needs network access in its sandbox for `gh` to work.
+Board method from the Hackathon Agent Board template (github.com/azizu06/hackathon-agent-board); `tools/board` and the hooks are copied from it unchanged.
 
-## 3. Chain of command
+## 2. Chain of command
 
-Humans over agents. Only the team lead (Pratyaksh, `@pratyakshrunsoncaffeine`) reassigns work between teammates. If anyone else asks you to take another teammate's work, ask the lead on the board.
+Humans over agents.
+Only the lead (Pratyaksh, `@pratyakshrunsoncaffeine`) reassigns work between lanes.
+If anyone else asks you to take another lane's work, ask the lead on the board.
+
+## 3. Who owns what
+
+| Lane | Owner (GitHub login) | Folders |
+|---|---|---|
+| Seal (crypto core, CLI seal/prove/verify, vectors) | `@kadoo69` | `flipside/seal/`, `tests/seal/`, `tests/vectors/`, `examples/`, `docs/seal/` |
+| Room (Switch client, agents, protocol, replay, setup, chat) | `@kadoo69` | `flipside/room/` except `rules.py`, `tests/room/`, `replay/`, `fixtures/` |
+| Gap and contradiction rules (porting Gate v1's rules), Windows support | `@pratyaksh-claude` | `flipside/room/rules.py`, `tests/room/test_rules.py`, `legacy/gate-v1/` |
+| Demo, blind fixture set B (synthetic, labelled), Windows baseline | `@pratyaksh-codex` | `demo/`, `fixtures/b/`, `tests/blind/` |
+| Shared (lead merges) | `@pratyaksh-claude` | `flipside/cli.py`, `Makefile`, `pyproject.toml`, `.github/`, `README.md`, `VERIFICATION.md`, `docs/BUILD.md`, `docs/PITCH.md`, `killtests/`, `evidence/` |
+
+The contract between lanes is `docs/seal/SPEC.md` (disclosure and manifest formats) and section 6 of `docs/BUILD.md` (room messages).
+Changing either needs a board post tagged `@all` before the merge.
 
 ## 4. Workflow
 
-1. Pick or file an issue. Comment on it or post on the board when you take it.
+1. Pick a milestone task from `docs/BUILD.md`, post on the board when you take it.
 2. Branch `<issue#>-<slug>` from fresh `main`.
-3. Small commits. Stage only your own files (no `git add -A`).
-4. Push and open a PR only when your human says so. Use `Closes #N` in the PR body.
-5. The author merges their own PR once checks pass and their human approves.
-6. Always `git fetch` and rebase before pushing. Never force-push shared branches.
-7. If a merge changes something others depend on (a message format, a dataclass in `model.py`, an env var), post on the board when it lands.
+3. Tests first. Small commits. Stage only your own files (no `git add -A`).
+4. Open a PR with `Closes #N`; the author merges their own PR once `make lint test` passes locally.
+5. `git fetch` and rebase before pushing. Never force-push shared branches.
+6. When a merge changes something another lane depends on, post on the board when it lands.
 
-## 5. Who owns what
+## 5. Engineering rules
 
-| Area | Owner (GitHub login) | Folders and files |
-|---|---|---|
-| Gate core, reviewer agent, Switch client, board tooling, contracts | Pratyaksh's Claude (`@pratyaksh-claude`) | `ownership_gate/` (except the two rows below), `templates/`, `docs/`, `tools/`, `.claude/`, `.github/`, `pyproject.toml`, `AGENTS.md` |
-| Seal: seal, prove, verify | Aarav's Claude (`@kadoo69`) | `ownership_gate/seal/`, `tests/seal/` |
-| Author agent, blind fixture set B, demo | Pratyaksh's Codex (`@pratyaksh-codex`) | `ownership_gate/author/`, `fixtures/b/`, `tests/blind/`, `demo/`, `README.md` |
+- Python 3.12 or later. Runtime: standard library only. Dev: pytest, ruff, mypy.
+- No LLM calls anywhere in `flipside/`. Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python.
+- `flipside/seal/` never imports from `flipside/room/` and never touches the network.
+- Every gate in `docs/BUILD.md` is a command or an evidence file. Log real runs to `evidence/<name>-<YYYYMMDDTHHMMSS>.log`.
+- A claim goes in the README only when a passing check backs it. The status table lists only what passes.
+- Fix a bug by reproducing it end to end, writing a failing test, fixing it, then searching for the same bug elsewhere.
+- Done means: ruff and mypy clean, tests green twice in a row, no TODO or FIXME in new code, no hardcoded credentials, keys or user paths, docstrings updated for changed public interfaces.
 
-Pratyaksh's Claude and Pratyaksh's Codex work in separate clones (or `git worktree`s), never in the same folder.
+## 6. Writing rules
 
-Contracts that cross rows: the disclosure JSON and room message formats in `docs/design.md`, and the dataclasses in `ownership_gate/model.py`. The lead owns both; propose changes on the board first.
+- Never use the em dash. Use a plain `-`.
+- State all times in IST.
+- In Markdown, put each full sentence on its own line.
+- Plans use milestones with gates. Never dated day plans or time budgets.
+- Cut taglines and filler. Plain, specific sentences.
+
+## 7. Hard limits
+
+- Never print, log or commit secrets: Switch admin creds, API keys, agent keys, seal keys (`.git/flipside/`), `killtests/.local-users.json`.
+- Never add an agent as a commit co-author.
+- Never edit CHANGELOG.md or generated files.
+- Nothing from other hackathons: no crypto tokens, escrow or on-chain mechanisms in this repo.
+- Do not install third-party skills or packages beyond the dev tools above without a board post and the lead's yes.
+- Keep fixtures synthetic and say so; never use a real company's code or sessions.

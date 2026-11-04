@@ -1,0 +1,22 @@
+{
+  "note": "Honest 1: the PR says what changed; the sealed test run passed.",
+  "pr": {
+    "number": 146,
+    "title": "Fix typo in docs/install.md",
+    "body": "Fixes a typo in the install guide. Tests pass.",
+    "author": "priya",
+    "reviewer": "omar"
+  },
+  "base": {
+    "docs/install.md": "Run intall.\n"
+  },
+  "head": {
+    "docs/install.md": "Run install.\n"
+  },
+  "checks": [
+    {
+      "name": "tests",
+      "conclusion": "success"
+    }
+  ]
+}

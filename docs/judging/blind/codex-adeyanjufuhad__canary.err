@@ -1,0 +1,362 @@
+OpenAI Codex v0.166.0
+--------
+workdir: /Users/aaravmahajan/flipside/docs/judging/blind
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 01a1a6b5-2df2-7812-99e1-ce85655a03be
+--------
+user
+You are a judge for the "Flip the Switch" hackathon (WeMakeDevs, DevTools Academy, and Switch by SandboxAQ).
+Switch is an open-source orchestration layer that puts AI coding agents (Claude Code, Codex, and others) and people into shared team-chat rooms (Slack, Discord, Mattermost), with rooms, roles, addressing policies, templates, documents, and custom agents that join over an HTTP and server-sent-events protocol.
+
+Official rubric:
+- Use of Switch, 30%: is Switch central, and would the project stop working without it?
+- Technical execution, 25%: does it run, and could someone clone the repo and reproduce it?
+- Creativity and impact, 25%: is it a fresh idea that solves a problem a real team has?
+- Presentation and documentation, 20%: do the demo video and README make clear what was built and how Switch is used?
+
+You can see only the submission's written material below, not its code or video. Judge only what the material shows.
+
+Submission:
+<p align="center">
+  <img src="web/src/app/icon.svg" alt="Canary logo: a yellow canary on a black square" width="112" height="112">
+</p>
+
+<h1 align="center">Canary</h1>
+
+<p align="center">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black">
+  <img alt="Node.js 20+" src="https://img.shields.io/badge/Node.js-20%2B-5FA04E?logo=nodedotjs&logoColor=white">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-FFD60A">
+</p>
+
+**Your team writes the rules of your product in plain English, in chat. Canary tries to break them on every pull request.**
+
+[Live site](https://canary-rust.vercel.app) · [How it works](#how-it-works) · [Tech stack](#tech-stack) · [Architecture](#system-architecture) · [Run it locally](#run-the-landing-page-locally)
+
+Security scanners find SQL injection and XSS. They can't know that *a wallet can never go below $0*, *a promo code works once per customer*, or *a refund can never be more than the original charge*. Only your team knows those rules.
+
+Canary is for engineering and product teams anywhere. It puts two AI agents and your team in one [Switch](https://docs.switchagents.ai) room, in the chat app you already use: Slack, Microsoft Teams, Discord, or Mattermost.
+
+- **`@canary-red`** reads each pull request against your rules, writes an exploit for each rule, runs it in a sandbox, and posts the evidence.
+- **`@canary-blue`** writes the fix. Red runs its exploit again against the fix.
+- **Your team** writes the rules and makes the final call on disputes. The room remembers every ruling.
+
+> **Status:** built for the **Flip the Switch** hackathon (WeMakeDevs × DevTools Academy × Switch, Nov 4–7, 2026). The landing page is live, and the full loop has run end to end on a real pull request: the watcher announced it, Red broke a rule, Blue fixed it, and Red confirmed the fix. See [Project status](#project-status).
+
+## How it works
+
+1. **Write a rule in chat.** One sentence that must always be true:
+   `@canary-red rule: A refund can never be more than the original charge.`
+2. **Open a pull request.** Canary reads the diff and finds the rules the change could affect.
+3. **Red tries to break them.** It writes an exploit for each rule, runs it in an isolated sandbox, and posts the requests and results in the room.
+4. **Blue fixes, your team decides.** Blue pushes a fix and a regression test to the pull request. Red runs the exploit again. A person on your team makes the final call, and the room saves the ruling so Canary never flags that case again.
+
+### Example: PR #42
+
+| Time (UTC) | Who | What happens |
+|---|---|---|
+| 09:12 | Amara (product) | Writes rule 1: a refund can never be more than the original charge. |
+| 14:02 | Lucas (backend) | Opens PR #42, *Split refunds into partial payments*. |
+| 14:05 | `@canary-red` | Sends 3 refunds of $1,500 at the same time against one $1,500 charge. All 3 succeed: **$4,500 refunded. Rule 1 broken.** |
+| 14:09 | `@canary-blue` | Pushes a fix (lock the charge, check the refund total before saving) and a regression test. |
+| 14:11 | `@canary-red` | Runs the exploit again: 1 refund succeeds, 2 are rejected with `409`. **Rule 1 holds.** |
+| 14:18 | Priya (engineering lead) | Rules that shipping fees count toward the total. Canary saves the ruling. |
+| 14:22 | Aiko (reviewer) | Approves and merges. |
+
+The bug never reached production.
+
+## Tech stack
+
+### Languages
+
+| Language | Where it is used |
+|---|---|
+| TypeScript | Landing page (`web/`) and the demo wallet API (`demo-wallet/`) |
+| JavaScript (Node.js ES modules) | Agent tools: PR watcher, sandbox runner, exploits (`agents/`) |
+| SQL | Database schema and seed data (`demo-wallet/db/`, `web/db/`) |
+| CSS | Landing page styles, with Tailwind CSS (`web/src/app/globals.css`) |
+| YAML | Local Docker stack (`docker-compose.yml`) |
+
+### Stack
+
+| Part | Built with |
+|---|---|
+| Agents | [Claude Code](https://claude.com/claude-code) sessions (`@canary-red`, `@canary-blue`), run by [Switch Console](https://docs.switchagents.ai) |
+| Chat | Slack today, through Switch. Switch also connects Microsoft Teams, Discord, and Mattermost |
+| PR watcher and sandbox | Node.js 20+, the [GitHub CLI](https://cli.github.com) (`gh`), Git |
+| Demo wallet API | Node.js, [Hono](https://hono.dev), [Zod](https://zod.dev), `pg`, PostgreSQL; tests with the Node.js test runner and `tsx` |
+| Landing page | [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, Tailwind CSS 4, GSAP, Motion, React Bits effects |
+| Hosting | [Vercel](https://vercel.com) for the landing page; [Neon](https://neon.tech) Postgres for the old waitlist table |
+| Local stack (optional) | Docker Compose: PostgreSQL 18 and the demo wallet API on Node.js 22 |
+
+## System architecture
+
+Canary has two parts: the **product**, which lives in your chat app and your Git host, and the **landing page**, which is a separate website.
+
+### Product
+
+```mermaid
+flowchart TB
+    humans["Your team<br/>engineers and product people"]
+    chat["Chat app<br/>Slack · Microsoft Teams · Discord · Mattermost"]
+
+    subgraph room["Switch room #canary"]
+        direction LR
+        red["@canary-red<br/>breaks rules"]
+        memory[("Rules and rulings<br/>room memory")]
+        blue["@canary-blue<br/>writes fixes"]
+        red <--> memory <--> blue
+    end
+
+    gh["GitHub<br/>pull request"]
+
+    subgraph sandbox["Isolated sandbox"]
+        direction LR
+        app["PR build of the app<br/>demo: wallet API"]
+        db[("Postgres<br/>test data only")]
+        app --> db
+    end
+
+    humans <-->|"rules, evidence, rulings"| chat
+    chat <-->|"messages"| room
+    gh -->|"1 · PR opened or updated"| red
+    red -->|"2 · run exploits, re-test fixes"| app
+    blue -->|"3 · push fix + regression test"| gh
+```
+
+Both agents call the model provider you configure (Anthropic or OpenAI) with your own API key.
+
+| Component | Job | Status |
+|---|---|---|
+| Chat app | Where your team writes rules, reads evidence, and makes rulings. | Your existing workspace |
+| Switch room | Connects the agents to your chat app and keeps the room's memory of rules and rulings. | Setup guide in [agents/](agents/) |
+| `@canary-red` | Maps the PR diff to rules, writes exploits, runs them in the sandbox, posts evidence. | Instructions and exploits built |
+| `@canary-blue` | Writes the fix and a regression test, pushes them to the PR. | Instructions built |
+| Sandbox | Runs the PR's build on 127.0.0.1 against a freshly reset database. Exploits never touch production. | Built and tested |
+| Demo wallet API | A small payments app with four business rules, for the demo. Money is stored as integer cents. See [demo-wallet/](demo-wallet/). | Built |
+| Model providers | You bring your own Anthropic or OpenAI key. | Planned |
+
+### One pull request, step by step
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Team as Your team
+    participant Room as Switch room
+    participant Red as @canary-red
+    participant Blue as @canary-blue
+    participant GH as GitHub PR
+    participant SB as Sandbox
+
+    Team->>Room: rule: a refund can never be more than the charge
+    Room->>Red: save as rule 1
+    GH->>Red: PR #35;42 opened
+    Red->>Red: which rules can this diff affect?
+    Red->>SB: deploy PR build, send 3 parallel refunds
+    SB-->>Red: 3 x 201, $4,500 refunded
+    Red->>Room: rule 1 broken, with request log
+    Room->>Blue: fix rule 1 on PR #35;42
+    Blue->>GH: push fix + regression test
+    GH->>Red: PR #35;42 updated
+    Red->>SB: run the same exploit again
+    SB-->>Red: 1 x 201, 2 x 409
+    Red->>Room: rule 1 holds
+    Team->>Room: ruling: shipping counts toward the total
+    Room->>Red: ruling saved, never flag this case again
+```
+
+### Landing page (live)
+
+```mermaid
+flowchart LR
+    visitor["Visitor's browser"] -->|"HTTPS"| vercel["Vercel<br/>canary-rust.vercel.app"]
+    subgraph vercel_box["Vercel project: canary"]
+        page["Next.js 16 page<br/>prerendered, static"]
+        api["POST /api/waitlist<br/>serverless function"]
+    end
+    vercel --> page
+    vercel --> api
+    api -->|"@neondatabase/serverless<br/>over HTTPS"| neon[("Neon Postgres<br/>canary-web · us-east-1<br/>table: waitlist")]
+    github["GitHub main branch"] -->|"push = production deploy"| vercel
+```
+
+- The page is prerendered at build time. Only the waitlist sign-up runs on the server.
+- Sign-ups are unique per email, whatever the letter case. A repeat sign-up is ignored, and the reply never reveals whether an address is already listed.
+- A hidden honeypot field filters simple bots.
+- Every push to `main` deploys to production. Other branches get preview deployments.
+
+## Project status
+
+| Part | Status |
+|---|---|
+| Landing page ([canary-rust.vercel.app](https://canary-rust.vercel.app)) | Live |
+| Waitlist (Neon) | Live |
+| Demo wallet API ([demo-wallet/](demo-wallet/)) | Built and tested |
+| Local Docker stack (`docker-compose.yml`) | Written, not yet run. Optional: the demo does not need it |
+| Agent tooling: instructions, exploits, PR watcher ([agents/](agents/)) | Built; exploits tested against a real bug |
+| `@canary-red` and `@canary-blue` running on Switch, in Slack | Running: rule 1 saved from Slack |
+| Sandbox runner | Built and tested |
+| Setup guide for the agents | [agents/README.md](agents/README.md) |
+| Full pull request round trip (watcher, Red, Blue, Red again) | Verified on a real pull request |
+
+## Repository layout
+
+```text
+canary/
+├── web/                         Landing page (Next.js 16, Tailwind CSS 4)
+│   ├── src/app/                 Page, layout, icons, POST /api/waitlist
+│   ├── src/components/          Hero, nav, footer, and one file per section
+│   │   ├── sections/            The gap, how it works, the room, rules, FAQ, waitlist…
+│   │   └── reactbits/           Vendored React Bits effects (kept identical to upstream)
+│   ├── src/content/en.ts        Every user-facing string, ready for translation
+│   ├── db/waitlist.sql          Waitlist table and unique email index
+│   └── public/hero/             Hero video loop (MP4 + WebM) and poster
+├── demo-wallet/                 The app Canary attacks in the demo (Node.js, Hono, Postgres)
+│   ├── src/app.ts               Routes and the four business-rule checks
+│   ├── test/rules.test.ts       Rule tests, including race attacks
+│   └── RULES.md                 The rules in plain English
+├── agents/                      canary-red and canary-blue: instructions, sandbox, exploits, PR watcher
+├── docker-compose.yml           Local Postgres + demo wallet API
+├── .env.example                 Every environment variable the project uses
+└── LICENSE                      MIT
+```
+
+## Run the landing page locally
+
+You need Node.js 20 or newer.
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+The waitlist works without a database. With no `DATABASE_URL`, sign-ups answer "Sign-ups aren't open yet". To store sign-ups locally:
+
+1. Create a Postgres database. [Neon](https://neon.tech) has a free tier.
+2. Run [`web/db/waitlist.sql`](web/db/waitlist.sql) against it.
+3. Put the connection string in `web/.env.local`:
+
+   ```bash
+   DATABASE_URL=postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require
+   ```
+
+Other commands, run from `web/`:
+
+| Command | What it does |
+|---|---|
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | ESLint |
+
+## Environment variables
+
+All of them are listed in [`.env.example`](.env.example). Never commit the real `.env` or `.env.local` files.
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `DATABASE_URL` | Landing page | Neon connection string for waitlist sign-ups |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | `docker-compose.yml` | Local Postgres for the demo wallet API |
+| `DEMO_API_PORT` | `docker-compose.yml` | Port for the demo wallet API on localhost |
+
+The demo wallet API also has its own [`demo-wallet/.env.example`](demo-wallet/.env.example) for running it without Docker (`DATABASE_URL`, `TEST_DATABASE_URL`, `PORT`).
+| `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` | Agents (planned) | Model providers. Bring your own keys. |
+| `GITHUB_TOKEN` | `@canary-blue` (planned) | Pushes the fix and regression test to the PR |
+
+## Run the demo wallet API
+
+The app Canary attacks in the demo. Full details are in [demo-wallet/README.md](demo-wallet/README.md).
+
+```bash
+docker compose up --build
+```
+
+Or without Docker, with any Postgres database:
+
+```bash
+cd demo-wallet
+npm install
+cp .env.example .env
+npm run db:setup
+npm run dev
+```
+
+The API runs on http://localhost:4000. `npm test` runs the rule tests, including race attacks that send many requests at the same moment.
+
+## Deploying the landing page
+
+The landing page runs on [Vercel](https://vercel.com):
+
+1. Import the repository and set the **root directory** to `web`. Vercel detects Next.js.
+2. Add `DATABASE_URL` for the production and preview environments.
+3. Push to `main` to deploy.
+
+## Writing good rules
+
+- **One sentence that must always be true.** "A promo code works once per customer."
+- **Describe behavior, not code.** Say what customers can and can't do, not how a function works inside.
+- **Use real numbers.** "A team on the Starter plan has at most 5 seats" is easier to test than "seat limits are enforced".
+
+Common first rules:
+
+| Area | Rule |
+|---|---|
+| Wallets | A wallet balance can never go below $0. |
+| Promo codes | A promo code works once per customer. |
+| Refunds | A refund can never be more than the original charge. |
+| Seats | A team on the Starter plan has at most 5 seats. |
+| Free trials | Each organization gets one free trial. |
+| Inventory | Stock can never go below zero. |
+
+## Canary and security scanners
+
+Canary does not replace your security scanner. Run both. Scanners find known patterns like SQL injection, XSS, and known CVEs. Canary tests the rules that only your team knows, proves each break with a working exploit, and tests the fix again.
+
+## License
+
+[MIT](LICENSE)
+
+Then:
+1. Score each criterion 1-10 with a one-line reason.
+2. Shortlist: yes or no, one sentence.
+3. The three weaknesses that cost the most points.
+Plain text, under 300 words. End with exactly one line: TOTAL: <weighted total out of 10, one decimal>
+
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+codex
+Use of Switch: 8/10 — Switch rooms connect the agents and team workflow, though the write-up leaves some integration details and model-provider setup marked planned.
+
+Technical execution: 7/10 — The repo layout and run instructions are detailed, and a real PR loop is claimed; the optional Docker stack is unrun, and I can’t verify the claims from code or video.
+
+Creativity and impact: 8/10 — Testing team-defined business rules with exploits and regression checks addresses a real gap in conventional security scanning.
+
+Presentation and documentation: 7/10 — The README explains the workflow and architecture well, but no demo video is included here and some status claims conflict.
+
+Shortlist: Yes — The idea and claimed end-to-end PR loop merit a closer look, with implementation and demo verification still needed.
+
+Three biggest weaknesses:
+1. The submission’s status is inconsistent: it says the full loop is verified, but also marks model providers planned.
+2. Reproduction is less clear for the core agent workflow than for the landing page and wallet API.
+3. The demo video is unavailable in the provided material, limiting presentation assessment.
+
+TOTAL: 7.6
+
+hook: Stop
+hook: Stop Completed
+tokens used
+11,255

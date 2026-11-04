@@ -1,0 +1,13 @@
+Use of Switch: 7/10 — Switch’s room addressing and approval permissions are central, with K1 and K2 reported passing; the full workflow is not built.
+
+Technical execution: 2/10 — The seal, verification, replay, fixtures, and most tests are still unbuilt, so reproducibility is not demonstrated.
+
+Creativity and impact: 8/10 — Cross-team questioning of an agent’s private session is a distinctive response to a real review problem.
+
+Presentation and documentation: 8/10 — The written material clearly explains the design, threat model, limits, and build status; no demo video evidence is available here.
+
+Shortlist: No — The idea and documentation are strong, but the core product path is mostly a specification rather than a working submission.
+
+Three weaknesses costing the most points: The seal and verification flow are unbuilt; replay and fixture results are unrun; no working end-to-end demo is evidenced.
+
+TOTAL: 6.2/10
