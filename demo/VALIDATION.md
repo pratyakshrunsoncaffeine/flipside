@@ -64,3 +64,14 @@ Aarav fixed binary private-file writes in `3bd2927` after receiving the reproduc
 The demo branch was advanced to that base, where ruff, formatting and mypy (default and win32) pass.
 The default CSV demo and exact G8 proof checks pass on that base as well.
 The full nine-case demo passed again on `7045ee1` before that update.
+
+## Fresh clone on 3bd2927
+
+A new remote clone on this Windows machine passed `uv sync --frozen`, ruff check and format, strict mypy (default and win32), both G8 proof checks, offline replay and all nine existing fixtures.
+The full test suite had 309 passing tests and nine failures in 191.97 seconds.
+Five failures concern Windows mode/permission checks; three compare CRLF checkout bytes with LF output.
+The ninth is in `test_private_write_is_binary_and_keeps_lf_bytes`: its spy removes `0x8000` before calling the real `os.open`, which removes the actual binary flag on Windows.
+Outside that spy, the synthetic 32-byte reproduction stores and loads exactly 32 bytes with the fixed production writer.
+The seal owner received this test-only diagnosis; the lead was tagged for the mode and checkout issues.
+Actual local output is at `demo/evidence/m4-clean-3bd2927.log`.
+The full Windows and M4 gates remain open.
