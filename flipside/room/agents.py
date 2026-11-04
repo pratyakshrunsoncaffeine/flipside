@@ -1,0 +1,462 @@
+"""author-agent and reviewer-agent state machines (docs/BUILD.md sections 4, 7, 8).
+
+Both agents are event-sourced: each ``step()`` re-reads the room transcript and acts
+only on what its own earlier posts have not covered yet, so a restarted agent resumes
+without duplicate posts. Every decision is deterministic Python; no LLM.
+"""
+
+import hashlib
+import json
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+from flipside.room.brief import build_brief
+from flipside.room.protocol import (
+    AUTHOR_AGENT,
+    REVIEWER_AGENT,
+    Msg,
+    accept,
+    decode,
+    encode,
+    parse_answer,
+    parse_request,
+)
+from flipside.room.rules import Gap, PRData, Selection, asked, contradictions, gaps, select
+from flipside.room.transport import Transport
+from flipside.seal.canon import canon
+from flipside.seal.git import git, parse_trailer, trailer_values
+from flipside.seal.manifest import ManifestError, load_manifest
+from flipside.seal.prove import ProveError, Rebuilt, disclosure, leaf_secret_hits, rebuild
+from flipside.seal.verify import verify
+
+Log = Callable[[str], None]
+APPROVE = ("approve", "accept")
+
+
+def card_id(commit: str, q: int, i: int) -> str:
+    """Deterministic card id, so a restarted author-agent never opens a second card."""
+    return hashlib.sha256(f"flipside/card/{commit}/{q}/{i}".encode()).hexdigest()[:32]
+
+
+def _short(sha: str) -> str:
+    return sha[:7]
+
+
+@dataclass
+class AuthorConfig:
+    pr: int
+    shared: str
+    private: str
+    repo: Path
+    root: str
+    commit: str
+    reviewer_agent: str
+    author_user: str
+    author_name: str
+    state_path: Path | None = None
+
+
+@dataclass
+class AuthorAgent:
+    """Seals are published, requests are checked, cards are opened, approved leaves are
+    proved and disclosed. Acts only on requests from reviewer-agent's sender id."""
+
+    t: Transport
+    cfg: AuthorConfig
+    log: Log = print
+    cards: dict[str, tuple[int, int]] = field(default_factory=dict)
+    dropped: set[str] = field(default_factory=set)
+    _rebuilt: Rebuilt | None = None
+
+    def __post_init__(self) -> None:
+        if self.cfg.state_path and self.cfg.state_path.exists():
+            raw = json.loads(self.cfg.state_path.read_text())
+            self.cards = {k: (v[0], v[1]) for k, v in raw.get("cards", {}).items()}
+            self.dropped = set(raw.get("dropped", []))
+
+    def _save(self) -> None:
+        if self.cfg.state_path:
+            self.cfg.state_path.write_text(
+                json.dumps(
+                    {
+                        "cards": {k: list(v) for k, v in self.cards.items()},
+                        "dropped": sorted(self.dropped),
+                    },
+                    sort_keys=True,
+                )
+            )
+
+    @property
+    def rebuilt(self) -> Rebuilt:
+        if self._rebuilt is None:
+            self._rebuilt = rebuild(self.cfg.repo, self.cfg.root)
+        return self._rebuilt
+
+    def roles(self) -> dict[str, str]:
+        return {AUTHOR_AGENT: self.t.me, REVIEWER_AGENT: self.cfg.reviewer_agent}
+
+    def step(self) -> int:
+        """Act once on the current transcript. Returns the number of posts or cards."""
+        acts = 0
+        msgs = self.t.read(self.cfg.shared)
+        mine = [x for m in msgs if (x := accept(m, self.roles())) and m.sender == self.t.me]
+        if not any(o["t"] == "seal" and o.get("commit") == self.cfg.commit for o in mine):
+            self.publish_seal()
+            acts += 1
+        done = {
+            (o["q"], o["i"])
+            for o in mine
+            if o["t"] in ("disclosure", "withheld") and o.get("commit") == self.cfg.commit
+        }
+        n = self.rebuilt.sealed.n
+        for m in msgs:
+            for q, i in self.wanted(m, n):
+                if (q, i) in done or card_id(self.cfg.commit, q, i) in self.cards:
+                    continue
+                acts += self.consider(q, i)
+                if card_id(self.cfg.commit, q, i) not in self.cards:
+                    done.add((q, i))
+        for oc in self.t.outcomes():
+            if oc.card not in self.cards:
+                continue
+            q, i = self.cards[oc.card]
+            if (q, i) in done:
+                continue
+            if oc.answered_by != self.cfg.author_user:
+                self.log(f"author-agent ignored card {oc.card[:8]} answered by {oc.answered_by}")
+                continue
+            if oc.answer in APPROVE:
+                self.disclose(q, i)
+            else:
+                self.withhold(q, i, "author")
+            done.add((q, i))
+            acts += 1
+        self._save()
+        return acts
+
+    def wanted(self, m: Msg, n: int) -> list[tuple[int, int]]:
+        """Leaves a message validly requests. Logs and drops everything else once."""
+        if m.sender != self.cfg.reviewer_agent:
+            return []
+        obj = decode(m.body)
+        if obj is None or obj["t"] != "request":
+            return []
+        reason = ""
+        req = parse_request(obj, n)
+        if m.addressed is False:
+            reason = "not addressed to author-agent"
+        elif req is None:
+            reason = "fails the request schema (free text or bad leaves)"
+        elif req.commit != self.cfg.commit:
+            reason = f"names commit {_short(req.commit)}, not the seal commit"
+        if reason or req is None:
+            if m.id not in self.dropped:
+                self.dropped.add(m.id)
+                self.log(f"author-agent DROPPED request {m.id}: {reason}")
+            return []
+        return [(req.q, i) for i in req.leaves]
+
+    def publish_seal(self) -> None:
+        sealed = self.rebuilt.sealed
+        uri = self.t.upload(self.cfg.shared, "manifest.json", sealed.manifest)
+        obj = {
+            "t": "seal",
+            "v": 1,
+            "pr": self.cfg.pr,
+            "commit": self.cfg.commit,
+            "root": self.cfg.root,
+            "n": sealed.n,
+            "manifest": sealed.manifest_sha256,
+            "mxc": uri,
+        }
+        line = (
+            f"Seal for PR #{self.cfg.pr} · root {_short(self.cfg.root)} · {sealed.n} "
+            f"leaves · commit {_short(self.cfg.commit)} · manifest attached"
+        )
+        mid = self.t.post(self.cfg.shared, encode(line, obj))
+        self.log(f"author-agent posted seal {mid}")
+
+    def offer(self, q: int, i: int) -> None:
+        """The author offers an extra leaf for question q; it goes through a card too."""
+        self.consider(q, i)
+        self._save()
+
+    def consider(self, q: int, i: int) -> int:
+        """Secret-scan leaf i, then withhold it or open the author's approval card."""
+        hits = leaf_secret_hits(self.rebuilt, i)
+        if hits:
+            self.withhold(q, i, "secret_scan")
+            return 1
+        leaf = self.rebuilt.sealed.leaves[i]
+        cid = card_id(self.cfg.commit, q, i)
+        title = f"Disclose step {leaf['step']} chunk {leaf['chunk']} to #pr-{self.cfg.pr}?"
+        detail = f"{leaf['text']}\n\nsha256 {hashlib.sha256(canon(leaf)).hexdigest()[:12]}"
+        self.t.open_card(self.cfg.private, cid, title, detail)
+        self.cards[cid] = (q, i)
+        self.log(f"author-agent opened card {cid[:8]} for Q{q} leaf {i}")
+        return 1
+
+    def disclose(self, q: int, i: int) -> None:
+        """Re-check the sealed prefix (F1) and disclose; a changed session is withheld."""
+        try:
+            self._rebuilt = rebuild(self.cfg.repo, self.cfg.root)
+        except ProveError as e:
+            self.log(f"author-agent cannot prove leaf {i}: {e}")
+            self.withhold(q, i, "session_changed")
+            return
+        d = disclosure(self.rebuilt, i, self.cfg.commit)
+        lf = d["leaf"]
+        line = (
+            f"Q{q} · step {lf['step']}, chunk {lf['chunk']} · approved by "
+            f"@{self.cfg.author_name} · proof against seal {_short(self.cfg.root)} "
+            f"(commit {_short(self.cfg.commit)})"
+        )
+        mid = self.t.post(self.cfg.shared, encode(line, {**d, "t": "disclosure", "q": q}))
+        self.log(f"author-agent posted disclosure {mid} for Q{q} leaf {i}")
+
+    def withhold(self, q: int, i: int, reason: str) -> None:
+        obj = {"t": "withheld", "v": 1, "commit": self.cfg.commit, "q": q, "i": i, "reason": reason}
+        why = {
+            "author": "author declined",
+            "secret_scan": "secret scan hit",
+            "session_changed": "session changed after sealing",
+        }[reason]
+        mid = self.t.post(self.cfg.shared, encode(f"Q{q} · leaf {i} withheld ({why})", obj))
+        self.log(f"author-agent posted withheld {mid} for Q{q} leaf {i} ({reason})")
+
+
+@dataclass
+class ReviewerConfig:
+    pr: PRData
+    shared: str
+    repo: Path
+    head: str
+    base: str
+    author_agent: str
+    author_agent_name: str
+    pr_author: str
+    reviewer_name: str
+    timeout: float = 1800.0
+
+
+@dataclass
+class _Round:
+    commit: str
+    manifest: list[dict[str, Any]] | None
+    manifest_bytes: bytes
+    seal_note: str
+
+
+@dataclass
+class ReviewerAgent:
+    """Gaps from public data, leaf requests, verdicts, coverage, and the brief."""
+
+    t: Transport
+    cfg: ReviewerConfig
+    log: Log = print
+    clock: Callable[[], float] = time.monotonic
+    asked_at: float | None = None
+    _round: _Round | None = None
+
+    def roles(self) -> dict[str, str]:
+        return {AUTHOR_AGENT: self.cfg.author_agent, REVIEWER_AGENT: self.t.me}
+
+    def seal_commit(self) -> str | None:
+        """The newest commit in base..head with exactly one valid Flipside-Seal trailer."""
+        out = git(self.cfg.repo, "rev-list", f"{self.cfg.base}..{self.cfg.head}")
+        for sha in out.split():
+            values = trailer_values(self.cfg.repo, sha)
+            if len(values) == 1 and parse_trailer(values[0]):
+                return sha
+        return None
+
+    def open_round(self, msgs: list[Msg]) -> _Round | None:
+        """Wait for the seal message that matches the trailer; check the manifest hash."""
+        commit = self.seal_commit()
+        if commit is None:
+            return _Round(self.cfg.head, None, b"", "no seal on this PR: questions only")
+        trailer = parse_trailer(trailer_values(self.cfg.repo, commit)[0])
+        assert trailer is not None
+        for m in msgs:
+            o = accept(m, self.roles())
+            if not o or o["t"] != "seal" or o.get("commit") != commit:
+                continue
+            data = self.t.download(self.cfg.shared, str(o.get("mxc")))
+            if hashlib.sha256(data).hexdigest() != trailer.manifest:
+                return _Round(
+                    commit,
+                    None,
+                    b"",
+                    "MANIFEST_HASH: the attached manifest differs from the trailer",
+                )
+            try:
+                manifest = load_manifest(data)
+            except ManifestError as e:
+                return _Round(commit, None, b"", f"MANIFEST_HASH: {e}")
+            return _Round(
+                commit,
+                manifest,
+                data,
+                f"sealed: root {_short(trailer.root)}, {trailer.n} leaves, commit {_short(commit)}",
+            )
+        return None
+
+    def step(self) -> int:
+        msgs = self.t.read(self.cfg.shared)
+        if self._round is None:
+            self._round = self.open_round(msgs)
+            if self._round is None:
+                return 0
+        rnd = self._round
+        mine = [x for m in msgs if (x := accept(m, self.roles())) and m.sender == self.t.me]
+        briefed = any(o["t"] == "brief" and o.get("commit") == rnd.commit for o in mine)
+        acts = 0
+        all_gaps = gaps(self.cfg.pr, rnd.manifest)
+        qs, not_asked = asked(all_gaps)
+        sel = {
+            k: (select(g, rnd.manifest) if rnd.manifest else Selection())
+            for k, g in enumerate(qs, 1)
+        }
+        if not briefed and not any(
+            o["t"] == "questions" and o.get("commit") == rnd.commit for o in mine
+        ):
+            self.post_questions(rnd, qs)
+            acts += 1
+        if self.asked_at is None:
+            self.asked_at = self.clock()
+        requested = {o["q"] for o in mine if o["t"] == "request" and o.get("commit") == rnd.commit}
+        for k, s in sel.items():
+            if s.leaves and k not in requested and not briefed:
+                self.post_request(rnd, k, s)
+                acts += 1
+        answers: dict[int, str] = {}
+        for m in msgs:
+            if m.sender == self.cfg.pr_author and (a := parse_answer(m.body)):
+                answers.setdefault(a[0], a[1])
+        verdicted = {o.get("ref") for o in mine if o["t"] == "verdict"}
+        verdicts: list[dict[str, Any]] = [o for o in mine if o["t"] == "verdict"]
+        withheld: list[dict[str, Any]] = []
+        for m in msgs:
+            o = accept(m, self.roles())
+            if not o or m.sender != self.cfg.author_agent:
+                continue
+            if o["t"] == "withheld" and o.get("commit") == rnd.commit:
+                withheld.append(o)
+            if o["t"] == "disclosure" and m.id not in verdicted:
+                verdicts.append(self.post_verdict(rnd, m.id, o))
+                acts += 1
+        if not briefed and self.ready(qs, sel, answers, verdicts, withheld):
+            self.post_brief(rnd, qs, not_asked, sel, answers, verdicts, withheld)
+            acts += 1
+        return acts
+
+    def post_questions(self, rnd: _Round, qs: list[Gap]) -> None:
+        obj = {
+            "t": "questions",
+            "v": 1,
+            "commit": rnd.commit,
+            "qs": [
+                {"q": k, "gap": g.kind, "file": g.file, "text": g.text} for k, g in enumerate(qs, 1)
+            ],
+        }
+        line = (
+            f"{len(qs)} question{'s' if len(qs) != 1 else ''} for PR #{self.cfg.pr.number} "
+            f"({rnd.seal_note}); answer each as Q<k>: in your own words"
+        )
+        if not qs:
+            line = f"No gaps on PR #{self.cfg.pr.number} ({rnd.seal_note})"
+        mid = self.t.post(self.cfg.shared, encode(line, obj))
+        self.log(
+            f"reviewer-agent posted questions {mid}: "
+            + "; ".join(
+                f"Q{k} {g.kind} {g.file or g.check or ''}".rstrip() for k, g in enumerate(qs, 1)
+            )
+        )
+
+    def post_request(self, rnd: _Round, q: int, s: Selection) -> None:
+        obj = {"t": "request", "v": 1, "commit": rnd.commit, "q": q, "leaves": list(s.leaves)}
+        line = (
+            f"@{self.cfg.author_agent_name} Q{q} · requesting leaves "
+            f"{', '.join(map(str, s.leaves))} · commit {_short(rnd.commit)}"
+        )
+        mid = self.t.post(self.cfg.shared, encode(line, obj))
+        self.log(f"reviewer-agent posted request {mid} for Q{q}: leaves {list(s.leaves)}")
+
+    def post_verdict(self, rnd: _Round, ref: str, d: dict[str, Any]) -> dict[str, Any]:
+        v = verify(self.cfg.repo, d, rnd.manifest_bytes, commit=rnd.commit, head=self.cfg.head)
+        i = d.get("i") if isinstance(d.get("i"), int) else -1
+        q = d.get("q") if isinstance(d.get("q"), int) else 0
+        obj: dict[str, Any] = {
+            "t": "verdict",
+            "v": 1,
+            "commit": rnd.commit,
+            "i": i,
+            "q": q,
+            "code": v.code,
+            "ref": ref,
+        }
+        if v.ok and v.leaf is not None:
+            obj["leaf"] = v.leaf
+        mid = self.t.post(self.cfg.shared, encode(f"Q{q} · leaf {i} · {v.message()}", obj))
+        self.log(f"reviewer-agent posted verdict {mid}: Q{q} leaf {i} {v.code}")
+        return obj
+
+    def ready(
+        self,
+        qs: list[Gap],
+        sel: dict[int, Selection],
+        answers: dict[int, str],
+        verdicts: list[dict[str, Any]],
+        withheld: list[dict[str, Any]],
+    ) -> bool:
+        """Page rule (7.5): every question answered and every requested leaf verified OK
+        or withheld; or the timeout passed (then missing answers and leaves are listed)."""
+        timed_out = self.asked_at is not None and self.clock() - self.asked_at >= self.cfg.timeout
+        if timed_out:
+            return True
+        if any(k not in answers for k in range(1, len(qs) + 1)):
+            return False
+        settled = {(v["q"], v["i"]) for v in verdicts if v["code"] == "OK"} | {
+            (w["q"], w["i"]) for w in withheld
+        }
+        return all((k, i) in settled for k, s in sel.items() for i in s.leaves)
+
+    def post_brief(
+        self,
+        rnd: _Round,
+        qs: list[Gap],
+        not_asked: list[Gap],
+        sel: dict[int, Selection],
+        answers: dict[int, str],
+        verdicts: list[dict[str, Any]],
+        withheld: list[dict[str, Any]],
+    ) -> None:
+        found = []
+        for k, g in enumerate(qs, 1):
+            ok = [
+                {"i": v["i"], "leaf": v["leaf"]}
+                for v in verdicts
+                if v["q"] == k and v["code"] == "OK" and "leaf" in v
+            ]
+            found.extend(contradictions(k, answers.get(k), g, ok, sel[k].anchored))
+        line, obj = build_brief(
+            self.cfg.pr,
+            rnd.commit,
+            rnd.seal_note,
+            rnd.manifest,
+            qs,
+            not_asked,
+            sel,
+            answers,
+            verdicts,
+            withheld,
+            found,
+            self.cfg.reviewer_name,
+        )
+        mid = self.t.post(self.cfg.shared, encode(line, obj))
+        self.log(f"reviewer-agent posted brief {mid}: {line}")
+        for c in obj["coverage"]:
+            self.log(f"  coverage {c['line']}")
