@@ -101,6 +101,15 @@ class AuthorConfig:
     author_name: str
     state_path: Path | None = None
     agent_name: str = AUTHOR_AGENT_NAME
+    # The author's linked messaging-app accounts, as the local part of the id Switch reports
+    # for a card answered there: "@switch-slack-<connection>-<username>" (before ":<server>").
+    author_answerers: tuple[str, ...] = ()
+
+    def answered_by_author(self, who: str) -> bool:
+        """True when a card answer came from the author, in Switch or a linked app."""
+        if who == self.author_user:
+            return True
+        return who.startswith("@") and who.split(":", 1)[0] in self.author_answerers
 
 
 @dataclass
@@ -201,7 +210,7 @@ class AuthorAgent:
             if oc.card not in self.cards:
                 continue
             i = self.cards[oc.card]
-            if oc.answered_by != self.cfg.author_user:
+            if not self.cfg.answered_by_author(oc.answered_by):
                 self.log(f"author-agent ignored card {oc.card[:8]} answered by {oc.answered_by}")
                 continue
             decided.setdefault(i, "approve" if oc.answer in APPROVE else "author")

@@ -94,6 +94,63 @@ def open_chat(user: Http, name: str, agent_id: str, greeting: str) -> str:
     return room_id(user.post("/gateway/chats", body))
 
 
+def open_room(
+    user: Http, name: str, agent_id: str, greeting: str, bridge: str | None = None
+) -> str:
+    """A new room with one agent: a Switch chat, or with ``bridge`` a private channel in that
+    messaging app (Slack), whose topic is ``greeting``. The creator joins the bridged room as
+    a member, since the gateway refuses reads of it otherwise (403 NOT_A_MEMBER)."""
+    if bridge is None:
+        return open_chat(user, name, agent_id, greeting)
+    body = {
+        "name": name,
+        "description": greeting,
+        "agent_ids": [agent_id],
+        "bridge_id": bridge,
+        "channel_type": "channel_private",
+    }
+    room = room_id(user.post("/gateway/rooms", body))
+    user.post(f"/gateway/chats/{room}/members", {"userId": user.get("/gateway/auth/me")["id"]})
+    return room
+
+
+def linked_names(person: Http, bridge: str) -> list[str]:
+    """The usernames of ``person``'s own accounts linked on ``bridge`` ("This is me")."""
+    return [
+        str(i["external_username"])
+        for i in person.get("/gateway/auth/me/identities") or []
+        if i.get("bridge_id") == bridge
+    ]
+
+
+def bridged_ids(person: Http, bridge: str, app: str = "slack") -> list[str]:
+    """``person``'s linked accounts on ``bridge`` as Switch names them in a card answer, without
+    the ``:<server>`` suffix the gateway does not expose: ``@switch-<app>-<connection>-<user>``."""
+    return [f"@switch-{app}-{bridge}-{n}" for n in linked_names(person, bridge)]
+
+
+def invite(owner: Http, room: str, names: list[str]) -> None:
+    """Add these messaging-app accounts to a bridged room's channel."""
+    if names:
+        owner.post(f"/gateway/rooms/{room}/users", {"user_names": names})
+
+
+def slack_bridge(admin: Http) -> str:
+    """The active Slack connection on this server, the default one first."""
+    found = [
+        b
+        for b in admin.get("/gateway/collaborations") or []
+        if b.get("bridge_type") == "slack" and b.get("status") == "active"
+    ]
+    if not found:
+        raise SetupError(
+            "no active Slack connection on this Switch server; connect one in Switch Console "
+            "(server Home, Messaging apps, Connect)"
+        )
+    found.sort(key=lambda b: not b.get("is_default"))
+    return str(found[0]["bridge_id"])
+
+
 def author_policy(shared: str, reviewer_agent: str) -> dict[str, Any]:
     """author-agent: its owner and owner's agents anywhere; reviewer-agent in ``#pr-<n>`` only."""
     return policy(OWNER_RULE, {"rooms": [shared], "users": [], "agents": [reviewer_agent]})

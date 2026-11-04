@@ -113,6 +113,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | Check | Command |
 |---|---|
 | Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
+| The live flow in Slack channels (`flip solo --slack --press`): the author approves the card in Slack; 4 refusals, 0 duplicate posts | `evidence/solo-csv-export-20261105T011603.log`, `evidence/solo-csv-export-20261105T011603-slack-card.png` |
 | K3: author-agent's approval card renders in Slack with Approve and Decline buttons; the reviewer gets 403; the author's button press in Slack reaches author-agent (4/4) | `evidence/k3-20261105T005334.log`, `evidence/k3-slack-card-20261105T005334-before.png` |
 | Seal core gates G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
 | Offline end to end, with the four refusals | `make replay-offline` |
@@ -133,8 +134,8 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
 - Not yet checked: author and reviewer on two machines.
-- The full review runs in Switch rooms, not Slack channels: `flip setup` creates Switch chats, and Flipside's agents recognise people by their Switch user id.
-  In a Slack channel, Switch reports a person's message as `kind: human` with no user id, and a button press as their bridged Slack identity, so the agents would ignore both.
+- `flip setup` creates Switch chats; only `flip solo --slack` opens the rooms as Slack channels.
+  There, author-agent accepts the author's card press from their linked Slack account, but questions are still answered through the gateway: Switch reports a message typed in Slack as `kind: human` with no user id, so the agents would ignore it.
 - A leaf's text is the session verbatim, so tool inputs carry the author's absolute paths; the author sees and approves those exact bytes on each card.
 - The local server has no chat window for people without Docker (its bundled Mattermost needs Docker); `make solo` acts for both people through the gateway API.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.

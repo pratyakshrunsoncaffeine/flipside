@@ -108,7 +108,8 @@ class Script:
     """The people's side of the case: answers, card decisions, and the refusal attempts.
 
     ``author_t`` and ``reviewer_t`` post the scripted attacks as the two agents (a forged
-    disclosure, an injected request); they never read agent state."""
+    disclosure, an injected request); they never read agent state. With ``by_hand`` the
+    author's cards are left for the author to answer in their own client (Slack)."""
 
     world: World
     humans: Humans
@@ -122,6 +123,7 @@ class Script:
     answered: set[int] = field(default_factory=set)
     decided: set[str] = field(default_factory=set)
     done: set[str] = field(default_factory=set)
+    by_hand: bool = False
 
     def step(self, transcript: list[Any]) -> int:
         acts = 0
@@ -253,6 +255,10 @@ class Script:
                     self.refusals.card_403.append(f"card {card.id[:8]}: {e}")
                     self.log(f"script: reviewer answering card {card.id[:8]} refused: {e}")
             answer = "decline" if step in decline else "approve"
+            if self.by_hand:
+                self.log(f"script: card {card.id[:8]} waits for the author: {answer} it in Slack")
+                self.decided.add(card.id)
+                continue
             self.humans.answer_card("author", card.id, answer)
             self.decided.add(card.id)
             acts += 1

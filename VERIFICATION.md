@@ -96,14 +96,22 @@ Earlier runs are kept.
 `k3-20261105T004840.log`: no live agent connection, so Switch showed "Host offline" and no buttons; stopped by hand.
 `k3-20261105T005115.log`: 3/4; K3.d expected a Switch user id, but a Slack press carries the bridged Slack identity.
 
+## The live flow in Slack channels
+
+`flip solo --slack --press --pace 2 --no-restart`: PASS in `evidence/solo-csv-export-20261105T011603.log`.
+`#pr-142` and `#pr-142-author` were private Slack channels on the Slack connection, with the author's linked Slack account added to both.
+The people's script answered Q1 through the gateway and did not answer the card; the author pressed Approve in Slack (`evidence/solo-csv-export-20261105T011603-slack-card.png`), and author-agent disclosed leaf 5.
+Four refusals live, 0 duplicate agent posts, verdict `OK` on the real disclosure and `PROOF_FAIL` on the forged copy.
+`flip solo --slack` without `--press` also passed (`evidence/solo-csv-export-20261105T011008.log`).
+
 ## Demo video
 
 Not recorded yet; its SHA-256 goes here.
 
 ## Outside the checked scope
 
-- The full review over Slack: not run. Only the approval card was checked in Slack (K3 above).
-  Switch reports a Slack message as `kind: human` with no user id, and a Slack button press as `@switch-slack-<connection>-<slack username>:<server>`; Flipside's agents accept only `user:<switch id>`.
+- Questions answered by typing in Slack: not supported. Switch reports a Slack message as `kind: human` with no user id; the agents accept a person's messages only as `user:<switch id>`.
+  A card press in Slack is accepted: author-agent matches `@switch-slack-<connection>-<username>` (the id before `:<server>`) against the author's linked accounts.
 - Two machines live (author and reviewer on different laptops): not run.
 - In fixtures, PR data (title, body, changed files, check runs) comes from each case's `case.json`; the GitHub reader ran on the sandbox PR and on team PRs #2 and #7.
 - All sessions and repos in `fixtures/` and `examples/` are synthetic.

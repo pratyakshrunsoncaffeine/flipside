@@ -23,7 +23,11 @@ class Clock:
 
 
 def setup(
-    world: World, tmp: Path, clock: Clock, rooms: tuple[str, str] = ("pr", "priv")
+    world: World,
+    tmp: Path,
+    clock: Clock,
+    rooms: tuple[str, str] = ("pr", "priv"),
+    answerers: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     shared, private = rooms
     hub = FakeSwitch()
@@ -48,6 +52,7 @@ def setup(
                 au,
                 "priya",
                 tmp / "author-state.json",
+                author_answerers=answerers,
             ),
             log=lambda _m: None,
         )
@@ -249,3 +254,47 @@ def test_state_from_another_room_is_not_reused(tmp_path: Path) -> None:
     r.step()
     a.step()
     assert len(s2["hub"].cards) == 1
+
+
+SLACK_PRIYA = "@switch-slack-b1-priya"
+
+
+def press_in_slack(hub: FakeSwitch, who: str) -> None:
+    """Switch reports a card answered from Slack under the presser's bridged identity."""
+    card = hub.cards[next(iter(hub.cards))]
+    card.answer, card.answered_by = "approve", who
+
+
+def test_a_card_pressed_in_slack_by_the_author_is_honoured(tmp_path: Path) -> None:
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock(), answerers=(SLACK_PRIYA,))
+    hub, a, r = s["hub"], s["author"](), s["reviewer"]()
+    a.step()
+    r.step()
+    a.step()
+    press_in_slack(hub, SLACK_PRIYA + ":localhost")
+    a.step()
+    assert "disclosure" in types(hub)
+
+
+def test_a_slack_press_by_anyone_else_is_ignored(tmp_path: Path) -> None:
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock(), answerers=(SLACK_PRIYA,))
+    hub, a, r = s["hub"], s["author"](), s["reviewer"]()
+    a.step()
+    r.step()
+    a.step()
+    press_in_slack(hub, "@switch-slack-b1-omar:localhost")
+    a.step()
+    assert "disclosure" not in types(hub)
+
+
+def test_only_the_whole_local_part_of_a_slack_id_matches() -> None:
+    cfg_ok = AuthorConfig(
+        1, "pr", "priv", Path("."), "", "", "ra", "a", "priya", author_answerers=(SLACK_PRIYA,)
+    )
+    assert cfg_ok.answered_by_author("a")
+    assert cfg_ok.answered_by_author(SLACK_PRIYA + ":localhost")
+    assert not cfg_ok.answered_by_author(SLACK_PRIYA + "x:localhost")
+    assert not cfg_ok.answered_by_author("user:" + SLACK_PRIYA)
+    assert not cfg_ok.answered_by_author("@switch-slack-b1-omar:localhost")
