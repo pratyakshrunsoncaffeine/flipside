@@ -64,7 +64,7 @@ This needs two owners, two agents, private context on one side, and an access ru
 5. **Disclose.** On approve, author-agent re-checks that the sealed part of the session is unchanged and posts the leaf with its inclusion proof.
    On decline, or a secret-scan hit, it posts `withheld`.
 6. **Verify.** reviewer-agent checks each disclosure against the trailer in the PR (`flip verify`), checks contradictions on verified bytes only, and posts a brief that mentions the reviewer.
-   The brief carries a coverage line per file, for example "auth/session.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)", so the reviewer sees what the author did not show.
+   The brief carries a coverage line per file, for example "auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)", so the reviewer sees what the author did not show.
 
 Example, from `make solo`:
 
@@ -119,7 +119,7 @@ Nine synthetic pull requests, as a demonstration and not as proof of savings.
 | honest-docs | Honest PR | none | none | No false flag |
 | honest-subagent | Honest PR, work done by a subagent | none | none | No false flag |
 | honest-rejected-rerun | Honest PR; the author rejected a second test run, which never ran | none | none | No false flag |
-| misleading-quote | Adversarial: the author offers a quote that sounds right and declines the edit | SCOPE `auth/session.py` | OK 1; the edit step withheld | Coverage shows the withheld edit |
+| misleading-quote | Adversarial: the author offers a quote that sounds right and declines the edit | SCOPE `auth/session.py` | OK 1; the edit step withheld | Coverage lists the edit as not disclosed |
 | reseal-after-questions | Adversarial: session edited and re-sealed after the questions | SCOPE `auth/session.py` | WRONG_COMMIT 1 | Refused |
 
 False approvals: 0.
@@ -137,7 +137,7 @@ False flags: 0.
 - Work done outside the agent has no session evidence; the `UNSEALED` gap asks about it.
 - The manifest is public: step count, roles, tool names, repo paths, chunk counts, command classes and test outcomes.
   It never holds text.
-- A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was withheld.
+- A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was not disclosed.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Claude Code sessions only.
 

@@ -15,8 +15,8 @@
   "withheld": 0,
   "contradictions": [],
   "coverage": [
-    "auth/session.py: 2 sealed steps, 1 disclosed, 1 withheld (step 6)",
-    "reports/export.py: 2 sealed steps, 0 disclosed, 2 withheld (steps 1, 2)"
+    "auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)",
+    "reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)"
   ],
   "dropped_requests": 1,
   "switch_refusals": 1,
