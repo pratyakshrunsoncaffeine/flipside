@@ -29,7 +29,7 @@ PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("api_key", re.compile(r"\bsk-(?:ant-|proj-)?[A-Za-z0-9_-]{32,}")),
 )
 _ENV_LINE = re.compile(
-    r"(?m)^\s*(?:export\s+)?([A-Z][A-Z0-9_]*)\s*=\s*[\"']?([^\s\"'#]{16,})[\"']?"
+    r"(?m)(?:^|(?<=[\s;&|(]))(?:export\s+)?([A-Z][A-Z0-9_]*)\s*=\s*[\"']?([^\s\"'#;&|]{16,})"
 )
 ENTROPY_MIN = 3.5
 

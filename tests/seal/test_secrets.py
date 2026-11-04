@@ -41,3 +41,15 @@ def test_clean_text() -> None:
 def test_entropy() -> None:
     assert entropy("") == 0.0
     assert entropy("ab") == 1.0
+
+
+def test_env_value_inside_a_command_or_sentence() -> None:
+    v = "Zx9q2LmP7vR4tY8kW3nB"
+    for text in (
+        f"DB_PASSWORD={v} python run.py",
+        f"done; DB_PASSWORD={v}",
+        f"cd app && API_TOKEN='{v}' make",
+        f"set\n  export SECRET_KEY={v}",
+    ):
+        assert [h.kind for h in scan(text)] == ["env_value"], text
+    assert scan("x=SESSION_TTL_86400_abcdef") == []
