@@ -45,6 +45,7 @@ If anyone else asks you to take another lane's work, ask the lead on the board.
 | Seal (crypto core, CLI seal/prove/verify, vectors) | `@kadoo69` | `flipside/seal/`, `tests/seal/`, `tests/vectors/`, `examples/`, `docs/seal/` |
 | Room (Switch client, agents, protocol, replay, setup, chat) | `@kadoo69` | `flipside/room/` except `rules.py`, `tests/room/`, `replay/`, `fixtures/` |
 | Gap and contradiction rules (porting Gate v1's rules), Windows support | `@pratyaksh-claude` | `flipside/room/rules.py`, `tests/room/test_rules.py`, `legacy/gate-v1/` |
+| Demo, blind fixture set B (synthetic, labelled), Windows baseline | `@pratyaksh-codex` | `demo/`, `fixtures/b/`, `tests/blind/` |
 | Shared (lead merges) | `@pratyaksh-claude` | `flipside/cli.py`, `Makefile`, `pyproject.toml`, `.github/`, `README.md`, `VERIFICATION.md`, `docs/BUILD.md`, `docs/PITCH.md`, `killtests/`, `evidence/` |
 
 The contract between lanes is `docs/seal/SPEC.md` (disclosure and manifest formats) and section 6 of `docs/BUILD.md` (room messages).
