@@ -20,7 +20,6 @@ import datetime as dt
 import json
 import os
 import secrets
-import signal
 import subprocess
 import sys
 import tempfile
@@ -278,11 +277,21 @@ class Agents:
     log: Log
     procs: dict[str, subprocess.Popen[bytes]] = field(default_factory=dict)
 
+    def stop_file(self, role: str) -> Path:
+        return self.work / f"{role}-agent.stop"
+
     def start(self, role: str) -> None:
         cmd = [sys.executable, "-m", "flipside.cli", "agent", role]
+        self.stop_file(role).unlink(missing_ok=True)
         with (self.work / f"{role}-agent.log").open("ab") as out:
             self.procs[role] = subprocess.Popen(
-                [*cmd, "--config", str(self.configs[role])],
+                [
+                    *cmd,
+                    "--config",
+                    str(self.configs[role]),
+                    "--stop-file",
+                    str(self.stop_file(role)),
+                ],
                 stdout=out,
                 stderr=subprocess.STDOUT,
                 cwd=ROOT,
@@ -297,9 +306,11 @@ class Agents:
         self.log(f"restart: {role}-agent process killed with SIGKILL (pid {p.pid})")
 
     def stop_all(self) -> None:
+        """Ask every agent to stop through its stop file, so its shutdown runs on every OS."""
+        for role in self.procs:
+            self.stop_file(role).touch()
         for role, p in self.procs.items():
             if p.poll() is None:
-                p.send_signal(signal.SIGTERM)
                 try:
                     p.wait(15)
                 except subprocess.TimeoutExpired:

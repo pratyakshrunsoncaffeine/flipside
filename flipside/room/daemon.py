@@ -221,14 +221,21 @@ def reviewer(cfg: dict[str, Any]) -> tuple[ReviewerAgent, SwitchTransport]:
     return agent, t
 
 
-def run(cfg: dict[str, Any], stop: threading.Event, poll: float = 1.0) -> int:
-    """Step the agent until ``stop`` is set. Transient Switch errors are logged and retried."""
+def run(
+    cfg: dict[str, Any], stop: threading.Event, poll: float = 1.0, stop_file: Path | None = None
+) -> int:
+    """Step the agent until ``stop`` is set or ``stop_file`` exists.
+
+    Transient Switch errors are logged and retried. The stop file is how a parent asks for a
+    clean stop on every OS: on Windows a signal from the parent is TerminateProcess, which
+    skips the shutdown below.
+    """
     agent: AuthorAgent | ReviewerAgent
     prepare_work(cfg)
     agent, t = author(cfg) if cfg["role"] == "author" else reviewer(cfg)
     log(f"{cfg['agent_name']} started (pid {os.getpid()})")
     try:
-        while not stop.is_set():
+        while not stop.is_set() and not (stop_file and stop_file.exists()):
             try:
                 agent.step()
             except (SwitchError, Forbidden, OSError) as e:
@@ -253,6 +260,7 @@ def main(argv: list[str]) -> int:
     p.add_argument("role", choices=("author", "reviewer"))
     p.add_argument("--config", required=True, help="agent config file (mode 0600)")
     p.add_argument("--poll", type=float, default=1.0, help="seconds between steps")
+    p.add_argument("--stop-file", type=Path, help="stop cleanly once this file exists")
     a = p.parse_args(argv)
     cfg = load_config(Path(a.config))
     if cfg.get("role") != a.role:
@@ -260,7 +268,7 @@ def main(argv: list[str]) -> int:
     stop = threading.Event()
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: stop.set())
-    return run(cfg, stop, a.poll)
+    return run(cfg, stop, a.poll, a.stop_file)
 
 
 if __name__ == "__main__":
