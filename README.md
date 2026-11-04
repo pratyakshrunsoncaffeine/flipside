@@ -119,6 +119,8 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | Live end to end on local Switch with the four refusals, each agent in its own process, both killed with SIGKILL and restarted without duplicate posts | `make solo` |
 | GitHub PR reader, on canned data and one public PR | `tests/room/test_github.py` |
 | A real Claude Code session, sealed, connected with `flip setup`, both agents as processes, people via `flip chat`: 2 questions, 8 leaves verified, brief | `evidence/real-session-20261104T224823.log` |
+| The same sealed PR on GitHub, read with `gh api` (title, body, files, check runs): 2 questions, 8 leaves verified, 0 contradictions | `evidence/github-pr-20261105T002706.log` |
+| CI on Ubuntu and Windows | `.github/workflows/ci.yml` |
 
 ## Limits
 
@@ -129,7 +131,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 - A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was withheld.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
-- Not yet checked: Slack rendering of the approval card, two machines, CI on Ubuntu, the GitHub reader on a sealed PR end to end (the real-session run used a local git remote).
+- Not yet checked: Slack rendering of the approval card, and author and reviewer on two machines.
 - A leaf's text is the session verbatim, so tool inputs carry the author's absolute paths; the author sees and approves those exact bytes on each card.
 - The local server has no chat window for people without Docker (its bundled Mattermost needs Docker); `make solo` acts for both people through the gateway API.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.

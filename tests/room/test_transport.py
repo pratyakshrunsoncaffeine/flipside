@@ -1,5 +1,7 @@
 """FakeSwitch applies the rules K1, K2 and K4 showed on the real server."""
 
+from pathlib import Path
+
 import pytest
 
 from flipside.room.transport import FORBIDDEN_ANSWER, REFUSAL, FakeSwitch, Forbidden, Rule
@@ -63,3 +65,17 @@ def test_refusal_to_an_agent_does_not_cascade() -> None:
     msgs = hub.read(ra, "other")
     assert len(msgs) == 2 and msgs[1].sender == aa
     assert msgs[1].body.startswith("@reviewer-agent ") and msgs[1].addressed is False
+
+
+def test_event_cursor_is_bound_to_its_agent_and_rooms(tmp_path: Path) -> None:
+    from flipside.room.switch_client import EventTap
+
+    cur = tmp_path / "cursor.json"
+    tap = EventTap("http://x", "agent-1", "key", ("r1", "r2"), cur)
+    tap.last_event_id, tap.addressed = "42", {"m1": True}
+    tap._save()
+    same = EventTap("http://x", "agent-1", "key", ("r2", "r1"), cur)
+    assert same.last_event_id == "42" and same.addressed == {"m1": True}
+    for agent, rooms in (("agent-2", ("r1", "r2")), ("agent-1", ("r3", "r4"))):
+        other = EventTap("http://x", agent, "key", rooms, cur)
+        assert other.last_event_id is None and other.addressed == {}
