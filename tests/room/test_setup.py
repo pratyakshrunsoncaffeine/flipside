@@ -128,6 +128,12 @@ def test_policies_and_membership(fake: type[FakeSwitch], tmp_path: Path) -> None
     posts = [(path, body) for m, path, body, _ in fake.calls if m == "POST"]
     assert ("/gateway/chats/room-pr-142/members", {"userId": "u-author"}) in posts
     assert ("/gateway/rooms/room-pr-142/agents", {"agent_ids": ["agent-a"]}) in posts
+    # Each room opens with Flipside's own first message, not Switch's generic greeting.
+    greetings = {b["name"]: b["greeting"] for p, b in posts if p == "/gateway/chats"}
+    assert greetings == {
+        "pr-142": setup.shared_greeting(142),
+        "pr-142-author": setup.private_greeting(142),
+    }
     # reviewer-agent's policy is set before author-agent joins the room.
     order = [path for _, path, _, _ in fake.calls]
     assert order.index("/gateway/agents/agent-r/addressing-policy") < order.index(
