@@ -12,6 +12,7 @@ lint: ## ruff and mypy
 	$(UV_RUN) ruff check flipside tests docs/seal/example.py examples fixtures
 	$(UV_RUN) ruff format --check flipside tests docs/seal/example.py examples fixtures
 	$(UV_RUN) mypy
+	$(UV_RUN) mypy --platform win32
 
 g8: ## Offline check: q2-ok verifies OK, q2-forged gives PROOF_FAIL (no network, no Switch)
 	$(PY) -m flipside.cli verify --bundle examples/seal.bundle --commit $$(cat examples/commit.txt) --manifest examples/manifest.json examples/q2-ok.json

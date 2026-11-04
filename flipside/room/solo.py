@@ -68,16 +68,23 @@ def person(admin: Http, base: str, role: str) -> tuple[Http, str, str]:
     Agent names are unique on a Switch server, so the same two users own the two agents in
     the kill tests and in every solo run. Returns the session, the user id and the name."""
     creds = json.loads(CREDS.read_text()) if CREDS.exists() else {}
+    existing = {u["email"] for u in admin.get("/gateway/users")}
     if role not in creds:
+        email = f"{role}@flipside.local"
+        if email in existing:
+            raise SystemExit(
+                f"{email} already exists on this Switch server, but {CREDS} has no password "
+                "for it; copy that file (mode 0600) from the clone that created the user"
+            )
         creds[role] = {
-            "email": f"{role}@flipside.local",
+            "email": email,
             "password": secrets.token_urlsafe(18),
             "name": role.capitalize(),
         }
         CREDS.write_text(json.dumps(creds))
         os.chmod(CREDS, 0o600)
     c = creds[role]
-    if c["email"] not in {u["email"] for u in admin.get("/gateway/users")}:
+    if c["email"] not in existing:
         admin.post(
             "/gateway/users",
             {"name": c["name"], "email": c["email"], "password": c["password"], "role": "member"},
@@ -272,7 +279,7 @@ class Agents:
 
     def kill(self, role: str) -> None:
         p = self.procs[role]
-        p.send_signal(signal.SIGKILL)
+        p.kill()  # SIGKILL on POSIX, TerminateProcess on Windows: no cleanup either way
         p.wait(10)
         self.log(f"restart: {role}-agent process killed with SIGKILL (pid {p.pid})")
 

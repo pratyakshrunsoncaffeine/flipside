@@ -47,6 +47,9 @@ def users(admin: Client) -> dict[str, dict]:
     for who in ("author", "reviewer"):
         email = f"{who}@flipside.local"
         if who not in creds:
+            if email in existing:
+                raise SystemExit(f"{email} exists on this server but {CREDS} has no password for it; "
+                                 "copy that file (mode 0600) from the clone that created the user")
             creds[who] = {"email": email, "password": secrets.token_urlsafe(18), "name": who.capitalize()}
         if email not in existing:
             admin.call("POST", "/gateway/users", {"name": creds[who]["name"], "email": email,
