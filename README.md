@@ -113,6 +113,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | Check | Command |
 |---|---|
 | Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
+| K3: author-agent's approval card renders in Slack with Approve and Decline buttons; the reviewer gets 403; the author's button press in Slack reaches author-agent (4/4) | `evidence/k3-20261105T005334.log`, `evidence/k3-slack-card-20261105T005334-before.png` |
 | Seal core gates G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
 | Offline end to end, with the four refusals | `make replay-offline` |
 | 9 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
@@ -131,7 +132,9 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 - A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was withheld.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
-- Not yet checked: Slack rendering of the approval card, and author and reviewer on two machines.
+- Not yet checked: author and reviewer on two machines.
+- The full review runs in Switch rooms, not Slack channels: `flip setup` creates Switch chats, and Flipside's agents recognise people by their Switch user id.
+  In a Slack channel, Switch reports a person's message as `kind: human` with no user id, and a button press as their bridged Slack identity, so the agents would ignore both.
 - A leaf's text is the session verbatim, so tool inputs carry the author's absolute paths; the author sees and approves those exact bytes on each card.
 - The local server has no chat window for people without Docker (its bundled Mattermost needs Docker); `make solo` acts for both people through the gateway API.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.

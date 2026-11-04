@@ -1,0 +1,12 @@
+2026-11-05T00:48:41 server http://127.0.0.1:52370; author user a4690271-4320-44a1-984f-459e4765d85a
+2026-11-05T00:48:41 Slack connection Flipside Slack f56432e5-e42d-4795-85d0-54f7fe94938b; author's Slack ids ['U0CESSDPMNZ']
+2026-11-05T00:48:42 Slack bot agent_switch in workspace Flipside T0CEY09M1LJ
+2026-11-05T00:48:42 author-agent 5557b586-915a-429c-9bb1-8d73cec90e33
+2026-11-05T00:48:43 room pr-k3-1105004842-author e6b3ac91-6283-4f46-954e-179ef136f22f: bridge slack, channel C0CEGTE4KC7, url slack://channel?team=T0CEY09M1LJ&id=C0CEGTE4KC7
+2026-11-05T00:48:43 PASS K3.a the author's private room is bridged to a Slack channel: channel C0CEGTE4KC7
+2026-11-05T00:48:43 invite author U0CESSDPMNZ to C0CEGTE4KC7: ok=True 
+2026-11-05T00:48:43 author-agent opened card 7d2d0e2bef8b418a9adc4522aafc1c18 in pr-k3-1105004842-author
+2026-11-05T00:49:44 Slack card ts None: text 'None'; buttons []
+2026-11-05T00:49:44 FAIL K3.b the approval card renders in Slack with Approve and Decline buttons: buttons []
+2026-11-05T00:49:44 PASS K3.c the reviewer cannot answer the card: 403 {"code":"NOT_AUTHORIZED","message":"You may not address this agent, so you may not answer it."}
+2026-11-05T00:49:44 WAITING up to 600s: press Approve on the card in Slack channel #pr-k3-1105004842-author
