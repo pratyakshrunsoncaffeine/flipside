@@ -179,7 +179,9 @@ def test_creds_readable_by_others_is_refused(tmp_path: Path) -> None:
 
 def test_private_creds_load_on_every_os(tmp_path: Path) -> None:
     creds = tmp_path / "c.json"
-    creds.write_text(json.dumps({"me": {"email": "e", "password": "p"}}))
+    creds.write_text(
+        json.dumps({"me": {"email": "e", "password": "p"}}), encoding="utf-8", newline=""
+    )
     os.chmod(creds, 0o600)
     assert setup.load_creds(creds, "me") == {"email": "e", "password": "p"}
 
