@@ -36,7 +36,14 @@ from flipside.room.protocol import accept
 from flipside.room.replay import DEFAULT_CASE, ROOT, case_timeout, report
 from flipside.room.run import Card, Cast, Log, Result, Script, play
 from flipside.room.scenario import World, load_case, materialize
-from flipside.room.setup import OWNER_RULE, policy, register, room_id
+from flipside.room.setup import (
+    OWNER_RULE,
+    open_chat,
+    policy,
+    private_greeting,
+    register,
+    shared_greeting,
+)
 from flipside.room.switch_client import DEFAULT_BASE, Http, SwitchTransport
 
 CREDS = ROOT / "killtests" / ".local-users.json"
@@ -155,12 +162,7 @@ def bootstrap(world: World, log: Log) -> Live:
         f"{reviewer_id}; author-agent {a_agent}, reviewer-agent {r_agent}"
     )
     n = world.pr.number
-    shared = room_id(
-        reviewer_h.post(
-            "/gateway/chats",
-            {"requestId": uuid.uuid4().hex, "name": f"pr-{n}", "agentIds": [r_agent]},
-        )
-    )
+    shared = open_chat(reviewer_h, f"pr-{n}", r_agent, shared_greeting(n))
     # Switch matches a person against `users` by their member client id, which the gateway
     # does not expose, so reviewer-agent admits any person in its own #pr-<n> room: only
     # the author and the reviewer are members, and it acts only on the PR author's answers.
@@ -174,12 +176,7 @@ def bootstrap(world: World, log: Log) -> Live:
     )
     reviewer_h.post(f"/gateway/chats/{shared}/members", {"userId": author_id})
     reviewer_h.post(f"/gateway/rooms/{shared}/agents", {"agent_ids": [a_agent]})
-    private = room_id(
-        author_h.post(
-            "/gateway/chats",
-            {"requestId": uuid.uuid4().hex, "name": f"pr-{n}-author", "agentIds": [a_agent]},
-        )
-    )
+    private = open_chat(author_h, f"pr-{n}-author", a_agent, private_greeting(n))
     log(
         f"reviewer opened #pr-{n} {shared} and added the author and author-agent; author opened "
         f"#pr-{n}-author {private}; author-agent policy: owner, owner's agents, reviewer-agent "
