@@ -109,8 +109,8 @@ The same targets, run directly:
 
 ```
 uv sync --frozen
-uv run --frozen ruff check flipside tests docs/seal/example.py examples fixtures
-uv run --frozen ruff format --check flipside tests docs/seal/example.py examples fixtures
+uv run --frozen ruff check flipside tests docs/seal/example.py examples fixtures killtests demo
+uv run --frozen ruff format --check flipside tests docs/seal/example.py examples fixtures killtests demo
 uv run --frozen mypy
 uv run --frozen pytest
 $c = Get-Content examples/commit.txt
