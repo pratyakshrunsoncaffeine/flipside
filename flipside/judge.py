@@ -57,7 +57,15 @@ def _run(args: list[str], timeout: int = 300) -> tuple[int, str]:
 def _show(args: list[str]) -> str:
     """The command as a judge would type it from the repo root."""
     parts = ["uv", "run", "flip", *args[len(PY) :]] if args[: len(PY)] == PY else args
-    return " ".join(shlex.quote(str(a)) for a in parts).replace(str(ROOT) + "/", "")
+    return " ".join(shlex.quote(_rel(a)) for a in parts)
+
+
+def _rel(x: str | Path) -> str:
+    """A path under the repo as the judge types it, with / on every OS; anything else as is."""
+    try:
+        return Path(x).resolve().relative_to(ROOT).as_posix()
+    except (ValueError, OSError):
+        return str(x)
 
 
 def _verify_args(disclosure: Path, manifest: Path) -> list[str]:
@@ -232,7 +240,7 @@ def live_evidence_check(since: float | None = None) -> Check:
         + ("ran now" if since is not None else "ran (recorded)")
         + " on real Switch 0.31.0 and Mattermost, both people on their own accounts"
         + ("" if since is not None else " (re-run live: `make judge-live`, needs Docker)"),
-        f"read {logs[-1].relative_to(ROOT)}",
+        f"read {_rel(logs[-1])}",
         "RESULT PASS on switch, four refusals live, no step errors, Switch message ids",
         f"{'all lines present' if not missing else 'missing: ' + '; '.join(missing)}; "
         f"{ids} Switch message ids",
@@ -329,7 +337,7 @@ MODEL_SDKS = re.compile(
 
 def deterministic_check() -> Check:
     hits = [
-        str(p.relative_to(ROOT))
+        _rel(p)
         for p in sorted((ROOT / "flipside").rglob("*.py"))
         if MODEL_SDKS.search(p.read_text(encoding="utf-8"))
     ]
@@ -426,7 +434,7 @@ def main(argv: list[str] | None = None) -> int:
         out.with_suffix(".json").write_text(
             json.dumps(record, indent=2) + "\n", encoding="utf-8", newline="\n"
         )
-        print(f"evidence {out.relative_to(ROOT)}.log and .json")
+        print(f"evidence {_rel(out)}.log and .json")
     return 0 if all(c.ok for c in checks) else 2
 
 

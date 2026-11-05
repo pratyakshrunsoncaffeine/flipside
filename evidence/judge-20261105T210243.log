@@ -44,7 +44,7 @@ PASS  J9   Questions come from fixed rules: 9 labelled cases, 2 of them adversar
         got:    9/9 match
         code:   flipside/room/rules.py, fixtures/
 PASS  J10  The same review ran (recorded) on real Switch 0.31.0 and Mattermost, both people on their own accounts (re-run live: `make judge-live`, needs Docker)
-        run:    read evidence/demo-mattermost-csv-export-20261105T201917.log
+        run:    read evidence/demo-mattermost-csv-export-20261105T204838.log
         expect: RESULT PASS on switch, four refusals live, no step errors, Switch message ids
         got:    all lines present; 14 Switch message ids
         code:   flipside/room/demo.py, flipside/room/switch_client.py, .github/workflows/
@@ -53,4 +53,4 @@ PASS  J11  No model decides anything: questions, verdicts and coverage are stand
         expect: no model SDK import; dependencies = []
         got:    no model SDK import; dependencies = []
         code:   flipside/, pyproject.toml
-RESULT PASS 11/11 checks in 8.1 s
+RESULT PASS 11/11 checks in 11.6 s

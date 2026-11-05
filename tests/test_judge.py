@@ -91,3 +91,11 @@ def test_recorded_live_check_reads_only_committed_logs(tmp_path: Path) -> None:
     ).stdout.split()
     read = c.command.removeprefix("read ")
     assert read in tracked
+
+
+def test_paths_print_with_forward_slashes() -> None:
+    # Windows CI printed evidence\\demo-...; a judge copies these lines on any OS.
+    assert judge._rel(judge.ROOT / "evidence" / "x.log") == "evidence/x.log"
+    assert judge._rel("--commit") == "--commit"
+    shown = judge._show([*judge.PY, "verify", str(judge.EX / "q2-ok.json")])
+    assert shown == "uv run flip verify examples/q2-ok.json"
