@@ -97,7 +97,7 @@ The four refusals, each live on Switch and logged in `evidence/solo-*.log`:
 | Two owners' agents meet without sharing machines or keys | Agents keep their owner; one room holds agents from two owners | K1, K4 |
 | Agents act only on what Switch addressed to them | `payload.addressed` on each agent's event stream | K1, `flipside/room/switch_client.py` |
 | The manifest travels with the seal message | Agent media upload (`/agents/{id}/rooms/{room}/media`) | `make solo` |
-| Teams stay in their chat app | Slack, Discord, Mattermost, Teams, Telegram bridges (`bridges/collaboration/`) | Not yet checked (K3, Slack) |
+| Teams stay in their chat app | Slack, Discord, Mattermost, Teams, Telegram bridges (`bridges/collaboration/`) | K3 (the card in Slack), `flip solo --slack --press`; answers typed in Slack are not accepted yet |
 
 ## What is deterministic
 
@@ -151,5 +151,7 @@ False flags: 0.
 | Nine fixture cases, offline and live | pass | `make fixtures`, `make solo-all` |
 | Full flow live, each agent in its own process, both killed and restarted mid-flow | pass | `make solo` |
 | GitHub PR reader (title, body, files, check runs) | pass on canned data and one public PR | `tests/room/test_github.py` |
-| Approval card in Slack with buttons (K3) | not run | - |
-| Two machines | not run | - |
+| Approval card in Slack with buttons; the reviewer gets 403; the author's press reaches author-agent (K3, 4 checks) | pass | `evidence/k3-20261105T005334.log` |
+| The live flow in Slack channels; the author approves in Slack | pass | `evidence/solo-csv-export-20261105T011603.log` |
+| Clean clone on a second machine (Windows, its own Switch server) reproduces the verdicts and coverage lines | pass | `evidence/replay-switch-csv-export-20261105T015811.log` |
+| Author and reviewer on two machines | not run | - |
