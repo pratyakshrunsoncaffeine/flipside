@@ -12,15 +12,31 @@ Prove what your coding agent did, without handing over the session.
 
 [![Flipside, the 78 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
 
-When one team's agent writes a pull request and another team owns the code, the reason behind each change lives only in the author's agent session.
-Flipside seals that session into the PR as one Merkle root in a commit trailer.
-The owning team's agent asks about gaps it finds in public PR data and requests specific sealed steps.
-The full session stays on the author's machine.
-Each requested chunk goes first to an approval card only the author can answer, and reaches the reviewer only if the author approves it.
-The reviewer's agent checks every quote against the sealed root and posts a brief that says what was not shown.
+**Flip the Switch · Track 01: Business workflow**
 
-Flip the Switch, Track 01 (Business workflow).
-All fixtures are synthetic.
+When another team's coding agent opens a pull request in code you own, the reason behind each change sits in that agent's private session.
+Flipside lets your reviewer ask for the one step that explains a change and check that it is genuine, while the author keeps the rest of the session to themselves.
+
+**The reviewer gets the why, with proof. The author shares one step, not the session. Switch decides who may ask and who may approve.**
+
+It is for teams that review code written by another team's agents: platform and security owners, and maintainers of shared services.
+
+### One review, start to finish
+
+1. Priya's coding agent writes PR #142, "Add CSV export to the reports page".
+   Before review, `flip seal` fingerprints her whole agent session into the PR as one Merkle root.
+2. Omar's reviewer-agent reads the public PR and finds a gap: `auth/session.py` changed and the description never says why.
+   It asks Q1 and requests the one session step behind that edit.
+3. Priya answers in her own words.
+   The requested step goes to an approval card that only she can answer, and she approves it.
+4. Omar's agent checks the step against the seal: `OK`.
+   An edited copy posted to the room fails with `PROOF_FAIL`.
+5. Omar gets a brief: the answer, the verified step, and the steps that were not shown.
+   When he tags Priya's agent for the whole session, Switch refuses.
+
+Every step above happened on real Switch 0.31.0 and Mattermost, with Priya and Omar as the `Author` and `Reviewer` accounts, in the film and in [this log](evidence/demo-mattermost-csv-export-20261105T190535.log).
+No model decides anything: questions, checks and the brief are deterministic Python on the standard library.
+All people, code and sessions are synthetic.
 
 ## Try it
 
@@ -36,16 +52,6 @@ Judging, or asking an agent to judge? [JUDGING.md](JUDGING.md) maps each claim t
 `make demo` is checked on macOS and in CI on Ubuntu; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
 To watch the recorded run play back step by step, open the [site](https://pratyakshrunsoncaffeine.github.io/gateplus/) (or `site/index.html` locally).
 To check a disclosed quote without installing anything, open [verify.html](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html) (or `site/verify.html`).
-
-## Why not just ask the author
-
-| | Outcome checks (tests, CI, model reviewers) | Asking the author in chat | Flipside |
-|---|---|---|---|
-| Says why the change was made | No: they check the result | Yes, but the answer may itself be agent-written | Yes, with the session step behind the answer |
-| The session stays with the author | Not needed | Yes | Yes: a requested chunk goes to the author's own card; only approved chunks reach the reviewer |
-| A quote can be checked | Not applicable | No | Yes, offline, against a root sealed before review began |
-| Who decides what is shared | Not applicable | The author, unchecked | The author, chunk by chunk, on a card only they can answer |
-| A model decides the outcome | Model reviewers: yes; tests and CI: no | Not applicable | Never: rules, proofs and coverage are deterministic Python |
 
 ## What the reviewer sees
 
@@ -71,6 +77,12 @@ reviewer-agent   @Reviewer Brief for PR #142: 1 question, 1 answered, 1 leaf ver
 The same review in Mattermost, with the author and the reviewer on their own accounts:
 
 ![The #pr-142 room in Mattermost: the reviewer asks for the whole session, the injected request is dropped, the author approves step 5, reviewer-agent verifies it OK and posts the brief](site/media/mattermost-review-room.jpg)
+
+*Figure 1. The shared room `#pr-142`: the reviewer's grab for the whole session, the injected request that author-agent drops, the approved step, the `OK` verdict and the brief.*
+
+![The approval card in the author's private room: Disclose step 5 chunk 0 to #pr-142? with the exact text and its hash, chosen by Author](site/media/mattermost-approve.jpg)
+
+*Figure 2. The approval card in the author's private room `#pr-142-author`: the exact text that would be shared and its hash. Only the author can answer it.*
 
 Q1 was "`auth/session.py` changed and the PR description does not mention it. Why?", raised by a deterministic rule.
 The reviewer gets the author's answer and the exact session step behind it, checked against a root sealed before review began.
@@ -101,17 +113,31 @@ sequenceDiagram
 
 Terms (seal, leaf, root, manifest, gap, coverage line, page rule) are defined in [docs/REFERENCE.md](docs/REFERENCE.md#terms).
 
-## Run it yourself
+## Why not just ask the author
 
-| Path | Needs | Commands |
-|---|---|---|
-| Offline | Git, Python 3.12, [uv](https://docs.astral.sh/uv/) | `make lint test`, `make g8`, `make replay-offline`, `make fixtures` |
-| Real Switch and Mattermost (macOS and CI Ubuntu checked) | Docker with Compose v2 | `make demo`, `make k5`, `make demo-down` |
-| Switch Console's local server | Switch Console | `make killtests`, `make solo`, `make replay` |
-| A real PR, author and reviewer each with their own login | Switch logins, `gh` | `flip seal`, `flip setup`, `flip agent` |
+| | Outcome checks (tests, CI, model reviewers) | Asking the author in chat | Flipside |
+|---|---|---|---|
+| Says why the change was made | No: they check the result | Yes, but the answer may itself be agent-written | Yes, with the session step behind the answer |
+| The session stays with the author | Not needed | Yes | Yes: a requested chunk goes to the author's own card; only approved chunks reach the reviewer |
+| A quote can be checked | Not applicable | No | Yes, offline, against a root sealed before review began |
+| Who decides what is shared | Not applicable | The author, unchecked | The author, chunk by chunk, on a card only they can answer |
+| A model decides the outcome | Model reviewers: yes; tests and CI: no | Not applicable | Never: rules, proofs and coverage are deterministic Python |
 
-`make demo` starts pinned Switch 0.31.0 with Mattermost on 127.0.0.1; both people act as their own Mattermost accounts and the author approves the card there.
-Every command, the Windows PowerShell versions and the real-PR setup are in [docs/RUNNING.md](docs/RUNNING.md).
+## How Switch is used
+
+| Switch feature | Where |
+|---|---|
+| Two owners' agents in one room, scoped addressing policy per room | `flipside/room/solo.py` (`run_switch`), `killtests/k4.py` |
+| Switch's own refusal message to a non-admitted sender | refusal 1; matched in `flipside/room/run.py` |
+| `payload.addressed` on the agent event stream | `flipside/room/switch_client.py` (`EventTap`) |
+| Agent messages and media upload (the manifest) | `SwitchTransport.post`, `SwitchTransport.upload` |
+| Approval cards and outcomes, answerable only by an addresser | `SwitchTransport.open_card`, `SwitchTransport.outcomes`, `killtests/k1_k2.py` (K2) |
+
+`make replay-offline` runs on `FakeSwitch`, an in-process model of the Switch behaviour that K1, K2 and K4 measured on a real server, so a judge can replay the flow with no server.
+It holds both sides' keys in one process, so it proves nothing about two owners.
+With two real owners, the refusals need a shared server that enforces each owner's policy on the other's people and agents: that is Switch, which stops the reviewer from commanding author-agent or answering the author's card.
+
+Facts verified against switch-core 0.31.0 are in [docs/DESIGN.md](docs/DESIGN.md#7-switch-facts-switch-core-0310-verified) section 7.
 
 ## The four refusals
 
@@ -129,20 +155,6 @@ The six steps in detail are in [docs/REFERENCE.md](docs/REFERENCE.md#how-it-work
 
 No LLM runs anywhere in `flipside/`.
 Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python on the standard library.
-
-## Repository map
-
-```
-flipside/seal/     seal, prove, verify: Merkle tree, manifest, disclosure, secret scan (no network)
-flipside/room/     the two agents, room protocol, deterministic rules, Switch client, demo, replay
-flipside/judge.py  make judge: every README claim as a PASS/FAIL check
-killtests/         K1 to K5: the Switch behaviour Flipside relies on, run on a real server
-fixtures/          9 synthetic PR cases, 2 adversarial, with expected questions and verdicts
-examples/          a real disclosure, a forged copy and their manifest
-site/              the replay page and the in-browser verifier (live on GitHub Pages)
-evidence/          a dated log of every real run, passing or not
-docs/              DESIGN.md (flow, messages, rules, Switch facts), seal/SPEC.md, RUNNING.md, REFERENCE.md
-```
 
 ## Connected agents and channel setup
 
@@ -163,21 +175,31 @@ The AI agent in the story is the author's coding agent (Claude Code): it wrote t
 `flip setup` creates the same two rooms as Switch chats for a real PR between two machines ([docs/RUNNING.md](docs/RUNNING.md)).
 Policies are set with `PUT /gateway/agents/{id}/addressing-policy` (`flipside/room/setup.py`, `author_policy` and `reviewer_policy`).
 
-## How Switch is used
+## Run it yourself
 
-| Switch feature | Where |
-|---|---|
-| Two owners' agents in one room, scoped addressing policy per room | `flipside/room/solo.py` (`run_switch`), `killtests/k4.py` |
-| Switch's own refusal message to a non-admitted sender | refusal 1; matched in `flipside/room/run.py` |
-| `payload.addressed` on the agent event stream | `flipside/room/switch_client.py` (`EventTap`) |
-| Agent messages and media upload (the manifest) | `SwitchTransport.post`, `SwitchTransport.upload` |
-| Approval cards and outcomes, answerable only by an addresser | `SwitchTransport.open_card`, `SwitchTransport.outcomes`, `killtests/k1_k2.py` (K2) |
+| Path | Needs | Commands |
+|---|---|---|
+| Offline | Git, Python 3.12, [uv](https://docs.astral.sh/uv/) | `make lint test`, `make g8`, `make replay-offline`, `make fixtures` |
+| Real Switch and Mattermost (macOS and CI Ubuntu checked) | Docker with Compose v2 | `make demo`, `make k5`, `make demo-down` |
+| Switch Console's local server | Switch Console | `make killtests`, `make solo`, `make replay` |
+| A real PR, author and reviewer each with their own login | Switch logins, `gh` | `flip seal`, `flip setup`, `flip agent` |
 
-`make replay-offline` runs on `FakeSwitch`, an in-process model of the Switch behaviour that K1, K2 and K4 measured on a real server, so a judge can replay the flow with no server.
-It holds both sides' keys in one process, so it proves nothing about two owners.
-With two real owners, the refusals need a shared server that enforces each owner's policy on the other's people and agents: that is Switch, which stops the reviewer from commanding author-agent or answering the author's card.
+`make demo` starts pinned Switch 0.31.0 with Mattermost on 127.0.0.1; both people act as their own Mattermost accounts and the author approves the card there.
+Every command, the Windows PowerShell versions and the real-PR setup are in [docs/RUNNING.md](docs/RUNNING.md).
 
-Facts verified against switch-core 0.31.0 are in [docs/DESIGN.md](docs/DESIGN.md#7-switch-facts-switch-core-0310-verified) section 7.
+## Repository map
+
+```
+flipside/seal/     seal, prove, verify: Merkle tree, manifest, disclosure, secret scan (no network)
+flipside/room/     the two agents, room protocol, deterministic rules, Switch client, demo, replay
+flipside/judge.py  make judge: every README claim as a PASS/FAIL check
+killtests/         K1 to K5: the Switch behaviour Flipside relies on, run on a real server
+fixtures/          9 synthetic PR cases, 2 adversarial, with expected questions and verdicts
+examples/          a real disclosure, a forged copy and their manifest
+site/              the replay page and the in-browser verifier (live on GitHub Pages)
+evidence/          a dated log of every real run, passing or not
+docs/              DESIGN.md (flow, messages, rules, Switch facts), seal/SPEC.md, RUNNING.md, REFERENCE.md
+```
 
 ## Status
 
