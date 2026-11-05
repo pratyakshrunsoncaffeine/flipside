@@ -331,8 +331,19 @@ def logins() -> int:
 
 
 def down() -> int:
+    """Remove the containers and volumes, then the local config and logins.
+
+    The config stays when Docker cannot remove the stack: without it the stack cannot be reached
+    or removed later.
+    """
     if (DIR / "compose.yml").exists() and (DIR / "stack.conf").exists():
-        compose("down", "-v", "--remove-orphans", check=False)
+        res = compose("down", "-v", "--remove-orphans", check=False)
+        if res.returncode != 0:
+            print(
+                f"docker compose down failed; kept {DIR} so you can retry:\n{res.stderr[-2000:]}",
+                file=sys.stderr,
+            )
+            return 1
     for name in ("stack.conf", "people.json", "users.json", "compose.yml"):
         (DIR / name).unlink(missing_ok=True)
     print("demo stack removed (containers, volumes, local config and users)")

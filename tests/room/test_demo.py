@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import stat
+import subprocess
 import urllib.request
 from pathlib import Path
 from types import SimpleNamespace
@@ -143,3 +144,38 @@ def test_switchs_generic_agent_greetings_are_turned_off(monkeypatch: pytest.Monk
     assert adm.calls == [
         ("PATCH", "/gateway/collaborations/b-1", {"agent_greetings_enabled": False})
     ]
+
+
+def _stack(tmp_path: Path) -> list[Path]:
+    files = [tmp_path / n for n in ("stack.conf", "people.json", "users.json", "compose.yml")]
+    for f in files:
+        f.write_text("x", encoding="utf-8", newline="")
+    return files
+
+
+def test_down_keeps_the_config_when_docker_cannot_remove_the_stack(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Deleting the logins after a failed `compose down` would strand running containers."""
+    files = _stack(tmp_path)
+    monkeypatch.setattr(demo, "DIR", tmp_path)
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, **kw: subprocess.CompletedProcess(cmd, 1, "", "daemon unavailable"),
+    )
+    assert demo.down() == 1
+    assert all(f.exists() for f in files)
+    assert "daemon unavailable" in capsys.readouterr().err
+
+
+def test_down_removes_the_config_once_docker_has_removed_the_stack(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    files = _stack(tmp_path)
+    monkeypatch.setattr(demo, "DIR", tmp_path)
+    monkeypatch.setattr(
+        subprocess, "run", lambda cmd, **kw: subprocess.CompletedProcess(cmd, 0, "", "")
+    )
+    assert demo.down() == 0
+    assert not any(f.exists() for f in files)
