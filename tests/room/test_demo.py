@@ -225,3 +225,17 @@ def test_a_run_turns_off_mattermosts_email_preview_banner() -> None:
     assert calls == [
         ("PUT", "/config/patch", {"EmailSettings": {"EnablePreviewModeBanner": False}})
     ]
+
+
+def test_a_run_points_mattermosts_site_url_at_the_address_it_prints() -> None:
+    """Mattermost refuses live updates from an origin other than its site URL, so a person
+    who opens the printed address saw new posts only after switching channels (issue #63)."""
+    calls: list[tuple[str, str, object]] = []
+
+    class FakeMM:
+        def call(self, method: str, path: str, body: object = None) -> object:
+            calls.append((method, path, body))
+            return {}
+
+    demo.match_site_url(FakeMM())  # type: ignore[arg-type]
+    assert calls == [("PUT", "/config/patch", {"ServiceSettings": {"SiteURL": demo.MM_BASE}})]

@@ -211,6 +211,12 @@ def archive_stale_channels(mma: MM) -> int:
     return gone
 
 
+def match_site_url(mma: MM) -> None:
+    """Set Mattermost's site URL to the address the demo prints. Mattermost refuses the live
+    connection from any other origin, so new posts would show only after a channel switch."""
+    mma.call("PUT", "/config/patch", {"ServiceSettings": {"SiteURL": MM_BASE}})
+
+
 def quiet_banner(mma: MM) -> None:
     """Turn off Mattermost's "Preview Mode: Email notifications" banner: the demo sends no
     email, and the banner sits over every channel the people use."""
@@ -335,6 +341,7 @@ def run(case: Path, restarts: bool, press: bool, pace: float) -> int:
     print(f"cleared {clear_rooms(conf)} review rooms from earlier runs")
     mma = mm_admin(conf)
     quiet_banner(mma)
+    match_site_url(mma)
     print(f"archived {archive_stale_channels(mma)} stale review channels")
     from flipside.room import solo
 
