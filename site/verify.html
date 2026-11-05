@@ -103,8 +103,8 @@
   </section>
   <div class="actions">
     <button id="check" type="button">Check proof</button>
-    <button id="sample" type="button" class="secondary">Try synthetic example</button>
-    <button id="forge" type="button" class="secondary">Edit sample quote</button>
+    <button id="sample" type="button" class="secondary">Check the sample step</button>
+    <button id="forge" type="button" class="secondary">Check an edited copy</button>
     <button id="clear" type="button" class="secondary">Clear inputs</button>
   </div>
   <section id="result" role="status" aria-live="polite" aria-atomic="true">
@@ -342,8 +342,14 @@ globalThis.FlipsideVerify = (() => {
       }
     }
   });
-  get("check").addEventListener("click", async () => {
-    if (pendingFiles.size || checking) return;
+  let inflight = null;
+  function run() {
+    if (pendingFiles.size) return Promise.resolve();
+    if (checking) return inflight;
+    inflight = check();
+    return inflight;
+  }
+  async function check() {
     const ticket = ++revision;
     checking = true;
     updateButton();
@@ -355,7 +361,8 @@ globalThis.FlipsideVerify = (() => {
     } catch {
       if (ticket === revision) show("INPUT_ERROR", "This input could not be checked. Run flip verify for the CLI verdict.");
     } finally { checking = false; updateButton(); }
-  });
+  }
+  get("check").addEventListener("click", run);
   function sample(forged) {
     const data = JSON.parse(get("sample-data").textContent);
     if (forged) data.disclosure.leaf.text += " [edited after sealing]";
@@ -367,6 +374,7 @@ globalThis.FlipsideVerify = (() => {
     manifestFileBytes = null;
     pendingFiles.clear();
     changed();
+    return run();
   }
   get("sample").addEventListener("click", () => sample(false));
   get("forge").addEventListener("click", () => sample(true));
