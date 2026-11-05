@@ -86,6 +86,22 @@ def test_run_js_is_built_from_its_evidence_log() -> None:
 
 
 def test_the_hidden_attribute_always_hides() -> None:
-    """A class rule with `display` beat `[hidden]`, so the film's play button stayed over the film."""
+    """A class rule with `display` beat `[hidden]`; the film's play button stayed on top."""
     page = (SITE / "index.html").read_text(encoding="utf-8")
     assert __import__("re").search(r"\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}", page)
+
+
+def test_vendored_three_is_pinned_r160_with_its_licence() -> None:
+    """The lead's condition for vendoring: MIT licence kept and the exact build pinned."""
+    import hashlib
+
+    lib = (SITE / "vendor" / "three.min.js").read_bytes()
+    assert b'const e="160"' in lib
+    assert hashlib.sha256(lib).hexdigest() == (
+        "170c6789f43217c96b3170f4b42fafe135de7f7cd48497a4218f9757ee1d49fa"
+    )
+    assert "MIT License" in (SITE / "vendor" / "THREE-LICENSE").read_text(encoding="utf-8")
+
+
+def test_the_film_stays_under_15_mb() -> None:
+    assert (SITE / "media" / "flipside-film.mp4").stat().st_size < 15 * 1024 * 1024
