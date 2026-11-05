@@ -213,7 +213,7 @@ def main() -> int:
     except HTTPError as e:
         check(
             "K3.c the reviewer cannot answer the card",
-            e.status in (401, 403, 404, 409),
+            e.status == 403,
             f"{e.status} {e.body[:160]}",
         )
 
