@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from flipside.cli import utf8_stdio
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -89,4 +91,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio()
     raise SystemExit(main())
