@@ -40,7 +40,7 @@ from flipside.room.protocol import Msg  # noqa: E402
 from flipside.room.replay import DEFAULT_CASE  # noqa: E402
 from flipside.room.scenario import load_case, materialize  # noqa: E402
 from flipside.room.setup import invite  # noqa: E402
-from flipside.room.switch_client import Http, SwitchError, SwitchTransport  # noqa: E402
+from flipside.room.switch_client import Http, SwitchTransport  # noqa: E402
 from flipside.room.transport import is_refusal  # noqa: E402
 
 LOG = ROOT / "evidence" / f"k5-{dt.datetime.now().strftime('%Y%m%dT%H%M%S')}.log"
@@ -155,10 +155,13 @@ def press(who: str, mm: MM, channel: str, title: str, name: str) -> str:
 
 
 def refused(h: Http, room: str, body: dict[str, Any]) -> str:
-    """'refused' when Switch refuses ``h`` changing ``room``; otherwise what it accepted."""
+    """'refused' when Switch answers 403 to ``h`` changing ``room``; 'accepted' when it succeeds.
+
+    Any other error (a 500, a 404) propagates: it is not evidence of a refusal.
+    """
     try:
         h.request("PATCH", f"/gateway/rooms/{room}", body)
-    except (SwitchError, PermissionError) as e:
+    except PermissionError as e:
         return f"refused ({type(e).__name__}: {str(e)[:80]})"
     return "accepted"
 
