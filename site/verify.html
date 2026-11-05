@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Flipside | Check a disclosed quote</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.6 system-ui, sans-serif; color: #183735; background: #f3f5ee; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1140px; margin: auto; padding: 36px 28px 60px; }
+    .brand { font: 700 14px/1.3 ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; }
+    .brand a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+    h1 { max-width: 800px; font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.08; letter-spacing: -.045em; margin: 25px 0 20px; }
+    h2 { font-size: 1.2rem; margin: 0 0 8px; }
+    p { max-width: 78ch; margin: 12px 0; }
+    .intro { font-size: 1.1rem; color: #405853; }
+    .local { display: inline-block; border: 1px solid #9eafa0; border-radius: 20px; padding: 5px 12px; font-size: .8rem; margin: 4px 0 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .panel { background: #fffef8; border: 1px solid #bac6b8; padding: 22px; border-radius: 12px; }
+    label { font-weight: 650; display: block; }
+    .hint { font-size: .85rem; color: #496159; margin: 5px 0 12px; }
+    textarea { width: 100%; min-height: 225px; padding: 12px; border: 1px solid #8b9f93; border-radius: 6px; resize: vertical; font: 12px/1.55 ui-monospace, monospace; color: #183735; background: white; }
+    #trailer { min-height: 96px; }
+    input[type=file] { width: 100%; font: inherit; font-size: .85rem; margin: 10px 0 0; }
+    button { border: 1px solid #173e38; border-radius: 6px; padding: 11px 19px; font: 650 .95rem system-ui, sans-serif; cursor: pointer; background: #173e38; color: white; }
+    button.secondary { background: transparent; color: #173e38; }
+    button:disabled { opacity: .55; cursor: wait; }
+    button:hover:not(:disabled) { box-shadow: 0 2px 0 #9eafa0; }
+    :focus-visible { outline: 3px solid #b36a20; outline-offset: 3px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0; }
+    #result { border-left: 5px solid #83978c; padding: 20px 24px; background: #e5ebe0; border-radius: 4px; }
+    #result[data-code=OK] { border-color: #247146; background: #e2f0df; }
+    #result[data-code=fail] { border-color: #a54927; background: #fae9dd; }
+    #status { font-weight: 750; margin: 0; font-size: 1.2rem; }
+    #detail { overflow-wrap: anywhere; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; font: .85rem/1.6 ui-monospace, monospace; }
+    #quote { background: white; padding: 15px; border: 1px solid #bac6b8; }
+    .scope { margin-top: 30px; border-top: 1px solid #bac6b8; padding-top: 22px; }
+    code { font: .88em ui-monospace, monospace; }
+    .step { color: #557064; font: .8rem ui-monospace, monospace; margin-right: 7px; }
+    @media (max-width: 720px) { main { padding: 24px 16px 40px; } .grid { grid-template-columns: 1fr; } .panel { padding: 17px; } }
+  </style>
+</head>
+<body>
+<main>
+  <div class="brand"><a href="index.html">Flipside</a> / Proof check</div>
+  <h1>Check the quote.<br>Keep the session private.</h1>
+  <p class="intro">Check a disclosed leaf against a public seal record and manifest.
+    SHA-256 runs in your browser. The rest of the session is not needed.</p>
+  <span class="local">Local inputs only · No uploads · No network requests</span>
+  <noscript>This checker requires JavaScript and browser WebCrypto. Use flip verify for the CLI check.</noscript>
+  <div class="grid">
+    <section class="panel">
+      <label for="disclosure"><span class="step">01</span>Disclosure JSON</label>
+      <p class="hint">Paste the output of <code>flip prove</code>, or choose its JSON file.</p>
+      <textarea id="disclosure" spellcheck="false" placeholder='{"v":1,"commit":"…","i":3,"n":5,"salt":"…","leaf":{…},"proof":[…]}'></textarea>
+      <input type="file" id="disclosure-file" accept=".json,application/json" aria-label="Choose disclosure JSON file">
+    </section>
+    <section class="panel">
+      <label for="manifest"><span class="step">02</span>Public manifest</label>
+      <p class="hint">Use the original bytes. Formatting or adding a newline changes the hash.</p>
+      <textarea id="manifest" spellcheck="false" placeholder='[{"chunk":0,"cmd":null,"files":[],"i":0,…}]'></textarea>
+      <input type="file" id="manifest-file" accept=".json,application/json" aria-label="Choose public manifest file">
+    </section>
+  </div>
+  <section class="panel" style="margin-top:18px">
+    <label for="trailer"><span class="step">03</span>Independent seal record</label>
+    <p class="hint">Copy the <code>Flipside-Seal:</code> line from the pinned commit or room record.
+      A record supplied by the proof's author is not independently authenticated by this page.</p>
+    <textarea id="trailer" spellcheck="false" placeholder="Flipside-Seal: v1 root=<64 hex> n=<count> manifest=<64 hex>"></textarea>
+  </section>
+  <div class="actions">
+    <button id="check" type="button">Check proof</button>
+    <button id="sample" type="button" class="secondary">Try synthetic example</button>
+    <button id="forge" type="button" class="secondary">Edit sample quote</button>
+    <button id="clear" type="button" class="secondary">Clear inputs</button>
+  </div>
+  <section id="result" role="status" aria-live="polite" aria-atomic="true">
+    <p id="status">Ready for local inputs</p>
+    <p id="detail">Check disclosure shape, manifest hash and metadata, tree size and inclusion proof.</p>
+    <pre id="quote" hidden></pre>
+  </section>
+  <section class="scope">
+    <h2>Git checks not run</h2>
+    <p>This page checks disclosure shape (0), then manifest and Merkle checks (4–7) in CLI order.
+      An <code>OK</code> here means those checks passed against the record you supplied.
+      It does not establish that the record is in the commit the reviewer asked about.</p>
+    <p><code>NO_SEAL</code>, <code>WRONG_COMMIT</code> and <code>NOT_IN_PR</code>: <strong>run flip verify</strong>.
+      It checks the named commit's trailer and its ancestry in the PR before checks 4–7.
+      Those earlier Git checks may refuse a proof that passes here.</p>
+    <pre>flip verify --commit &lt;question-commit&gt; --head &lt;pr-head&gt; --manifest manifest.json disclosure.json</pre>
+    <p class="hint">Run that command in the PR clone, or add <code>--bundle seal.bundle</code> for a local Git bundle.
+      Open this file directly or serve <code>site/</code> locally.
+      No hosting, account, install or model key is needed for this page.</p>
+    <p class="hint">Inclusion proves bytes belong to the supplied seal. It does not prove a genuine session,
+      a complete answer or that the session wrote the code. Inputs stay in this tab and are never stored.</p>
+  </section>
+</main>
+<script id="verify-core">
+"use strict";
+// The parity gate executes this exact script under Node WebCrypto.
+globalThis.FlipsideVerify = (() => {
+  const meta = ["v", "session", "step", "chunk", "role", "tools", "files", "mentions", "cmd", "ok"];
+  const leafKeys = [...meta, "text"];
+  // Python re.match's '$' accepts one final LF. Preserve the existing CLI contract.
+  const hex64 = /^[0-9a-f]{64}\n?$/;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder("utf-8", {fatal: true, ignoreBOM: true});
+  const object = x => x !== null && typeof x === "object" && !Array.isArray(x);
+  const integer = x => typeof x === "bigint" && x >= 0n;
+  const keysAre = (x, keys) => object(x) && Object.keys(x).length === keys.length && keys.every(k => Object.hasOwn(x, k));
+
+  // JSON.parse rounds large integers and conflates 1 with 1.0. Preserve integer
+  // tokens as BigInt; float tokens stay Number and cannot pass integer metadata.
+  function parse(text) {
+    let p = 0;
+    const ws = () => { while (/[\x20\t\r\n]/.test(text[p] || "x")) p++; };
+    function value() {
+      ws();
+      if (text[p] === '"') {
+        const m = /^"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))*"/.exec(text.slice(p));
+        if (!m) throw Error("Invalid JSON string");
+        p += m[0].length;
+        return JSON.parse(m[0]);
+      }
+      if (text[p] === "[" || text[p] === "{") {
+        const array = text[p++] === "[", end = array ? "]" : "}";
+        const out = array ? [] : Object.create(null);
+        ws();
+        if (text[p] === end) { p++; return out; }
+        while (true) {
+          if (array) out.push(value());
+          else {
+            ws();
+            if (text[p] !== '"') throw Error("JSON object key must be a string");
+            const key = value();
+            ws();
+            if (text[p++] !== ":") throw Error("Expected colon");
+            out[key] = value();
+          }
+          ws();
+          if (text[p] === end) { p++; return out; }
+          if (text[p++] !== ",") throw Error("Expected comma");
+        }
+      }
+      for (const [word, result] of [["true", true], ["false", false], ["null", null],
+        ["NaN", NaN], ["Infinity", Infinity], ["-Infinity", -Infinity]]) {
+        if (text.startsWith(word, p)) { p += word.length; return result; }
+      }
+      const m = /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?/.exec(text.slice(p));
+      if (!m) throw Error("Invalid JSON value");
+      p += m[0].length;
+      return /[.eE]/.test(m[0]) ? Number(m[0]) : BigInt(m[0]);
+    }
+    const result = value();
+    ws();
+    if (p !== text.length) throw Error("Unexpected data after JSON value");
+    return result;
+  }
+
+  function canonical(x) {
+    if (typeof x === "bigint") return x.toString();
+    if (typeof x === "number") throw Error("Floats are not canonical metadata");
+    if (typeof x === "string") {
+      // TextEncoder silently replaces lone surrogates; never hash replacement bytes.
+      for (const c of x) {
+        const n = c.codePointAt(0);
+        if (n >= 0xd800 && n <= 0xdfff) throw Error("Unpaired Unicode surrogate");
+      }
+      return JSON.stringify(x);
+    }
+    if (x === null || typeof x === "boolean") return JSON.stringify(x);
+    if (Array.isArray(x)) return "[" + x.map(canonical).join(",") + "]";
+    return "{" + Object.keys(x).sort().map(k => JSON.stringify(k) + ":" + canonical(x[k])).join(",") + "}";
+  }
+
+  function validMeta(x) {
+    return x.v === 1n && ["session", "step", "chunk"].every(k => integer(x[k])) &&
+      ["user", "assistant", "tool_result"].includes(x.role) &&
+      ["tools", "files", "mentions"].every(k => Array.isArray(x[k]) && x[k].every(s => typeof s === "string")) &&
+      (x.cmd === null || ["test", "lint", "build", "other"].includes(x.cmd)) &&
+      (x.ok === null || typeof x.ok === "boolean");
+  }
+
+  function shape(d) {
+    if (!object(d) || !["v", "commit", "i", "n", "salt", "leaf", "proof"].every(k => Object.hasOwn(d, k))) return false;
+    if (d.v !== 1n || typeof d.commit !== "string" || !/^[0-9a-f]{40}\n?$/.test(d.commit) ||
+      !integer(d.i) || !integer(d.n) || typeof d.salt !== "string" || !hex64.test(d.salt) ||
+      !Array.isArray(d.proof) || !d.proof.every(p => typeof p === "string" && hex64.test(p)) ||
+      !keysAre(d.leaf, leafKeys) || typeof d.leaf.text !== "string" || !validMeta(d.leaf)) return false;
+    try { canonical(d.leaf); return true; } catch { return false; }
+  }
+
+  const hex = bytes => Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+  const unhex = s => Uint8Array.from(s.match(/../g), x => parseInt(x, 16));
+  async function hash(...parts) {
+    const data = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
+    let offset = 0;
+    for (const p of parts) { data.set(p, offset); offset += p.length; }
+    return new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", data));
+  }
+
+  function proofLength(i, n) {
+    let length = 0;
+    while (n > 1n) {
+      let k = 1n;
+      while (k * 2n < n) k *= 2n;
+      if (i < k) n = k;
+      else { i -= k; n -= k; }
+      length++;
+    }
+    return length;
+  }
+
+  async function rootFromProof(i, n, leaf, proof) {
+    let fn = i, sn = n - 1n, root = leaf;
+    for (const sibling of proof) {
+      if (sn === 0n) return null;
+      const p = unhex(sibling);
+      if ((fn & 1n) || fn === sn) {
+        root = await hash(new Uint8Array([1]), p, root);
+        if (!(fn & 1n)) while (!(fn & 1n) && fn !== 0n) { fn >>= 1n; sn >>= 1n; }
+      } else root = await hash(new Uint8Array([1]), root, p);
+      fn >>= 1n;
+      sn >>= 1n;
+    }
+    return sn === 0n ? hex(root) : null;
+  }
+
+  async function verify(disclosure, manifestBytes, record) {
+    const result = (code, detail) => ({code, detail});
+    let d;
+    try { d = parse(disclosure); }
+    catch { return result("INPUT_ERROR", "Disclosure is not JSON. The CLI treats unreadable JSON as a usage error."); }
+    if (!shape(d)) return result("BAD_DISCLOSURE", "Disclosure fields or metadata are malformed.");
+    const t = /^(?:Flipside-Seal: )?v1 root=([0-9a-f]{64}) n=([1-9][0-9]*) manifest=([0-9a-f]{64})$/.exec(record.trim());
+    if (!t) return result("INPUT_ERROR", "Supply a v1 Flipside-Seal record with root, n and manifest hash. Git checks require flip verify.");
+    if (!globalThis.crypto?.subtle) return result("INPUT_ERROR", "WebCrypto unavailable. Open as a local file or use localhost, or run flip verify.");
+    if (hex(await hash(manifestBytes)) !== t[3]) return result("MANIFEST_HASH", "Manifest SHA-256 differs from the supplied record.");
+    let entries;
+    try {
+      entries = parse(decoder.decode(manifestBytes));
+      if (!Array.isArray(entries) || !entries.length || !entries.every((e, i) =>
+        keysAre(e, ["i", ...meta]) && e.i === BigInt(i) && validMeta(e))) throw Error("Malformed manifest");
+      const encoded = encoder.encode(canonical(entries));
+      if (encoded.length !== manifestBytes.length || !encoded.every((b, i) => b === manifestBytes[i])) throw Error("Noncanonical manifest");
+    } catch { return result("MANIFEST_HASH", "Manifest is malformed or is not exact canonical UTF-8 JSON."); }
+    if (d.i < BigInt(entries.length) && meta.some(k => canonical(entries[Number(d.i)][k]) !== canonical(d.leaf[k])))
+      return result("MANIFEST_MISMATCH", "Leaf metadata differs from the public manifest entry.");
+    if (d.i >= d.n || d.n !== BigInt(t[2]) || d.proof.length !== proofLength(d.i, d.n))
+      return result("BAD_SIZE", "Leaf index, tree size or proof length is inconsistent.");
+    const leaf = await hash(new Uint8Array([0]), unhex(d.salt), encoder.encode(canonical(d.leaf)));
+    if (await rootFromProof(d.i, d.n, leaf, d.proof) !== t[1])
+      return result("PROOF_FAIL", "Disclosed bytes do not hash up to the supplied root.");
+    return {...result("OK", `Leaf ${d.i}, session ${d.leaf.session}, step ${d.leaf.step}, chunk ${d.leaf.chunk} matches supplied seal ${t[1].slice(0, 7)}.`), text: d.leaf.text};
+  }
+  return Object.freeze({verify});
+})();
+</script>
+<script id="verify-ui">
+"use strict";
+(() => {
+  const get = id => document.getElementById(id);
+  const encoder = new TextEncoder();
+  let manifestFileBytes = null;
+  let revision = 0;
+  let checking = false;
+  const pendingFiles = new Map();
+  function updateButton() { get("check").disabled = checking || pendingFiles.size > 0; }
+  function show(code, detail, quote) {
+    get("result").dataset.code = code === "OK" ? "OK" : code ? "fail" : "";
+    get("status").textContent = code === "OK" ? "Proof checks OK · Git checks not run" : code || "Ready for local inputs";
+    get("detail").textContent = detail;
+    get("quote").hidden = quote === undefined;
+    get("quote").textContent = quote ?? "";
+  }
+  function changed() {
+    revision++;
+    updateButton();
+    show("", pendingFiles.size ? "Reading local file..." : "Inputs changed. Check the proof again.");
+  }
+  for (const id of ["disclosure", "manifest", "trailer"]) get(id).addEventListener("input", () => {
+    if (id === "manifest") manifestFileBytes = null;
+    if (id !== "trailer") {
+      pendingFiles.delete(id);
+      get(id + "-file").value = "";
+    }
+    changed();
+  });
+  for (const id of ["disclosure", "manifest"]) get(id + "-file").addEventListener("change", async event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const ticket = Symbol(id);
+    pendingFiles.set(id, ticket);
+    changed();
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (pendingFiles.get(id) !== ticket) return;
+      get(id).value = new TextDecoder("utf-8", {fatal: true, ignoreBOM: true}).decode(bytes);
+      if (id === "manifest") manifestFileBytes = bytes;
+      pendingFiles.delete(id);
+      changed();
+    } catch {
+      if (pendingFiles.get(id) === ticket) {
+        pendingFiles.delete(id);
+        get(id).value = "";
+        if (id === "manifest") manifestFileBytes = null;
+        changed();
+        show("INPUT_ERROR", "Cannot read this file as UTF-8. No proof was checked.");
+      }
+    }
+  });
+  get("check").addEventListener("click", async () => {
+    if (pendingFiles.size || checking) return;
+    const ticket = ++revision;
+    checking = true;
+    updateButton();
+    show("", "Checking locally with SHA-256...");
+    try {
+      const result = await FlipsideVerify.verify(get("disclosure").value,
+        manifestFileBytes ?? encoder.encode(get("manifest").value), get("trailer").value);
+      if (ticket === revision) show(result.code, result.detail, result.text);
+    } catch {
+      if (ticket === revision) show("INPUT_ERROR", "This input could not be checked. Run flip verify for the CLI verdict.");
+    } finally { checking = false; updateButton(); }
+  });
+  function sample(forged) {
+    const data = JSON.parse(get("sample-data").textContent);
+    if (forged) data.disclosure.leaf.text += " [edited after sealing]";
+    get("disclosure").value = JSON.stringify(data.disclosure, null, 2);
+    get("manifest").value = data.manifest;
+    get("trailer").value = data.trailer;
+    get("disclosure-file").value = "";
+    get("manifest-file").value = "";
+    manifestFileBytes = null;
+    pendingFiles.clear();
+    changed();
+  }
+  get("sample").addEventListener("click", () => sample(false));
+  get("forge").addEventListener("click", () => sample(true));
+  get("clear").addEventListener("click", () => {
+    for (const id of ["disclosure", "manifest", "trailer", "disclosure-file", "manifest-file"]) get(id).value = "";
+    manifestFileBytes = null;
+    pendingFiles.clear();
+    changed();
+  });
+})();
+</script>
+<script id="sample-data" type="application/json">{"disclosure": {"commit": "a41b2c7000000000000000000000000000000000", "i": 3, "leaf": {"chunk": 0, "cmd": null, "files": ["auth/session.py"], "mentions": [], "ok": null, "role": "assistant", "session": 0, "step": 3, "text": "test_export_csv failed with SessionExpired; raising SESSION_TTL to 86400 in auth/session.py", "tools": ["Edit"], "v": 1}, "n": 5, "proof": ["52b9b68acf139e2fdbea68002ac995ab424dddafcffef9181ddb4bb0a8dd554a", "7bc3dd3b31089d6098f94cf330702cc9d354e049c59cdd347ec3254426c94d31", "d5f9dcfb0e2030ecc1e2cfc6bceda7e6fd0fad78bba994433c3cd3770efc4ced"], "salt": "29c3111716183cdc4bf6fca921591cdf5a38bd767d8cab569875c964483aef2a", "v": 1}, "manifest": "[{\"chunk\":0,\"cmd\":null,\"files\":[],\"i\":0,\"mentions\":[],\"ok\":null,\"role\":\"user\",\"session\":0,\"step\":0,\"tools\":[],\"v\":1},{\"chunk\":0,\"cmd\":null,\"files\":[\"reports/export.py\"],\"i\":1,\"mentions\":[],\"ok\":null,\"role\":\"assistant\",\"session\":0,\"step\":1,\"tools\":[\"Edit\"],\"v\":1},{\"chunk\":0,\"cmd\":\"test\",\"files\":[],\"i\":2,\"mentions\":[],\"ok\":false,\"role\":\"tool_result\",\"session\":0,\"step\":2,\"tools\":[\"Bash\"],\"v\":1},{\"chunk\":0,\"cmd\":null,\"files\":[\"auth/session.py\"],\"i\":3,\"mentions\":[],\"ok\":null,\"role\":\"assistant\",\"session\":0,\"step\":3,\"tools\":[\"Edit\"],\"v\":1},{\"chunk\":0,\"cmd\":null,\"files\":[],\"i\":4,\"mentions\":[],\"ok\":null,\"role\":\"assistant\",\"session\":0,\"step\":4,\"tools\":[],\"v\":1}]", "trailer": "Flipside-Seal: v1 root=05e8bcaa5910df22540c6c666c1b5a87d4ac9dc2d08ab3929c9c6272dc2d93ad n=5 manifest=3df385b68180da54aaab67594fad71b0d19086ac9c47d673aefc30bb79d1b131"}</script>
+</body>
+</html>
