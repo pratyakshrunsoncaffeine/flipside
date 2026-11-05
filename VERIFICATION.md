@@ -58,6 +58,8 @@ PR #21 stops them through a stop file; `evidence/solo-csv-export-20261105T020718
 | Real session end to end: `claude -p` made the change in a synthetic sandbox repo, `flip seal`, `flip setup` (three steps), both `flip agent` processes, people via `flip chat`; 2 questions, 8 leaves OK, 0 contradictions | manual run | `evidence/real-session-20261104T224823.log` |
 | The same sealed PR on GitHub (`kadoo69/flipside-sandbox#1`, private, with a GitHub Actions check run): reviewer cloned from GitHub, `flip setup reviewer --github`, reviewer-agent read the PR with `gh api`; 2 questions, 2 answered, 8 leaves OK, 0 contradictions | manual run | `evidence/github-pr-20261105T002706.log` |
 | All 9 fixture cases live, twice, after one-card-per-leaf | `make solo-all` | `evidence/solo-all-20261104T225437.log` (9/9), `evidence/solo-all-20261104T230152.log` (9/9) |
+| M1b: the whole review in Mattermost from a fresh clone; both people type as their own Mattermost accounts, the author presses Approve in Mattermost, four refusals, both agents killed and restarted | `make demo` | `evidence/demo-mattermost-csv-export-20261105T122618.log` (fresh clone of `295bfff`), `evidence/demo-mattermost-csv-export-20261105T122010.log` |
+| K5 (6/6, two runs): in Mattermost, Switch addresses the author's claimed account, refuses the reviewer's and an unclaimed account's tag, and takes a card press only from the author | `make k5` | `evidence/k5-20261105T123747.log`, `evidence/k5-20261105T123842.log` |
 
 Two earlier `make solo` runs are kept as they ran:
 - `evidence/solo-csv-export-20261104T205555.log` failed: the duplicate check counted the scripted injection request as a repeat of the real request.

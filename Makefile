@@ -1,7 +1,7 @@
 PY ?= uv run --frozen python
 UV_RUN ?= uv run --frozen
 
-.PHONY: help test lint killtests g8 replay-offline fixtures solo solo-all replay demo demo-down
+.PHONY: help test lint killtests g8 k5 replay-offline fixtures solo solo-all replay demo demo-down
 help: ## List targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "%-12s %s\n", $$1, $$2}'
 
@@ -20,6 +20,9 @@ g8: ## Offline check: q2-ok verifies OK, q2-forged gives PROOF_FAIL (no network,
 
 killtests: ## K1, K2 and K4 against the local Switch server; writes evidence/k1k2-*.log, k4-*.log
 	cd killtests && python3 k1_k2.py && python3 k4.py
+
+k5: ## K5: who Switch admits in Mattermost; needs `flip demo up`; writes evidence/k5-*.log
+	cd killtests && python3 k5.py
 
 k3: ## K3: approval card in Slack; needs a Slack connection on the local server and SLACK_BOT_TOKEN_FILE
 	cd killtests && python3 k3.py
