@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flipside</title>
+<meta name="description" content="Question another team's coding-agent session in Switch, without the author handing it over. Every answer is checked against a seal in the commit.">
+<meta name="theme-color" content="#f2f0ec">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 26 26%22%3E%3Crect x=%221%22 y=%221%22 width=%2224%22 height=%2224%22 rx=%228%22 fill=%22%23f6f3ec%22/%3E%3Crect x=%224.5%22 y=%225.5%22 width=%2217%22 height=%2214%22 rx=%225%22 fill=%22%230d0e11%22/%3E%3Crect x=%229%22 y=%229.6%22 width=%222.4%22 height=%224.6%22 rx=%221.2%22 fill=%22%23fff4e2%22/%3E%3Crect x=%2214.6%22 y=%229.6%22 width=%222.4%22 height=%224.6%22 rx=%221.2%22 fill=%22%23fff4e2%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"><!-- taste-skill-ignore: mono is only for code, ids and hashes -->
+<style>
+/* One motif: Flip's puck, a rounded square whose corner is 30% of its side. It is the hero's stage,
+   the play button, the film's frame, the four how-it-works fields and the closing mark.
+   The film's palette: warm paper, ink, amber for the seal side, dark panels for the product itself. */
+:root {
+  color-scheme: light;
+  --paper: #f3f2ef; --ivory: #fafaf8; --stone: #e7e4de; --ink: #121316; --muted: #4f535a;
+  --amber: #f2b544; --amber-ink: #8a5a06; --night: #16181b;
+  --p-1: #1d2024; --p-2: #262a30; --p-ink: #ebe9e4; --p-ink-2: #9a9ea6;
+  --p-green: #3fb950; --p-green-w: rgba(63,185,80,.14); --p-red: #ff7b72; --p-red-w: rgba(255,123,114,.13); --p-amber-w: rgba(242,181,68,.13);
+  --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; /* taste-skill-ignore: code only */
+  --m: max(20px, 4vw);
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --t-display: clamp(56px, 7vw, 108px); --t-h2: clamp(36px, 4.4vw, 64px); --t-say: clamp(22px, 2vw, 30px); --t-body: 18px; --t-small: 15px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: var(--t-body)/1.55 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+.g { padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
+.in { max-width: 1320px; margin: 0 auto; }
+a { color: inherit; }
+h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -.04em; }
+h2 { font-size: var(--t-h2); font-weight: 650; line-height: 1.02; letter-spacing: -.038em; }
+p { margin: 0; text-wrap: pretty; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 8px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 24px; border-radius: 17px; border: 0;
+  background: var(--ink); color: var(--ivory); font-weight: 650; font-size: 18px; text-decoration: none; cursor: pointer;
+  transition: transform .2s var(--ease), background-color .2s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: scale(.97); }
+.btn svg { width: 16px; height: 16px; }
+.textlink { font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; text-decoration-color: var(--amber); transition: text-underline-offset .2s var(--ease); }
+.textlink:hover { text-underline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+.js .rise { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .8s var(--ease); }
+.js .rise.on { opacity: 1; transform: none; }
+}
+
+/* Nav: wordmark and four plain links. */
+nav.top { position: relative; z-index: 3; }
+nav.top .in { display: flex; align-items: center; gap: 28px; height: 84px; }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 24px; letter-spacing: -.03em; text-decoration: none; }
+.brand svg { width: 34px; height: 34px; }
+nav.top .links { display: flex; gap: 28px; margin-left: auto; font-size: var(--t-small); font-weight: 600; }
+nav.top .links a { text-decoration: none; }
+nav.top .links a:hover { color: var(--amber-ink); }
+
+/* Hero: the puck's amber back, 120vh across, cropped by the right edge. Flip stands on it. */
+.hero { position: relative; min-height: min(100svh, 900px); margin-top: -84px; display: grid; align-items: center; }
+.hero .in { position: relative; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(40px, 6vw, 104px); align-items: center; padding-block: 120px 48px; }
+.hero h1 { font-size: clamp(48px, 5.6vw, 84px); font-weight: 650; line-height: 1; letter-spacing: -.042em; }
+.hero h1 .ln { display: block; overflow: hidden; padding-bottom: .1em; margin-bottom: -.1em; }
+.hero h1 .ln > span { display: inline-block; }
+.hero h1 .amb { color: var(--amber-ink); }
+.hero p { margin-top: 28px; max-width: 30em; }
+.hero .act { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; margin-top: 36px; }
+@media (prefers-reduced-motion: no-preference) {
+.js .hero h1 .ln > span { transform: translateY(105%); animation: lineup 1s var(--ease) forwards; }
+.js .hero h1 .ln:nth-child(2) > span { animation-delay: .09s; }
+.js .hero .enter { opacity: 0; transform: translateY(14px); animation: enter .9s var(--ease) forwards; }
+.js .hero .enter.e2 { animation-delay: .32s; } .js .hero .enter.e3 { animation-delay: .42s; }
+.js .hero .stage.enter { transform: scale(.96); animation-delay: .18s; animation-duration: 1.1s; }
+}
+@keyframes lineup { to { transform: none; } }
+@keyframes enter { to { opacity: 1; transform: none; } }
+
+/* The stage is Flip's own shape. One beat of the real run at a time: seal, ask, refuse, approve, verify. */
+.stage { position: relative; aspect-ratio: 1; width: 100%; max-width: 640px; justify-self: end; border-radius: 30%; background: var(--stone); }
+.stage .stagebot { position: absolute; left: 50%; top: 5%; width: 46%; aspect-ratio: 1; translate: -50% 0; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
+.stage .stagebot canvas { display: block; width: 100%; height: 100%; }
+.beats { position: absolute; left: 13%; right: 13%; top: 53%; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.beats li { display: grid; gap: 8px; font-size: 13px; font-weight: 600; color: #8b8780; transition: color .4s ease; }
+.beats li.on, .beats li.done { color: var(--ink); }
+.beats i { display: block; height: 4px; border-radius: 4px; background: #d5d1c9; overflow: hidden; }
+.beats i::after { content: ""; display: block; height: 100%; width: var(--fill, 0%); background: var(--ink); border-radius: inherit; transition: width var(--dur, 0s) linear; }
+.beatcard { position: absolute; left: 13%; right: 13%; top: 62%; min-height: 25%; background: var(--night); color: var(--p-ink); border-radius: 24px; padding: 16px 18px; display: grid; align-content: start; gap: 10px;
+  transition: opacity .28s ease, transform .5s var(--ease); }
+.beatcard.out { opacity: 0; transform: translateY(-8px); transition-duration: .22s; }
+.beatcard.pre { opacity: 0; transform: translateY(14px); transition: none; }
+.beatcard .room { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--p-ink-2); font-weight: 600; background: none; border-radius: 0; overflow: visible; }
+.beatcard .room svg { width: 12px; height: 12px; }
+.beatcard .row { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; }
+.beatcard .av { width: 28px; height: 28px; border-radius: 9px; background: var(--ivory); display: grid; place-items: center; }
+.beatcard .av svg { width: 20px; height: 20px; }
+.beatcard .who { font-size: 14px; font-weight: 650; display: flex; align-items: center; gap: 7px; }
+.beatcard .tag { font-size: 10px; font-weight: 700; letter-spacing: .06em; padding: 2px 5px; border-radius: 5px; background: var(--p-2); color: var(--p-ink-2); }
+.beatcard .say2 { margin-top: 3px; font-size: 14px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.beatcard .say2.bad { color: var(--p-red); } .beatcard .say2.good { color: var(--p-green); }
+.beatcard .btns { display: flex; gap: 8px; margin-left: 38px; }
+.beatcard .btns span { font-size: 13px; font-weight: 650; padding: 7px 12px; border-radius: 9px; background: var(--p-2); color: var(--p-ink-2); transition: background-color .25s ease, color .25s ease, transform .15s ease; }
+.beatcard .btns span.yes { background: var(--p-green); color: #06210d; }
+.beatcard .btns span.yes.press { transform: scale(.94); background: #2ea043; }
+.hcursor { position: absolute; left: 0; top: 0; width: 22px; height: 22px; pointer-events: none; opacity: 0; transition: transform .9s var(--ease), opacity .3s ease; }
+.hcursor.on { opacity: 1; }
+
+/* The connection: where each agent runs, wired through the switch into one room. After the Switch hackathon's own diagram. */
+section.link { padding-block: 112px 0; }
+.link .lead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 48px; align-items: end; margin-bottom: 48px; }
+.link .lead p { max-width: 34em; }
+.diagram { position: relative; display: grid; grid-template-columns: minmax(0, 290px) minmax(110px, 1fr) minmax(0, 2.4fr); align-items: center; }
+.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.wires path { fill: none; stroke: #cbc5b9; stroke-width: 2; stroke-dasharray: var(--len, 600); stroke-dashoffset: var(--len, 600); transition: stroke-dashoffset 1s var(--ease), stroke .5s ease; }
+.diagram.drawn .wires path { stroke-dashoffset: 0; }
+.diagram.on .wires path { stroke: var(--amber); stroke-width: 2.5; }
+.nodes { display: grid; gap: 12px; position: relative; z-index: 1; }
+.node { background: var(--night); color: var(--p-ink); border-radius: 22px; padding: 16px 18px; display: grid; gap: 4px; }
+.node .who { display: flex; align-items: center; gap: 10px; }
+.node b { font-size: 16px; font-weight: 650; }
+.node small { font-size: 14px; color: var(--p-ink-2); }
+.node code { margin-top: 6px; font: 13px/1.4 var(--mono); color: var(--p-ink-2); }
+.node .dot { width: 8px; height: 8px; border-radius: 3px; background: #4a4f57; transition: background-color .4s ease; }
+.diagram.on .node .dot { background: var(--p-green); }
+.hub { justify-self: center; display: grid; justify-items: center; gap: 10px; position: relative; z-index: 1; font-size: 14px; font-weight: 650; color: var(--muted); }
+.puck { width: 76px; height: 76px; perspective: 400px; }
+.puck .flipper { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.3,1.5,.5,1); }
+.diagram.on .puck .flipper { transform: rotateY(180deg); }
+.puck .side { position: absolute; inset: 0; border-radius: 30%; backface-visibility: hidden; display: grid; place-items: center; }
+.puck .front { background: var(--ivory); }
+.puck .front i { width: 60%; height: 48%; border-radius: 30%; background: #0d0e11; display: flex; gap: 22%; align-items: center; justify-content: center; }
+.puck .front i::before, .puck .front i::after { content: ""; width: 12%; height: 46%; border-radius: 4px; background: #fff4e2; }
+.puck .back { background: var(--amber); transform: rotateY(180deg); }
+.puck .back svg { width: 54%; height: 54%; }
+.chatroom { position: relative; z-index: 1; background: var(--night); color: var(--p-ink); border-radius: 30px; display: grid; grid-template-columns: 170px minmax(0, 1fr) 150px; height: 400px; overflow: hidden; }
+.chatroom > div { min-width: 0; min-height: 0; }
+.chatroom .members, .chatroom .panel { background: var(--p-1); padding: 18px 16px; display: grid; align-content: start; gap: 10px; font-size: 14px; }
+.chatroom h3 { font-size: 14px; font-weight: 650; letter-spacing: 0; color: var(--p-ink-2); }
+.mem { display: flex; align-items: center; gap: 9px; transition: opacity .4s ease, transform .4s var(--ease); }
+.mem .av { width: 26px; height: 26px; border-radius: 8px; font-size: 11px; }
+.mem .av.bot svg { width: 18px; height: 18px; }
+.mem.agent { opacity: 0; transform: translateX(-8px); }
+.diagram.on .mem.agent { opacity: 1; transform: none; }
+.chatroom .talk { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.chatroom .talk header { padding: 16px 20px; font-weight: 650; background: var(--p-2); display: flex; gap: 8px; align-items: center; }
+.chatroom .talk header span { margin-left: auto; font-size: 13px; font-weight: 500; color: var(--p-ink-2); }
+.chatroom .msgs { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; justify-content: flex-end; }
+.chatroom .msgs .msg { display: none; }
+.chatroom .msgs .msg.shown { display: grid; animation: arrive .55s var(--ease); }
+.chatroom .msgs .text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pitem { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 12px; background: var(--p-2); color: var(--p-ink-2); transition: background-color .35s ease, color .35s ease; }
+.pitem i { width: 8px; height: 8px; border-radius: 3px; background: #4a4f57; transition: background-color .35s ease; }
+.pitem.lit { color: var(--p-ink); background: #2e2717; }
+.pitem.lit i { background: var(--amber); }
+.link .works { margin-top: 20px; text-align: right; font-size: var(--t-small); color: var(--muted); }
+
+/* The replay player. Its controls are docked at its top and stay in view while the rooms change below them. */
+section.replay { padding-block: 160px 0; }
+.replay .lead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 48px; align-items: end; margin-bottom: 40px; }
+.replay .lead p { max-width: 34em; }
+.replay .lead code { font: 15px/1.5 var(--mono); background: var(--stone); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.player { --h: clamp(660px, calc(100svh - 32px), 920px); position: relative; background: var(--night); color: var(--p-ink); border-radius: 36px;
+  height: var(--h); display: grid; grid-template-rows: auto minmax(0, 1fr); scroll-margin-top: 16px; }
+.dock { position: sticky; top: 0; z-index: 6; background: var(--night); border-radius: 36px 36px 0 0; padding: 18px 22px 16px; display: grid; gap: 14px; }
+.dock .row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; }
+.flipbtn { width: 76px; height: 76px; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
+.flipbtn canvas { width: 100%; height: 100%; display: block; }
+.say { font-size: var(--t-say); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; color: #fff; }
+.say .w { display: inline-block; transition: opacity .45s ease, transform .5s var(--ease), filter .45s ease; }
+.say .w.hide { opacity: 0; transform: translateY(.3em); filter: blur(6px); }
+.transport { display: flex; gap: 8px; align-items: center; }
+.transport button { height: 52px; min-width: 52px; border-radius: 16px; border: 0; background: var(--p-2); color: var(--p-ink); cursor: pointer; display: grid; place-items: center; transition: transform .15s var(--ease), background-color .2s; }
+.transport button:hover { background: #30353c; }
+.transport button:active { transform: scale(.94); }
+.transport button svg { width: 18px; height: 18px; }
+.transport .play { width: 64px; height: 64px; border-radius: 19px; background: var(--amber); color: var(--ink); }
+.transport .play:hover { background: #f6c364; }
+.chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 8), minmax(0, 1fr)); gap: 6px; }
+.chapters button { width: 100%; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; display: grid; gap: 8px; color: var(--p-ink-2); font: 600 14px/1 var(--sans); }
+.chapters .seg { height: 6px; border-radius: 6px; background: var(--p-2); overflow: hidden; }
+.chapters .seg i { display: block; height: 100%; width: 0; background: var(--amber); border-radius: 6px; transition: width .45s var(--ease); }
+.chapters button.now, .chapters button.done { color: var(--p-ink); }
+.chapters button:hover { color: #fff; }
+.screens { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; gap: 10px; padding: 0 10px 10px; min-height: 0; }
+.room { min-width: 0; min-height: 0; background: var(--p-1); border-radius: 26px; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+.room.shared { grid-row: 1 / span 2; grid-column: 2; }
+.room header { display: flex; align-items: center; gap: 8px; padding: 14px 18px; font-size: 14px; background: var(--p-2); }
+.room header b { font-weight: 650; }
+.room header svg { width: 14px; height: 14px; color: var(--p-ink-2); }
+.room header .who { margin-left: auto; font-size: 14px; color: var(--p-ink-2); text-align: right; }
+.feed { overflow-y: auto; padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--p-2) transparent; min-height: 0; }
+.empty { margin: auto; text-align: center; font-size: 14px; color: var(--p-ink-2); max-width: 26ch; }
+.msg { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 11px; font-size: 14px; line-height: 1.5; }
+.msg.future { display: none; }
+.msg.new { animation: arrive .55s var(--ease); }
+@keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.av { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; font: 700 12px/1 var(--sans); background: var(--p-2); color: var(--p-ink); }
+.av.bot { background: #f6f3ec; }
+.av.bot svg { width: 22px; height: 22px; }
+.av.rev { background: #2d3a4f; color: #b9cdf0; }
+.av.auth { background: #4a3a1a; color: var(--amber); }
+.av.sys { background: var(--p-red-w); color: var(--p-red); }
+.body { min-width: 0; }
+.line1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.name { font-weight: 650; }
+.badge { font: 700 10px/1 var(--sans); letter-spacing: .04em; color: var(--p-ink-2); background: var(--p-2); border-radius: 5px; padding: 4px 6px; }
+.sw { margin-left: auto; font: 11px/1 var(--mono); background: none; padding: 0; color: var(--p-ink-2); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.text { margin-top: 3px; overflow-wrap: anywhere; color: #dad8d3; }
+.chip { display: inline-flex; margin-top: 8px; padding: 5px 9px; border-radius: 8px; font: 500 13px/1.4 var(--sans); background: var(--p-2); color: var(--p-ink-2); }
+.chip.amber { background: var(--p-amber-w); color: var(--amber); }
+.chip.green { background: var(--p-green-w); color: var(--p-green); }
+.chip.red { background: var(--p-red-w); color: var(--p-red); }
+.msg.dropped .text { color: var(--p-ink-2); text-decoration: line-through; text-decoration-color: var(--p-red); }
+.msg.refusal .text { color: var(--p-red); }
+.card { margin-top: 8px; border-radius: 14px; padding: 14px 14px 14px 17px; display: grid; gap: 10px; background: var(--p-2); border-left: 3px solid var(--amber); }
+.card .t { font-weight: 650; color: var(--p-ink); }
+.card .k { font-size: 14px; color: var(--p-ink-2); }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btns span { font: 650 13px/1 var(--sans); padding: 10px 15px; border-radius: 10px; background: #343941; color: var(--p-ink); transition: background-color .3s ease, opacity .3s ease; }
+.card.pressed { border-left-color: var(--p-green); }
+.card.pressed .approve { background: #238636; color: #fff; }
+.card.pressed .decline { opacity: .35; }
+.note { font: 500 13px/1.5 var(--sans); color: var(--p-red); background: var(--p-red-w); padding: 9px 11px; border-radius: 10px; }
+.cursor { position: absolute; left: 0; top: 0; width: 26px; height: 26px; pointer-events: none; opacity: 0; z-index: 7; transition: transform .9s cubic-bezier(.6,.05,.3,1), opacity .3s ease; }
+.cursor.on { opacity: 1; }
+.cursor.click::after { content: ""; position: absolute; left: -10px; top: -10px; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--amber); animation: ping .6s ease-out forwards; }
+@keyframes ping { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.7); opacity: 0; } }
+.seal { background: var(--p-1); border-radius: 26px; padding: 14px 16px 6px; display: grid; gap: 4px; min-width: 0; }
+.seal .head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 14px; color: var(--p-ink-2); }
+.seal .head b { color: var(--p-ink); font-weight: 650; }
+.tree svg { display: block; width: 100%; height: auto; }
+.tree .edge { stroke: #353a42; stroke-width: 1.8; fill: none; transition: stroke .5s ease; }
+.tree .edge.path { stroke: var(--amber); stroke-width: 2.6; }
+.tree .node { fill: var(--p-1); stroke: var(--p-ink-2); stroke-width: 1.5; transition: fill .5s ease, stroke .5s ease; }
+.tree .node.sib, .tree .leaf.sib { stroke: var(--amber); fill: #3a2f17; }
+.tree .root { fill: #2b2415; stroke: var(--amber); stroke-width: 1.8; }
+.tree .leaf { fill: var(--p-2); stroke: #4a4f57; stroke-width: 1.5; transition: fill .45s ease, stroke .45s ease; }
+.tree .leaf.req { stroke: var(--amber); stroke-width: 3; }
+.tree .leaf.out { fill: var(--amber); stroke: var(--amber); }
+.tree .leaf.ok { fill: var(--p-green); stroke: var(--p-green); }
+.tree .leaf.bad { fill: var(--p-red); stroke: var(--p-red); }
+.tree text { font: 600 14px var(--sans); font-variant-numeric: tabular-nums; fill: var(--p-ink-2); }
+.tree text.on { fill: var(--p-ink); font-weight: 600; }
+.tree text.rt { fill: var(--amber); font-weight: 600; }
+.replay .after { display: flex; flex-wrap: wrap; gap: 10px 36px; padding-top: 22px; font-size: var(--t-small); color: var(--muted); }
+.replay .after b { color: var(--ink); font-weight: 650; }
+
+/* Real screens: the same approval card in Slack and in Mattermost, and the review room as it was. */
+section.shots { padding-block: 200px 0; }
+
+.shots .grid { margin-top: 48px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+.shots figure { margin: 0; display: grid; gap: 14px; align-content: start; }
+.shots .frame { border-radius: 26px; overflow: hidden; background: #1a1d21; }
+.shots .frame.light { background: #fff; }
+.shots img { display: block; width: 100%; height: auto; }
+.shots figcaption { font-size: var(--t-small); color: var(--muted); }
+.shots figcaption b { color: var(--ink); font-weight: 650; }
+.shots .stack { display: grid; gap: 16px; align-content: start; }
+
+/* How it works: four fields, one card, further along each time. */
+section.how { margin-top: 160px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.how .f { min-height: 84svh; position: relative; padding: 40px 28px 32px; display: grid; grid-template-rows: auto 1fr auto; gap: 24px; }
+.how .f:nth-child(1) { background: var(--ivory); }
+.how .f:nth-child(2) { background: var(--stone); }
+.how .f:nth-child(3) { background: var(--night); color: var(--p-ink); }
+.how .f:nth-child(4) { background: var(--amber); }
+.how h2 { font-size: var(--t-say); font-weight: 650; letter-spacing: -.025em; }
+.how .f p { font-size: var(--t-say); font-weight: 650; letter-spacing: -.025em; line-height: 1.15; }
+.how .slot { display: grid; place-items: center; }
+.leafcard { width: min(100%, 272px); background: var(--night); color: var(--p-ink); border-radius: 22px; padding: 18px; display: grid; gap: 12px; transition: transform .15s ease; }
+.how .f:nth-child(3) .leafcard { background: #24272c; }
+.how .f:hover .leafcard { transform: translateY(-6px); }
+.leafcard .top { display: flex; align-items: center; gap: 10px; }
+.leafcard .sq { width: 34px; height: 34px; border-radius: 10px; background: var(--p-2); display: grid; place-items: center; font: 700 14px/1 var(--sans); color: var(--p-ink-2); flex: none; }
+.leafcard .sq.amber { background: var(--amber); color: var(--ink); }
+.leafcard .sq.green { background: var(--p-green); color: var(--ink); }
+.leafcard b { font-weight: 650; font-size: 15px; }
+.leafcard code { display: block; font: 12.5px/1.5 var(--mono); color: var(--p-ink-2); overflow-wrap: anywhere; }
+.leafcard .state { justify-self: start; font: 500 13px/1 var(--sans); padding: 7px 9px; border-radius: 8px; background: var(--p-2); color: var(--p-ink-2); }
+.leafcard .state.amber { background: var(--p-amber-w); color: var(--amber); }
+.leafcard .state.green { background: var(--p-green-w); color: var(--p-green); }
+.leafcard .press { display: flex; gap: 6px; }
+.leafcard .press span { font: 650 12.5px/1 var(--sans); padding: 8px 11px; border-radius: 9px; background: #343941; }
+.leafcard .press span:first-child { background: #238636; color: #fff; }
+.leafcard .press span:last-child { opacity: .35; }
+
+/* Showcase: the film and the real Mattermost screens, one at a time, beside spare text. */
+section.show { padding-block: 160px; }
+.show .in { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.plate { position: relative; align-self: center; border-radius: 32px; overflow: hidden; background: var(--stone); aspect-ratio: 16 / 10; }
+.plate > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.plate video { object-fit: cover; display: block; background: var(--stone); }
+.plate .playfilm { border: 0; padding: 0; background: rgba(18,19,22,.16); display: grid; place-items: center; cursor: pointer; transition: background-color .3s ease; }
+.plate .playfilm:hover { background: rgba(18,19,22,.06); }
+.plate .playfilm span { width: 104px; height: 104px; border-radius: 31px; background: var(--amber); color: var(--ink); display: grid; place-items: center; transition: transform .25s var(--ease); }
+.plate .playfilm:hover span { transform: scale(1.06); }
+.plate .playfilm svg { width: 30px; height: 30px; margin-left: 5px; }
+.js .shutter { clip-path: inset(0 0 0 100% round 32px); }
+.js .shutter.on { clip-path: inset(0 0 0 0 round 32px); transition: clip-path 1.1s cubic-bezier(.7,0,.2,1); }
+.js .shutter > video { transform: scale(1.12); transition: transform 1.4s var(--ease); }
+.js .shutter.on > video { transform: none; }
+.copy { display: flex; flex-direction: column; justify-content: center; gap: 48px; }
+.copy h2 { font-size: var(--t-h2); }
+.copy p { margin-top: 28px; max-width: 34ch; }
+.cells { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cells a, .cells button { height: 72px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; font-weight: 650; font-size: 18px; text-decoration: none; cursor: pointer; transition: transform .2s var(--ease); }
+.cells a:hover, .cells button:hover { transform: translateY(-2px); }
+.cells .one { background: var(--ink); color: var(--ivory); }
+.cells .two { background: var(--stone); color: var(--ink); }
+
+/* Run it: the closing statement and the real commands. */
+section.run { background: var(--night); color: var(--p-ink); padding-block: 180px; }
+.run .in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 56px; align-items: center; }
+.run h2 { color: #fff; }
+.run p { margin-top: 28px; color: var(--p-ink); max-width: 30em; }
+.term { background: var(--p-1); border-radius: 30px; overflow: hidden; }
+.term .bar { display: flex; align-items: center; gap: 8px; padding: 16px 18px 0; }
+.term .bar i { width: 12px; height: 12px; border-radius: 4px; background: var(--p-2); }
+.term .bar button { margin-left: auto; height: 36px; padding: 0 14px; border-radius: 11px; border: 0; background: var(--p-2); color: var(--p-ink); font-weight: 650; font-size: 14px; cursor: pointer; }
+.term .bar button:hover { background: #30353c; }
+.term pre { margin: 0; padding: 18px 24px 26px; font: 15px/1.8 var(--mono); overflow-x: auto; }
+.term .d { color: var(--amber); }
+.term .c { color: var(--p-ink-2); }
+.term .ok { color: var(--p-green); }
+
+/* The close: the mark, built large. */
+footer { padding-block: 120px 40px; }
+.mark { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 2vw; }
+.mark .endbot { width: clamp(110px, 16vw, 250px); aspect-ratio: 1; }
+.mark .endbot canvas { width: 100%; height: 100%; display: block; }
+.mark .word { font-size: clamp(76px, 17vw, 270px); font-weight: 800; letter-spacing: -.065em; line-height: .8; }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px 40px; margin-top: 64px; font-size: var(--t-small); color: var(--muted); }
+.foot nav { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.foot nav a { color: var(--ink); font-weight: 600; text-decoration: none; }
+.foot nav a:hover { color: var(--amber-ink); }
+
+@media (max-width: 980px) {
+  .diagram { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .wires { display: none; }
+  .nodes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .link .lead { grid-template-columns: minmax(0, 1fr); }
+  .screens { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .room.shared { grid-row: auto; grid-column: auto; }
+  .player { height: auto; }
+  .feed { height: 380px; }
+  .chapters { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 12px; }
+  section.how { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .show .in, .run .in, .replay .lead { grid-template-columns: minmax(0, 1fr); }
+  .show .in { min-height: 0; }
+  .show .copy { order: -1; }
+  .shots .grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .nodes { grid-template-columns: minmax(0, 1fr); }
+  .chatroom { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .chatroom .members, .chatroom .panel { display: none; }
+  .chatroom .msgs { height: 360px; }
+  section.link { padding-block: 120px 0; }
+  nav.top .links a:not(:first-child) { display: none; }
+  .hero { min-height: 0; }
+  .hero .in { grid-template-columns: minmax(0, 1fr); padding-block: 120px 24px; gap: 48px; }
+  .hero h1 { font-size: clamp(40px, 11.6vw, 72px); }
+  .hero p { margin-top: 22px; font-size: 17px; }
+  .stage { justify-self: center; max-width: 560px; }
+  .beats li { font-size: 0; gap: 0; }
+  .beatcard { left: 9%; right: 9%; top: 60%; padding: 13px 14px; border-radius: 20px; }
+  .beatcard .say2 { font-size: 13px; }
+  section.replay { padding-block: 120px 0; }
+  .dock { padding: 14px 14px 12px; border-radius: 28px 28px 0 0; }
+  .dock .row { grid-template-columns: auto minmax(0, 1fr); }
+  .dock .transport { grid-column: 1 / -1; }
+  .transport .play { flex: 1; }
+  .flipbtn { width: 60px; height: 60px; }
+  .say { font-size: 20px; }
+  .player { border-radius: 28px; }
+  .sw { display: none; }
+  .feed { height: 340px; }
+  section.how { grid-template-columns: minmax(0, 1fr); margin-top: 140px; }
+  .how .f { min-height: 0; padding: 44px 20px; grid-template-rows: auto; }
+  .how .f > div:empty { display: none; }
+  .how .slot { justify-items: start; }
+  .term pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13.5px; }
+  section.show, section.run { padding-block: 130px; }
+  section.shots { padding-block: 130px 0; }
+  .mark .endbot { width: 72px; }
+  .plate .playfilm span { width: 68px; height: 68px; border-radius: 20px; }
+  .plate .playfilm svg { width: 22px; height: 22px; margin-left: 3px; }
+  .mark .word { font-size: 18vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .js .rise { opacity: 1; transform: none; }
+  .js .shutter { clip-path: none; }
+  .js .shutter > video { transform: none; }
+}
+</style>
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+<nav class="top g" aria-label="Site">
+  <div class="in">
+    <a class="brand" href="#top" aria-label="Flipside">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="7.2" fill="#f8f6f1" stroke="#d8d2c6"/><rect x="4.5" y="5.5" width="17" height="14" rx="5" fill="#0d0e11"/><rect x="9" y="9.6" width="2.4" height="4.6" rx="1.2" fill="#fff4e2"/><rect x="14.6" y="9.6" width="2.4" height="4.6" rx="1.2" fill="#fff4e2"/></svg>
+      Flipside
+    </a>
+    <div class="links"><a href="#link">How it connects</a><a href="#player">The replay</a><a href="#how">How it works</a><a href="#film">The film</a></div>
+  </div>
+</nav>
+
+<header class="hero g" id="top">
+  <div class="in">
+    <div>
+      <h1><span class="ln"><span>Ask the agent</span></span><span class="ln"><span class="amb">why.</span></span></h1>
+      <p class="enter e2">Flipside lets your agent question another team's coding-agent session in a Switch room. The author approves every step that leaves their laptop, and each one is checked against a seal in the commit.</p>
+      <div class="act enter e3">
+        <a class="btn" href="#player"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.8v10.4L13 8z" fill="currentColor"/></svg>Watch a real review</a>
+        <a class="textlink" href="#film">Play the 65 second film</a>
+      </div>
+    </div>
+    <div class="stage enter" id="stage" data-ui aria-label="One review, beat by beat, from the real run">
+      <button type="button" class="stagebot" id="herobtn" aria-label="Flip the bot to its seal side"><canvas id="hero"></canvas></button>
+      <ol class="beats" id="beats"></ol>
+      <div class="beatcard" id="beatcard" aria-live="polite"></div>
+      <svg class="hcursor" id="hcursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8-6.2 1.6L10 19z" fill="#121316" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</header>
+
+<section class="link g" id="link" aria-labelledby="linkh">
+  <div class="in">
+    <div class="lead">
+      <h2 id="linkh" class="rise">Two laptops, one Switch room.</h2>
+      <p class="rise">Each agent runs on its owner's machine and joins the team's chat through Switch. The session stays with the author; only approved steps reach the room.</p>
+    </div>
+    <div class="diagram" id="diagram" data-ui>
+      <svg class="wires" id="wires" aria-hidden="true"></svg>
+      <div class="nodes">
+        <div class="node" data-wire><div class="who"><span class="dot"></span><b>Claude Code</b></div><small>author's laptop · the session</small><code>sealed into b43b8d0</code></div>
+        <div class="node" data-wire><div class="who"><span class="dot"></span><b>author-agent</b></div><small>author's laptop · holds the seal</small><code>$ flip agent author</code></div>
+        <div class="node" data-wire><div class="who"><span class="dot"></span><b>reviewer-agent</b></div><small>reviewer's laptop · asks</small><code>$ flip agent reviewer</code></div>
+      </div>
+      <div class="hub" id="hub">
+        <div class="puck"><div class="flipper">
+          <div class="side front"><i></i></div>
+          <div class="side back"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#121316" stroke-width="2.2"/><path d="m7.6 12.3 3 3 5.8-6" fill="none" stroke="#121316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div></div>
+        <span id="hubtext">Switch off</span>
+      </div>
+      <div class="chatroom" id="chatroom">
+        <div class="members"><h3>Members</h3>
+          <div class="mem"><span class="av auth">AU</span>Author</div>
+          <div class="mem"><span class="av rev">RE</span>Reviewer</div>
+          <div class="mem agent"><span class="av bot"></span>author-agent</div>
+          <div class="mem agent"><span class="av bot"></span>reviewer-agent</div>
+        </div>
+        <div class="talk"><header># pr-142<span>Mattermost</span></header><div class="msgs" id="dmsgs"></div></div>
+        <div class="panel" id="dpanel"><h3>Room</h3></div>
+      </div>
+    </div>
+    <p class="works">Run through Switch in Mattermost (make demo, make k5) and Slack (make k3).</p>
+  </div>
+</section>
+
+<section class="replay g" id="replay" aria-labelledby="replayh">
+  <div class="in">
+    <div class="lead">
+      <h2 id="replayh" class="rise">A real review, played back.</h2>
+      <p class="rise">Two people, two agents and a live Switch server with Mattermost. Every message below is from <code id="source">the evidence log</code>, with Switch's own message ids.</p>
+    </div>
+
+    <div class="player" id="player" data-ui>
+      <div class="dock">
+        <div class="row">
+          <button class="flipbtn" id="flipbtn" type="button" aria-label="Play the replay"><canvas id="narrator"></canvas></button>
+          <p class="say" id="caption" aria-live="polite">Two rooms. One seal. Nothing leaves without a yes.</p>
+          <div class="transport">
+            <button id="prev" type="button" aria-label="Previous step"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3 5.5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="play" id="play" type="button" aria-label="Play"><svg viewBox="0 0 16 16" aria-hidden="true" id="playicon"><path d="M4 2.5v11L13.5 8z" fill="currentColor"/></svg></button>
+            <button id="next" type="button" aria-label="Next step"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m5.5 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <ol class="chapters" id="chapters" aria-label="Chapters"></ol>
+      </div>
+      <div class="screens" id="stage">
+        <article class="room" aria-label="The author's private room">
+          <header>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <b id="privname">pr-author</b><span class="who">author and author-agent</span>
+          </header>
+          <div class="feed" id="private"><p class="empty" id="privempty">The author's private room. Nothing in it leaves the laptop until the author approves a card.</p></div>
+        </article>
+        <article class="room shared" aria-label="The shared review room">
+          <header>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6h10M3 10h10M6.5 2.5 5.5 13.5M10.5 2.5l-1 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <b id="sharedname">pr</b><span class="who">author, reviewer, both agents</span>
+          </header>
+          <div class="feed" id="shared"></div>
+        </article>
+        <section class="seal" aria-label="The seal">
+          <div class="head"><b>The seal</b><span id="sealhead"></span></div>
+          <div class="tree" id="tree"></div>
+        </section>
+      </div>
+      <svg class="cursor" id="cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l15 9-6.5 1.6L9.5 20z" fill="#fff" stroke="#121316" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="after" id="after"></div>
+  </div>
+</section>
+
+<section class="shots g" id="shots" aria-labelledby="shotsh">
+  <div class="in">
+    <h2 id="shotsh" class="rise">In Slack and Mattermost.</h2>
+    <div class="grid">
+      <figure class="rise">
+        <div class="frame light"><img src="media/mattermost-review-room.jpg" width="1130" height="580" alt="Mattermost, shared room pr-142: the reviewer's request is refused, the author's answer, the disclosed step and the OK verdict" loading="lazy"></div>
+        <figcaption><b>Mattermost, #pr-142.</b> The shared room on the run above, with each agent's message and its JSON.</figcaption>
+      </figure>
+      <div class="stack">
+        <figure class="rise">
+          <div class="frame"><img src="media/slack-approve.jpg" width="1010" height="216" alt="Slack, the author's private room: author-agent asks permission to disclose step 5, chunk 0, with Approve and Decline buttons" loading="lazy"></div>
+          <figcaption><b>Slack.</b> author-agent's card in the author's private room. Only the author's press counts.</figcaption>
+        </figure>
+        <figure class="rise">
+          <div class="frame light"><img src="media/mattermost-approve.jpg" width="1110" height="340" alt="Mattermost, private room pr-142-author: the same card after the author chose Approve" loading="lazy"></div>
+          <figcaption><b>Mattermost.</b> The same card after the author pressed Approve; the reviewer's press was refused.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how" aria-labelledby="howh">
+  <div class="f">
+    <h2 id="howh" class="rise">How it works</h2>
+    <div class="slot"><div class="leafcard rise" data-ui>
+      <div class="top"><span class="sq">5</span><b>Step 5 of 10</b></div>
+      <code>edit auth/session.py</code>
+      <span class="state">sealed · stays on the laptop</span>
+    </div></div>
+    <p class="rise">First the author's agent seals its session into the commit.</p>
+  </div>
+  <div class="f">
+    <div></div>
+    <div class="slot"><div class="leafcard rise" data-ui>
+      <div class="top"><span class="sq amber">5</span><b>Step 5 of 10</b></div>
+      <code>Q1 · requesting leaves 5 · commit b43b8d0</code>
+      <span class="state amber">asked for by number</span>
+    </div></div>
+    <p class="rise">Then the reviewer's agent asks for one step by number.</p>
+  </div>
+  <div class="f">
+    <div></div>
+    <div class="slot"><div class="leafcard rise" data-ui>
+      <div class="top"><span class="sq amber">5</span><b>Disclose step 5, chunk 0?</b></div>
+      <code>SESSION_TTL = 3600 → 86400</code>
+      <div class="press"><span>1. Approve</span><span>2. Decline</span></div>
+    </div></div>
+    <p class="rise">The author approves those exact bytes, or does not.</p>
+  </div>
+  <div class="f">
+    <div></div>
+    <div class="slot"><div class="leafcard rise" data-ui>
+      <div class="top"><span class="sq green">5</span><b>Step 5 of 10</b></div>
+      <code>OK leaf 5 against seal ae44db8</code>
+      <span class="state green">proof checked</span>
+    </div></div>
+    <p class="rise">Last, the reviewer checks it against the seal. Edited bytes fail.</p>
+  </div>
+</section>
+
+<section class="show g" id="film" aria-labelledby="showh">
+  <div class="in">
+    <div class="plate shutter" id="plate">
+      <video id="film-v" src="media/flipside-film.mp4" poster="media/flipside-film-poster.jpg" preload="none" playsinline></video>
+      <button class="playfilm" id="filmplay" type="button" aria-label="Play the film"><span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.8v12.4L14 8z" fill="currentColor"/></svg></span></button>
+    </div>
+    <div class="copy">
+      <div>
+        <h2 id="showh">The idea in 65 seconds.</h2>
+        <p>A synthetic PR, its sealed session and the review, cut to music. The interfaces are rebuilt with their real text.</p>
+      </div>
+      <div class="cells">
+        <button type="button" class="one" id="showact">Play the film</button>
+        <a class="two" href="media/flipside-film.mp4">Open full size</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="run g" id="run" aria-labelledby="runh">
+  <div class="in">
+    <div>
+      <h2 id="runh" class="rise">Run the whole review yourself.</h2>
+      <p class="rise">One command starts Switch and Mattermost in Docker, signs in both people and plays the review. The checks are plain Python with no model in the loop.</p>
+    </div>
+    <div class="term rise">
+      <div class="bar"><i></i><i></i><i></i><button type="button" id="copy">Copy</button></div>
+      <pre id="cmds"><span class="c"># Switch 0.31.0 and Mattermost 11.9.0, the whole review</span>
+<span class="d">$</span> make demo
+<span class="c"># who may address whom, enforced by Switch: 8 of 8</span>
+<span class="d">$</span> make k5
+<span class="c"># check one disclosed step against the seal</span>
+<span class="d">$</span> flip verify examples/q2-ok.json
+<span class="ok">OK leaf 5 (session 0, step 5, chunk 0) against seal ae44db8</span></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="g">
+  <div class="in">
+    <div class="mark">
+      <div class="endbot"><canvas id="endbot"></canvas></div>
+      <div class="word" aria-hidden="true">Flipside</div>
+    </div>
+    <div class="foot">
+      <nav aria-label="Project">
+        <a href="https://github.com/pratyakshrunsoncaffeine/gateplus">Source</a>
+        <a href="https://github.com/pratyakshrunsoncaffeine/gateplus/blob/main/VERIFICATION.md">Evidence</a>
+        <a href="https://github.com/sandbox-quantum/switch">Switch</a>
+      </nav>
+      <span>Flip the Switch, Track 01. All fixtures are synthetic. Film music: "Modern Chillout (Future Calm)" by penguinmusic, Pixabay.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="vendor/three.min.js"></script>
+<script src="flip.js"></script>
+<script src="run.js"></script>
+<script>
+// The connection diagram: wires draw in, the switch flips to its seal side, the agents join, and real lines from the run arrive.
+(() => {
+  const RUN = window.RUN, d = document.getElementById("diagram");
+  if (!RUN || !d) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const FACE = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3.5" width="18" height="15" rx="5.5" fill="#0d0e11"/><rect x="6.6" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/><rect x="13" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/></svg>';
+  d.querySelectorAll(".mem .av.bot").forEach((a) => (a.innerHTML = FACE));
+  const all = RUN.chapters.flatMap((c) => c.steps);
+  const pick = [["seal", "Seal"], ["request", "Questions"], ["human", "Answers"], ["switch-refusal", "Refused"], ["verdict-ok", "Proofs"]]
+    .map(([k, label]) => ({ s: all.find((x) => x.kind === k), label })).filter((p) => p.s);
+  const names = { "author-person": ["Author", "auth"], "reviewer-person": ["Reviewer", "rev"] };
+  const msgs = document.getElementById("dmsgs"), panel = document.getElementById("dpanel");
+  const rows = pick.map(({ s, label }) => {
+    const agent = s.who.startsWith("flipside-");
+    const [nm, cls] = names[s.who] || [s.who.replace("flipside-", ""), ""];
+    const m = document.createElement("div");
+    m.className = "msg" + (s.kind === "switch-refusal" ? " refusal" : "");
+    m.innerHTML = `<div class="av ${agent ? "bot" : cls}">${agent ? FACE : nm.slice(0, 2).toUpperCase()}</div><div class="body"><div class="line1"><span class="name">${esc(nm)}</span>${agent ? '<span class="badge">AGENT</span>' : ""}</div><div class="text">${esc(s.text)}</div></div>`;
+    msgs.append(m);
+    const it = document.createElement("div"); it.className = "pitem"; it.innerHTML = `<i></i>${label}`; panel.append(it);
+    return { m, it };
+  });
+  function wires() {
+    const svg = document.getElementById("wires"), box = d.getBoundingClientRect(), hub = d.querySelector(".puck").getBoundingClientRect(), room = document.getElementById("chatroom").getBoundingClientRect();
+    if (getComputedStyle(svg).display === "none") return;
+    const hx = hub.left - box.left, hy = hub.top - box.top + hub.height / 2;
+    let out = "";
+    d.querySelectorAll("[data-wire]").forEach((n) => {
+      const r = n.getBoundingClientRect(), x = r.right - box.left, y = r.top - box.top + r.height / 2, mx = (x + hx) / 2;
+      out += `<path d="M${x} ${y} C ${mx} ${y}, ${mx} ${hy}, ${hx} ${hy}"/>`;
+    });
+    out += `<path d="M${hx + hub.width} ${hy} L ${room.left - box.left} ${hy}"/>`;
+    svg.innerHTML = out;
+    svg.querySelectorAll("path").forEach((p) => p.style.setProperty("--len", Math.ceil(p.getTotalLength())));
+  }
+  function finish() { d.classList.add("drawn", "on"); document.getElementById("hubtext").textContent = "Switch on"; rows.forEach((r) => { r.m.classList.add("shown"); r.it.classList.add("lit"); }); }
+  wires();
+  addEventListener("resize", wires);
+  if (reduce) { finish(); return; }
+  new IntersectionObserver(([e], o) => {
+    if (!e.isIntersecting) return;
+    o.disconnect();
+    requestAnimationFrame(() => d.classList.add("drawn"));
+    setTimeout(() => { d.classList.add("on"); document.getElementById("hubtext").textContent = "Switch on"; }, 1000);
+    rows.forEach((r, i) => setTimeout(() => { r.m.classList.add("shown"); r.it.classList.add("lit"); }, 1900 + i * 1200));
+  }, { threshold: 0.45 }).observe(d);
+})();
+</script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const mount = (id, opts) => (window.Flip ? window.Flip.mount($(id), opts) : null);
+
+  // Entrances: each part of a section rises once as it comes into view, staggered by its place among its neighbours.
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const box = e.target.closest("section, header, .f") || document.body;
+    const all = [...box.querySelectorAll(".rise")];
+    setTimeout(() => e.target.classList.add("on"), Math.max(0, all.indexOf(e.target)) * 80);
+    io.unobserve(e.target);
+  }), { threshold: 0.12 });
+  document.querySelectorAll(".rise").forEach((el) => io.observe(el));
+
+  // Hero: one beat of the real run at a time, with Flip reacting. Clicking Flip flips it.
+  const hero = mount("hero", { fit: 0.62 });
+  {
+  const LOCK = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+  const HFACE = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3.5" width="18" height="15" rx="5.5" fill="#0d0e11"/><rect x="6.6" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/><rect x="13" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/></svg>';
+  const runSteps = window.RUN.chapters.flatMap((c) => c.steps);
+  const find = (k) => runSteps.find((x) => x.kind === k);
+  const BEATS = [
+    { label: "Seal", s: find("seal"), flip: { side: 1, mood: "neutral" } },
+    { label: "Ask", s: find("request"), flip: { side: 0, mood: "neutral", look: [0, -0.6] } },
+    { label: "Refuse", s: find("switch-refusal"), tone: "bad", flip: { side: 0, mood: "wary", shake: true } },
+    { label: "Approve", s: find("card"), card: true, flip: { side: 0, mood: "squint", look: [0.4, -0.7] } },
+    { label: "Verify", s: find("verdict-ok"), tone: "good", flip: { side: 1, mood: "happy", hop: true } },
+  ].filter((b) => b.s);
+  const beatsEl = $("beats"), card = $("beatcard"), cur = $("hcursor"), stage = $("stage");
+  beatsEl.innerHTML = BEATS.map((b) => `<li><i></i>${b.label}</li>`).join("");
+  const lis = [...beatsEl.children];
+  const BEAT_MS = 3200;
+  const cardHTML = (b) => {
+    const s = b.s, priv = s.room === "private";
+    const who = s.who.replace("flipside-", "");
+    const room = `<div class="room">${priv ? LOCK : "#"} ${priv ? `pr-${window.RUN.pr}-author` : `pr-${window.RUN.pr}`}</div>`;
+    const btns = b.card ? '<div class="btns"><span class="yes">1. Approve</span><span>2. Decline</span></div>' : "";
+    return `${room}<div class="row"><div class="av">${HFACE}</div><div><div class="who">${esc(who)}<span class="tag">AGENT</span></div><div class="say2 ${b.tone || ""}">${esc(s.text)}</div></div></div>${btns}`;
+  };
+  let bi = -1, timer = null, live = false, inView = false;
+  const timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  function hShow(i, animate) {
+    const b = BEATS[i];
+    lis.forEach((li, k) => {
+      li.classList.toggle("on", k === i); li.classList.toggle("done", k < i);
+      const bar = li.firstElementChild;
+      bar.style.setProperty("--dur", "0s"); bar.style.setProperty("--fill", k < i ? "100%" : "0%");
+    });
+    if (animate) {
+      requestAnimationFrame(() => requestAnimationFrame(() => { const bar = lis[i].firstElementChild; bar.style.setProperty("--dur", BEAT_MS + "ms"); bar.style.setProperty("--fill", "100%"); }));
+    } else lis[i].firstElementChild.style.setProperty("--fill", "100%");
+    const swap = () => {
+      card.innerHTML = cardHTML(b);
+      if (!animate) return;
+      card.classList.remove("out"); card.classList.add("pre");
+      requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove("pre")));
+    };
+    if (animate && card.innerHTML) { card.classList.add("out"); later(swap, 220); } else swap();
+    if (hero) hero.set({ look: [0, 0], ...b.flip });
+    cur.classList.remove("on");
+    if (b.card && animate) {
+      const sr = stage.getBoundingClientRect();
+      cur.style.transition = "none"; cur.style.transform = `translate(${sr.width * 0.86}px, ${sr.height * 0.98}px)`;
+      later(() => {
+        const yes = card.querySelector(".yes"); if (!yes) return;
+        const r = yes.getBoundingClientRect();
+        cur.style.transition = ""; cur.classList.add("on");
+        cur.style.transform = `translate(${r.left - sr.left + r.width * 0.55}px, ${r.top - sr.top + r.height * 0.45}px)`;
+      }, 700);
+      later(() => { const yes = card.querySelector(".yes"); if (yes) yes.classList.add("press"); if (hero) hero.set({ mood: "happy", hop: true }); }, 1750);
+      later(() => { const yes = card.querySelector(".yes"); if (yes) yes.classList.remove("press"); cur.classList.remove("on"); }, 2500);
+    }
+  }
+  function hTick() { bi = (bi + 1) % BEATS.length; hShow(bi, true); timer = setTimeout(hTick, BEAT_MS); }
+  function hPlay() { if (live || reduce || !BEATS.length) return; live = true; hTick(); }
+  function hStop() { live = false; clearTimeout(timer); timers.splice(0).forEach(clearTimeout); }
+  if (BEATS.length) {
+    if (reduce) hShow(BEATS.length - 1, false);
+    else {
+      hShow(0, false); bi = 0;
+      new IntersectionObserver(([e]) => { inView = e.isIntersecting; if (inView && !document.hidden) { if (!live) { live = true; timer = setTimeout(hTick, BEAT_MS); } } else hStop(); }, { threshold: 0.35 }).observe(stage);
+      document.addEventListener("visibilitychange", () => { if (document.hidden) hStop(); else if (inView) hPlay(); });
+    }
+  }
+  if (hero) {
+    $("herobtn").addEventListener("click", () => { hero.set({ side: 1, mood: "happy", hop: true }); setTimeout(() => hero.set({ side: 0, mood: "neutral" }), 1400); });
+    addEventListener("pointermove", (e) => {
+      if (!live) return;
+      const r = $("hero").getBoundingClientRect();
+      if (Math.abs(e.clientY - r.top) > innerHeight) return;
+      hero.set({ look: [clamp((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2), -1, 1), clamp(-(e.clientY - (r.top + r.height / 2)) / (innerHeight / 2), -1, 1)] });
+    }, { passive: true });
+  }
+  }
+  const endbot = mount("endbot", { fit: 0.74 });
+  if (endbot) new IntersectionObserver(([e]) => { if (e.isIntersecting) { endbot.set({ mood: "happy", hop: true }); setTimeout(() => endbot.set({ mood: "neutral" }), 1500); } }, { threshold: 0.8 }).observe($("endbot"));
+
+  // Showcase: the film opens with a shutter and plays with its own controls.
+  const plate = $("plate"), v = $("film-v");
+  function playFilm() { v.controls = true; v.play().catch(() => {}); }
+  // The cover follows the film itself, whichever control started or stopped it.
+  v.addEventListener("play", () => { $("filmplay").hidden = true; });
+  v.addEventListener("ended", () => { v.controls = false; v.currentTime = 0; $("filmplay").hidden = false; });
+  $("filmplay").addEventListener("click", playFilm);
+  $("showact").addEventListener("click", playFilm);
+  // Observe the section, not the plate: a fully clipped element never reports an intersection.
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { plate.classList.add("on"); o.disconnect(); } }, { threshold: 0.25 }).observe(plate.parentElement);
+
+  $("copy").addEventListener("click", (e) => {
+    const b = e.currentTarget, done = () => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1400); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($("cmds")); getSelection().removeAllRanges(); getSelection().addRange(r); };
+    try { navigator.clipboard.writeText("make demo\nmake k5\nflip verify examples/q2-ok.json").then(done, fallback); } catch (err) { fallback(); }
+  });
+
+  // The replay. Every step comes from site/run.js, which site/build.py makes from a real evidence log.
+  const RUN = window.RUN;
+  if (!RUN) return;
+  const narrator = mount("narrator", { fit: 0.86 });
+  const FACE = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3.5" width="18" height="15" rx="5.5" fill="#0d0e11"/><rect x="6.6" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/><rect x="13" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/></svg>';
+  const PLAY = '<path d="M4 2.5v11L13.5 8z" fill="currentColor"/>', PAUSE = '<rect x="3.5" y="2.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="9.3" y="2.5" width="3.2" height="11" rx="1" fill="currentColor"/>';
+  const people = { "author-person": "Author", "reviewer-person": "Reviewer", "flipside-author-agent": "author-agent", "flipside-reviewer-agent": "reviewer-agent" };
+  const steps = [];
+  RUN.chapters.forEach((c, ci) => c.steps.forEach((s) => steps.push({ ...s, ci })));
+  const leaf = steps.find((s) => s.kind === "card")?.leaf;
+
+  $("privname").textContent = `pr-${RUN.pr}-author`;
+  $("sharedname").textContent = `pr-${RUN.pr}`;
+  $("source").textContent = RUN.source;
+  $("sealhead").textContent = `root ${RUN.seal.root} · ${RUN.seal.leaves} leaves · commit ${RUN.seal.commit}`;
+  $("after").innerHTML = [
+    `<span><b>${esc(RUN.result)}</b> on PR #${RUN.pr}, ${esc(RUN.title)}</span>`,
+    `<span><b>${RUN.restarts}</b> crash${RUN.restarts === 1 ? "" : "es"}: reviewer-agent was killed mid-run and restarted</span>`,
+    `<span><b>${RUN.duplicates}</b> duplicate posts after the restart</span>`,
+  ].join("");
+
+  // Chapters double as the progress bar: one segment each, filled as its steps play.
+  $("chapters").style.setProperty("--n", RUN.chapters.length);
+  const segs = RUN.chapters.map((c, ci) => {
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.type = "button"; b.innerHTML = `<span class="seg"><i></i></span><span>${esc(c.id)}</span>`;
+    b.setAttribute("aria-label", `Chapter ${ci + 1}: ${c.id}`);
+    b.addEventListener("click", () => { pause(); go(steps.findIndex((s) => s.ci === ci), true); });
+    li.append(b); $("chapters").append(li);
+    return { b, fill: b.querySelector("i"), n: c.steps.length, first: steps.findIndex((s) => s.ci === ci) };
+  });
+
+  const nodes = steps.map((s) => {
+    const el = document.createElement("div");
+    const isAgent = s.who.startsWith("flipside-");
+    const name = people[s.who] || s.who;
+    const human = s.who === "author-person" ? "auth" : s.who === "reviewer-person" ? "rev" : "";
+    let cls = "msg", av = isAgent ? `<div class="av bot">${FACE}</div>` : `<div class="av ${human}">${esc(name.slice(0, 2).toUpperCase())}</div>`, extra = "", text = esc(s.text);
+    const sw = s.sw ? `<code class="sw" title="Switch message id">${esc(s.sw)}</code>` : "";
+    switch (s.kind) {
+      case "attachment": text = ""; extra = `<span class="chip">file · ${esc(s.text)} · the seal's public manifest</span>`; break;
+      case "seal": extra = `<span class="chip amber">sealed · root ${esc(RUN.seal.root)} · ${RUN.seal.leaves} leaves</span>`; break;
+      case "request": extra = `<span class="chip">asks for leaf ${esc((s.leaves || []).join(", "))} by number</span>`; break;
+      case "human": extra = `<span class="chip green">typed in Mattermost · Switch let it through</span>`; break;
+      case "relay": extra = `<span class="chip">relayed from the author's own account</span>`; break;
+      case "injection": cls += " dropped"; extra = `<span class="chip red">dropped · free text is not a request</span>`; break;
+      case "human-tag": extra = `<span class="chip">typed in Mattermost · not the author</span>`; break;
+      case "switch-refusal": cls += " refusal"; av = `<div class="av sys">S</div>`; extra = `<span class="chip red">refused by Switch, from author-agent's policy</span>`; break;
+      case "disclosure": extra = `<span class="chip amber">leaf ${leaf ?? ""} disclosed · with its Merkle proof</span>`; break;
+      case "verdict-ok": extra = `<span class="chip green">proof OK against root ${esc(RUN.seal.root)}</span>`; break;
+      case "forged": extra = `<span class="chip red">one word edited</span>`; break;
+      case "verdict-fail": extra = `<span class="chip red">PROOF_FAIL · rejected</span>`; break;
+      case "brief": extra = `<span class="chip green">to the reviewer · the session never left</span>`; break;
+      case "card":
+        text = ""; extra = `<div class="card" id="card"><div class="t">${esc(s.text)}</div><div class="k">Only the author can answer. Switch checks who presses.</div><div class="btns"><span class="approve" id="approve">1. Approve</span><span class="decline">2. Decline</span></div></div>`; break;
+      case "card-403":
+        av = `<div class="av sys">S</div>`; text = ""; extra = `<div class="note">The reviewer tried to answer the card · 403 · ${esc(s.text)}</div>`; break;
+      case "press":
+        text = `Pressed <b>${esc(s.text)}</b> in Mattermost.`; extra = `<span class="chip green">accepted · the author's claimed account</span>`; break;
+    }
+    const server = s.kind === "switch-refusal" || s.kind === "card-403";
+    const badge = server ? `<span class="badge">SERVER</span>` : isAgent ? `<span class="badge">AGENT</span>` : "";
+    el.className = cls;
+    el.innerHTML = `${av}<div class="body"><div class="line1"><span class="name">${esc(server ? "Switch" : name)}</span>${badge}${sw}</div>${text ? `<div class="text">${text}</div>` : ""}${extra}</div>`;
+    $(s.room === "private" ? "private" : "shared").append(el);
+    return el;
+  });
+
+  // RFC 9162 Merkle tree: split at the largest power of two below n; the proof path is drawn for the disclosed leaf.
+  function treeSvg(n) {
+    const W = 560, top = 22, leafY = 132, pad = 22;
+    const x = (i) => pad + (i + 0.5) * ((W - 2 * pad) / n);
+    const inner = [], edges = [];
+    function build(lo, hi, depth) {
+      if (hi - lo === 1) return { lo, hi, x: x(lo), y: leafY, leaf: true };
+      let k = 1; while (k * 2 < hi - lo) k *= 2;
+      const l = build(lo, lo + k, depth + 1), r = build(lo + k, hi, depth + 1);
+      const me = { lo, hi, x: (l.x + r.x) / 2, y: 0, l, r, depth };
+      inner.push(me); edges.push([me, l], [me, r]);
+      return me;
+    }
+    const root = build(0, n, 0);
+    const maxD = Math.max(...inner.map((d) => d.depth));
+    inner.forEach((d) => { d.y = top + (d.depth / (maxD + 1)) * (leafY - top); });
+    const sibs = new Set(), onPath = new Set();
+    if (leaf != null) {
+      let cur = root;
+      while (!cur.leaf) { onPath.add(cur); const left = leaf < cur.l.hi; sibs.add(left ? cur.r : cur.l); cur = left ? cur.l : cur.r; }
+    }
+    const isPath = (a, b) => onPath.has(a) && (onPath.has(b) || (b.leaf && b.lo === leaf));
+    let s = `<svg viewBox="0 0 ${W} 166" role="img" aria-label="Merkle tree of ${n} sealed leaves">`;
+    edges.forEach(([a, b]) => { s += `<path class="edge" data-path="${isPath(a, b) ? 1 : 0}" d="M${a.x} ${a.y} C ${a.x} ${(a.y + b.y) / 2}, ${b.x} ${(a.y + b.y) / 2}, ${b.x} ${b.y}"/>`; });
+    inner.forEach((d) => {
+      if (d === root) s += `<rect class="root" x="${d.x - 40}" y="${d.y - 14}" width="80" height="27" rx="8"/><text class="rt" x="${d.x}" y="${d.y + 4.5}" text-anchor="middle">${esc(RUN.seal.root)}</text>`;
+      else s += `<circle class="node${sibs.has(d) ? " sibling" : ""}" cx="${d.x}" cy="${d.y}" r="6"/>`;
+    });
+    const sibLeaves = new Set([...sibs].filter((d) => d.leaf).map((d) => d.lo));
+    for (let i = 0; i < n; i++) s += `<rect class="leaf${sibLeaves.has(i) ? " sibling" : ""}" id="leaf${i}" x="${x(i) - 12}" y="${leafY - 12}" width="24" height="24" rx="7"/><text id="lt${i}" x="${x(i)}" y="${leafY + 30}" text-anchor="middle">${i}</text>`;
+    return s + "</svg>";
+  }
+  $("tree").innerHTML = treeSvg(RUN.seal.leaves || 0);
+  const pathEdges = [...document.querySelectorAll("#tree .edge")].filter((e) => e.dataset.path === "1");
+  const sibNodes = [...document.querySelectorAll("#tree .sibling")];
+
+  // How Flip reacts to each kind of step: its mood, where it looks, which side faces you.
+  const REACT = {
+    seal: { side: 1, mood: "neutral", look: [0, 0], hop: true }, attachment: { side: 1, look: [0.6, 0] },
+    questions: { side: 0, mood: "neutral", look: [0.7, -0.3] }, request: { side: 0, mood: "neutral", look: [0.7, -0.3] },
+    human: { side: 0, mood: "happy", look: [0.7, -0.3] }, relay: { side: 0, mood: "happy", look: [0.7, -0.3] },
+    injection: { side: 0, mood: "squint", look: [0.7, -0.3], shake: true }, "human-tag": { side: 0, mood: "wary", look: [0.7, -0.3] },
+    "switch-refusal": { side: 0, mood: "squint", look: [0.4, -0.3], shake: true },
+    card: { side: 0, mood: "neutral", look: [-0.3, -0.7] }, "card-403": { side: 0, mood: "squint", look: [-0.3, -0.7], shake: true },
+    press: { side: 0, mood: "happy", look: [-0.3, -0.7], hop: true },
+    disclosure: { side: 0, mood: "neutral", look: [0.6, -0.4] }, "verdict-ok": { side: 0, mood: "happy", look: [-0.4, -0.8], hop: true },
+    forged: { side: 0, mood: "wary", look: [0.6, -0.4] }, "verdict-fail": { side: 0, mood: "squint", look: [-0.4, -0.8], shake: true },
+    brief: { side: 0, mood: "happy", look: [0, 0], hop: true },
+  };
+  function react(i, animate) {
+    if (!narrator) return;
+    if (i < 0) { narrator.set({ side: 0, mood: "neutral", look: [0, 0] }); return; }
+    const r = { ...(REACT[steps[i].kind] || { mood: "neutral" }) };
+    if (!animate) { delete r.shake; delete r.hop; }
+    narrator.set(r);
+  }
+
+  let cur = -1, timer = null, playing = false;
+  const INTRO = "Two rooms. One seal. Nothing leaves without a yes.";
+  function caption(text, animate) {
+    const h = $("caption");
+    h.innerHTML = `<span>${text.split(" ").map((w) => `<span class="w${animate ? " hide" : ""}">${esc(w)}</span>`).join(" ")}</span>`;
+    if (animate) [...h.querySelectorAll(".w")].forEach((w, i) => setTimeout(() => w.classList.remove("hide"), 40 + i * 55));
+  }
+  function seal(i) {
+    if (leaf == null) return;
+    const seen = (k) => steps.slice(0, i + 1).some((s) => s.kind === k);
+    const el = $(`leaf${leaf}`), lt = $(`lt${leaf}`);
+    el.classList.remove("req", "out", "ok", "bad");
+    lt.classList.toggle("on", seen("request"));
+    if (seen("request")) el.classList.add("req");
+    if (seen("disclosure")) el.classList.add("out");
+    if (seen("verdict-ok")) el.classList.add("ok");
+    const forgedNow = steps[i] && (steps[i].kind === "forged" || steps[i].kind === "verdict-fail");
+    if (forgedNow) { el.classList.remove("ok"); el.classList.add("bad"); }
+    const showPath = seen("verdict-ok") && !forgedNow;
+    pathEdges.forEach((e) => e.classList.toggle("path", showPath));
+    sibNodes.forEach((n) => n.classList.toggle("sib", showPath));
+  }
+  function moveCursor(then) {
+    const c = $("cursor"), btn = $("approve");
+    if (reduce || !btn) { then(); return; }
+    const pb = $("player").getBoundingClientRect(), bb = btn.getBoundingClientRect();
+    c.classList.add("on");
+    c.style.transform = `translate(${pb.width * 0.3}px, ${pb.height * 0.9}px)`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      c.style.transform = `translate(${bb.left - pb.left + bb.width * 0.55}px, ${bb.top - pb.top + bb.height * 0.5}px)`;
+      setTimeout(() => { c.classList.add("click"); then(); setTimeout(() => c.classList.remove("click", "on"), 700); }, 950);
+    }));
+  }
+  function go(i, animate = false) {
+    i = clamp(i, -1, steps.length - 1);
+    const prevCi = cur >= 0 ? steps[cur].ci : -1;
+    cur = i;
+    nodes.forEach((n, k) => { n.classList.toggle("future", k > i); n.classList.remove("new"); });
+    if (i >= 0 && animate) nodes[i].classList.add("new");
+    $("privempty").hidden = steps.slice(0, i + 1).some((s) => s.room === "private");
+    $("card")?.classList.toggle("pressed", steps.slice(0, i + 1).some((s) => s.kind === "press"));
+    const ci = i >= 0 ? steps[i].ci : -1;
+    if (ci !== prevCi) caption(ci >= 0 ? RUN.chapters[ci].caption : INTRO, animate);
+    segs.forEach((g, k) => {
+      const done = clamp(i - g.first + 1, 0, g.n);
+      g.fill.style.width = `${(done / g.n) * 100}%`;
+      g.b.classList.toggle("now", k === ci);
+      g.b.classList.toggle("done", k < ci);
+      if (k === ci) g.b.setAttribute("aria-current", "step"); else g.b.removeAttribute("aria-current");
+    });
+    seal(i);
+    react(i, animate);
+    ["private", "shared"].forEach((r) => { const f = $(r); f.scrollTop = f.scrollHeight; });
+  }
+  function delay(i) {
+    const s = steps[i + 1];
+    if (!s) return 0;
+    return (i < 0 || s.ci !== steps[i].ci ? 2600 : 1700) + Math.min(1400, (s.text || "").length * 12);
+  }
+  function tick() {
+    if (!playing) return;
+    if (cur >= steps.length - 1) { pause(); return; }
+    const advance = () => { go(cur + 1, true); timer = setTimeout(tick, delay(cur)); };
+    if (steps[cur + 1].kind === "press") moveCursor(advance); else advance();
+  }
+  function label() {
+    const end = cur >= steps.length - 1;
+    $("playicon").innerHTML = playing ? PAUSE : PLAY;
+    const what = playing ? "Pause" : end ? "Replay" : "Play";
+    $("play").setAttribute("aria-label", what); $("flipbtn").setAttribute("aria-label", `${what} the replay`);
+  }
+  function play() {
+    if (cur >= steps.length - 1) go(-1, true);
+    playing = true; label();
+    clearTimeout(timer); timer = setTimeout(tick, cur < 0 ? 900 : 500);
+  }
+  function pause() { playing = false; clearTimeout(timer); label(); }
+  const toggle = () => (playing ? pause() : play());
+  $("play").addEventListener("click", toggle);
+  $("flipbtn").addEventListener("click", toggle);
+  $("prev").addEventListener("click", () => { pause(); go(cur - 1); });
+  $("next").addEventListener("click", () => { pause(); go(cur + 1, true); });
+  $("player").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") { e.preventDefault(); pause(); go(cur + 1, true); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); pause(); go(cur - 1); }
+  });
+
+  // At rest the whole run shows; with motion it starts the first time the player is mostly on screen.
+  if (reduce) { go(steps.length - 1); pause(); }
+  else {
+    go(-1); label();
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); play(); } }, { threshold: 0.55 }).observe($("player"));
+  }
+})();
+</script>
+</body>
+</html>

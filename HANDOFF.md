@@ -1,8 +1,8 @@
 # Handoff
 
-Updated 5 Nov 2026, 01:05 IST.
+Updated 5 Nov 2026, 14:30 IST.
 Load first: `AGENTS.md`, this file, `docs/BUILD.md` (gates, protocol in section 6, Switch facts in section 9), `docs/seal/SPEC.md` before touching `flipside/seal/`, `VERIFICATION.md` (evidence).
-Skills: `pr-protocol` before branching or opening a PR; `pr` for PR bodies; `handoff` to update this file.
+Skills: `pr-protocol` before branching or opening a PR; `pr` for PR bodies; `handoff` to update this file; `design-taste-frontend` before changing `site/`.
 
 ## Goal
 
@@ -25,25 +25,28 @@ Flipside lets the owning team question the author team's private coding-agent se
 ## State
 
 Team repo `pratyakshrunsoncaffeine/gateplus` (private); team clone `~/gateplus-kadoo69`.
-`main` at 18d0234 or later: Flipside, Gate v1 in `legacy/gate-v1/`, ported rules, Windows fixes, room-bound agent state (#11), Codex's set B, demo and Windows evidence (#5, #6, #12), K3 (#14).
+`main` at 05fa751 or later.
 
 Open PRs:
-- #17 `16-coverage-not-disclosed` (Aarav): coverage lines say "N not disclosed (steps ...)"; `coverage[].withheld` JSON key is now `not_disclosed`; "withheld" means only an author decision. Lead approved the contract change on the board. Codex runs set B unchanged against it, then the lead merges. This handoff is a commit on that branch.
-- #15 `lead/k3-evidence-wording` (lead): VERIFICATION K3.d cites the log line, not the after screenshot.
+- #33 `32-make-demo-mattermost` (Aarav): `make demo` runs Switch 0.31.0 and Mattermost 11.9.0 in Docker, signs in both people and plays the review; the author presses Approve in the Mattermost web app; `make k5` 8/8 on a cleared server. CI green. Waits for the lead's review.
+- #28, #30, #31 (lead's lane): wait for the lead.
 
-Done (evidence in `evidence/`, details in `VERIFICATION.md`):
-- Live M4 on a second machine: a clean clone on Windows with its own Switch Console 0.40.1 server reproduces the Mac's verdicts and coverage lines (`evidence/replay-switch-csv-export-20261105T015811.log`). Windows needs `SWITCH_BASE` from `SERVER_PORT` in `switch-core.env`.
-- K1/K2 9/9, K4 6/6 (`make killtests`); G1 to G8 (`make lint test g8`); 338 tests, twice.
-- K3 4/4 (`make k3`, `evidence/k3-20261105T005334.log`, screenshots): author-agent's card renders in Slack with Approve and Decline; the reviewer gets 403; the author's Slack press reaches author-agent.
-- Offline flow with the four refusals (`make replay-offline`); 9 fixtures 9/9 offline (`make fixtures`); live on local Switch: `make solo`, `make solo-all` 9/9.
-- A real Claude Code session end to end, and a real sealed GitHub PR (`kadoo69/flipside-sandbox#1`, private, synthetic): `evidence/real-session-20261104T224823.log`, `evidence/github-pr-20261105T002706.log`.
-- CI: Ubuntu required, Windows green, macOS on pushes to `main` only.
+Unmerged branch, no PR yet:
+- `34-site-replay` (Aarav, pushed, based on #33's branch): the static site in `site/`. Open the PR after #33 merges, with the `pr` skill.
+  The board post (5 Nov) asks the lead for a yes on the vendored three.js (670 KB, MIT), the 11.5 MB film in `site/media/`, and GitHub Pages (needs the repo public).
+
+Done:
+- Everything listed in `VERIFICATION.md`: K1/K2 9/9, K3 4/4 (Slack card), K4 6/6, K5 8/8 (Mattermost), G1 to G8, M4 on Windows, a real Claude Code session, a real sealed GitHub PR.
+- The launch film v6 (`~/Desktop/flipside-launch-v6.mp4`, 64.8 s; sources in `~/flipside-video/film2/`); copied into `site/media/flipside-film.mp4`.
+- The site (`site/index.html`), sections in order: hero with Flip (the bot, live Three.js); "Two laptops, one Switch room" diagram after the Switch hackathon page (agents wired to a switch that turns on, then a chat room with members, messages and a room panel); the replay player (the dock with Flip, play and chapter bars sits at the top of the player, over both rooms and the seal tree); real Slack and Mattermost screens; How it works in four colour fields; the film; Run it; footer.
+  Every message in the replay and the diagram comes from `site/run.js`, which `site/build.py` writes from `evidence/demo-mattermost-csv-export-20261105T132112.log`.
+  Design direction: tasteskill "one-motif" (seed 405919273, palette and type kept): Flip's puck, a rounded square with 30% corners, is the hero field, the buttons, the film frame and the end mark. The amber "why." in the hero is a deliberate brand exception from the film.
+  Inspector: 0 FAIL at 1440, 768 and 390 px; two defended warnings (one card shown at four steps; the paper colour matches the film). No horizontal overflow from 320 to 1440 px.
 
 Not done:
-- Demo video (at most 2.5 minutes, BUILD section 11) and its SHA-256 in VERIFICATION. Aarav records it on the Mac from `docs/DEMO.md`.
-- Final blind judge run on the final README (`docs/judging/blind/`); submission; the lead makes the repo public before 7 Nov 23:59 IST.
+- Demo video for submission (at most 2.5 minutes, BUILD section 11) and its SHA-256 in VERIFICATION.
+- Final blind judge run on the final README; submission; the lead makes the repo public before 7 Nov 23:59 IST.
 - The full review inside Slack channels (only the card is checked there); see Dead ends.
-- Switch auto-posts an author-agent greeting and a "no session connected" reply in new rooms; no setting stops it.
 
 ## Slack (K3 setup, local only)
 
@@ -70,6 +73,8 @@ Not done:
 | K3 bridged room uses `channel_type: channel_private` and a live agent connection | Bridged rooms need `channel_type`; without a connected agent Switch shows "Host offline" and no buttons |
 | The review stays in Switch rooms; Slack is shown for the card | Slack senders are not Switch user ids (Dead ends) |
 | PR CI: Ubuntu and Windows must pass, macOS on `main` only and non-blocking | macOS jobs were cancelled for lack of runners; Windows green on every PR since #7 |
+| The site is static files with no build step beyond `site/build.py` | Runs from any static host or `python3 -m http.server`; no packages to approve |
+| The site replays a real run, never invented text | Judges can match every Switch message id to the evidence log |
 
 ## Dead ends
 
@@ -83,6 +88,9 @@ Not done:
 - `killtests/k1_k2.py` imports `switch_api` from its own folder; scripts outside it must add `killtests/` to `sys.path`.
 - A second clone has no `killtests/.local-users.json`; copy it (mode 0600) from the clone that created the users.
 - A chat cannot be created without an agent (422 `AGENTS_REQUIRED`); agent names are unique per server (409).
+- A `.rise` or shutter element that starts fully clipped never fires an IntersectionObserver; observe its parent (site film plate bug).
+- The Playwright MCP browser window is shared with the user and pins its window at 1600x1000; for exact widths open a new context with `browser.newContext({viewport})`.
+- Never pass credentials through Playwright code; Mattermost passwords live only in `.flipside-demo/people.json` (0600). Never run `flip demo logins` in a session.
 - `greeting` on room create, `receives_join_events: false`, `!follow-ups off` do not stop Switch's greeting.
 
 ## Files
@@ -91,6 +99,8 @@ Not done:
 - Room: `flipside/room/` (`agents.py`, `rules.py` (lead's lane), `switch_client.py`, `daemon.py`, `setup.py`, `chat.py`, `solo.py`, `replay.py`, `run.py`, `github.py`, `protocol.py`, `brief.py`, `transport.py`).
 - Kill tests: `killtests/k1_k2.py`, `k3.py`, `k4.py`, `switch_api.py`.
 - Fixtures: `fixtures/build_fixtures.py` writes `fixtures/cases/`; set B in `fixtures/b/` (Codex).
+- Demo (#33): `make demo`, `make k5`, `make demo-down`; people and passwords in `.flipside-demo/` (local, 0600).
+- Site: `site/index.html` (page, inline CSS and JS), `site/flip.js` (the bot), `site/build.py` and `site/run.js` (generated), `site/media/`, `site/vendor/three.min.js`; tests in `tests/test_site.py`.
 - Local only, never committed: `killtests/.local-users.json`, agent configs, `.git/flipside/`, the Slack token files.
 
 ## Run
@@ -105,6 +115,12 @@ make killtests          # K1, K2, K4; needs Switch Console's local server at 127
 SLACK_BOT_TOKEN_FILE=~/.flipside-slack-bot make k3   # K3; press Approve in Slack
 make solo               # live flow, agents as processes, SIGKILL restarts
 make solo-all           # all 9 cases live
+make demo               # Switch + Mattermost in Docker, full review; make demo-down to remove
+make k5                 # who Switch admits in Mattermost, 8/8
+python3 site/build.py evidence/demo-mattermost-<case>-<time>.log   # rebuild site/run.js
+cd site && python3 -m http.server 8765 --bind 127.0.0.1           # view the site
+uv run pytest tests/test_site.py                                  # links, em dash, run.js freshness
+node ~/.claude/skills/design-taste-frontend/scripts/inspect.mjs http://127.0.0.1:8765/index.html
 ```
 
 A real PR by hand: README section "Run it on a real PR" (`flip seal`, `flip setup` three steps, `flip agent`, `flip chat`).
@@ -112,9 +128,10 @@ Board: `tools/board unread`, `tools/board post "[Aarav's Claude] ..."`; keep one
 
 ## Open questions
 
-- Demo narration: macOS `say` (free, local) or an ElevenLabs key.
-- Whether to make the full review run inside Slack channels for the demo (needs the identity change above), or show only the card in Slack.
+- The lead: vendored three.js, the 11.5 MB film in the repo, and GitHub Pages for `site/` (board, 5 Nov).
+- Demo narration: macOS `say` (free, local) or an ElevenLabs key (rotate the key that was shared in chat).
+- Whether to run the full review inside Slack channels for the demo (needs the identity change in Dead ends), or show only the card in Slack.
 
 ## Next step
 
-Read the board (`tools/board unread`). When Codex confirms set B on #17 and the lead merges it, write and post the live demo script (BUILD section 11) so Codex can record the video.
+Read the board (`tools/board unread`). When the lead merges #33, rebase `34-site-replay` on `main` and open its PR with the `pr` skill, citing the inspector run and `tests/test_site.py`.
