@@ -61,7 +61,8 @@ Optional stretch S1 adds the reviewer's own Claude Code agent to the room to exp
    The author pushes and opens the PR.
 2. **Detect.** reviewer-agent polls open PRs on the watched repo (`gh api`), and finds the head commit chain contains a `Flipside-Seal:` trailer.
    A PR with no seal gets questions only (no evidence), and the brief says so.
-3. **Open rooms.** The reviewer's side creates `#pr-<n>` (shared) and the author's side creates `#pr-<n>-author` (private), from `templates/flipside.template.yaml` or the API.
+3. **Open rooms.** The reviewer's side creates `#pr-<n>` (shared) and the author's side creates `#pr-<n>-author` (private): `flip setup` calls `POST /gateway/rooms` as each owner (`flipside/room/setup.py`).
+   There is no Switch room template yet.
    The room owner adds both agents (K1 found that only the room owner can add an agent).
    author-agent's addressing policy is set to: owner, owner's agents, and reviewer-agent in `#pr-<n>` only (`PUT /gateway/agents/{id}/addressing-policy`).
 4. **Publish the seal.** author-agent posts the `seal` message and uploads `manifest.json` as a room attachment.
