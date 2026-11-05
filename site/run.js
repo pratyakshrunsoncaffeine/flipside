@@ -15,7 +15,7 @@ window.RUN = {
  "chapters": [
   {
    "id": "seal",
-   "caption": "Your agent's session stays on your laptop. Its seal and a public manifest go out.",
+   "caption": "The author's agent seals its session. The session itself stays on the laptop.",
    "steps": [
     {
      "kind": "attachment",
@@ -58,7 +58,7 @@ window.RUN = {
   },
   {
    "id": "answer",
-   "caption": "You answer in your own words, from Mattermost.",
+   "caption": "The author replies in their own words, straight from Mattermost.",
    "steps": [
     {
      "kind": "human",
@@ -78,7 +78,7 @@ window.RUN = {
   },
   {
    "id": "refuse",
-   "caption": "Anyone else who asks is refused by Switch.",
+   "caption": "Anyone else who asks the author's agent is turned away by Switch.",
    "steps": [
     {
      "kind": "injection",
@@ -105,7 +105,7 @@ window.RUN = {
   },
   {
    "id": "approve",
-   "caption": "It goes to your own card first, and to the reviewer only if you approve.",
+   "caption": "The step goes to the author first. It reaches the reviewer only after they approve.",
    "steps": [
     {
      "kind": "card",
@@ -135,7 +135,7 @@ window.RUN = {
   },
   {
    "id": "proof",
-   "caption": "The reviewer checks the disclosed quote against the seal.",
+   "caption": "The reviewer's agent checks the step against the seal. It matches.",
    "steps": [
     {
      "kind": "disclosure",
@@ -156,7 +156,7 @@ window.RUN = {
   },
   {
    "id": "forgery",
-   "caption": "An edited copy fails the proof.",
+   "caption": "Change one word and the check fails.",
    "steps": [
     {
      "kind": "forged",
@@ -177,7 +177,7 @@ window.RUN = {
   },
   {
    "id": "brief",
-   "caption": "The reviewer gets a brief, not your session.",
+   "caption": "The reviewer gets a short brief, not the session.",
    "steps": [
     {
      "kind": "brief",
