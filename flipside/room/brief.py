@@ -1,4 +1,4 @@
-"""The brief reviewer-agent posts when the page rule fires (docs/BUILD.md 4.11, 7.5)."""
+"""The brief reviewer-agent posts when the page rule fires (docs/DESIGN.md 3 step 11, 5.5)."""
 
 from collections.abc import Sequence
 from typing import Any

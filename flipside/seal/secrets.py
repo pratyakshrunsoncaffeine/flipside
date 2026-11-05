@@ -1,4 +1,4 @@
-"""Secret scan for leaves before they reach an approval card (docs/BUILD.md section 8).
+"""Secret scan for leaves before they reach an approval card (docs/DESIGN.md section 6).
 
 Hits report the kind and the character span only, never the matched bytes.
 """

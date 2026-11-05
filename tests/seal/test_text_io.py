@@ -10,15 +10,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DIRS = ("flipside", "fixtures", "examples", "tests", "killtests")
-SKIP = {ROOT / "tests" / "test_board.py"}  # vendored from the board template
 
 
 def calls(attr: str) -> list[tuple[Path, int, set[str]]]:
     out = []
     for d in DIRS:
         for f in sorted((ROOT / d).rglob("*.py")):
-            if f in SKIP:
-                continue
             for node in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):
                 if (
                     isinstance(node, ast.Call)
@@ -48,8 +45,6 @@ def test_every_text_mode_open_is_utf8_and_lf() -> None:
     bad = []
     for d in DIRS:
         for f in sorted((ROOT / d).rglob("*.py")):
-            if f in SKIP:
-                continue
             for node in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):
                 if not isinstance(node, ast.Call):
                     continue
@@ -85,8 +80,6 @@ def test_every_os_open_is_binary() -> None:
     bad = []
     for d in DIRS:
         for f in sorted((ROOT / d).rglob("*.py")):
-            if f in SKIP:
-                continue
             text = f.read_text(encoding="utf-8")
             for fn in ast.walk(ast.parse(text)):
                 if not isinstance(fn, ast.FunctionDef):

@@ -1,7 +1,7 @@
 """``flip replay``: play a fixture case end to end and check it against its expected outcome.
 
-``--offline`` runs on FakeSwitch in this process (M2). Without it, the same case runs on
-the local Switch server with fresh users and agents (M4; see solo.py).
+``--offline`` runs on FakeSwitch in this process. Without it, the same case runs on
+the local Switch server with fresh users and agents (see solo.py).
 Writes ``evidence/replay-<mode>-<case>-<time>.log`` and exits 0 only when the outcome
 matches ``expected`` in the case file.
 """
@@ -171,7 +171,7 @@ def report(result: Result, expected: dict[str, Any], log: Log) -> list[str]:
 
 
 def fixtures_report(out: Path) -> int:
-    """M5: run every case in fixtures/cases offline and write the results table."""
+    """Run every case in fixtures/cases offline and write the results table."""
     cases = sorted((ROOT / "fixtures" / "cases").iterdir())
     rows, failures = [], 0
     for d in cases:

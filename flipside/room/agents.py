@@ -1,4 +1,4 @@
-"""author-agent and reviewer-agent state machines (docs/BUILD.md sections 4, 7, 8).
+"""author-agent and reviewer-agent state machines (docs/DESIGN.md sections 3, 5, 6).
 
 Both agents are event-sourced: each ``step()`` re-reads the room transcript and acts
 only on what its own earlier posts have not covered yet, so a restarted agent resumes

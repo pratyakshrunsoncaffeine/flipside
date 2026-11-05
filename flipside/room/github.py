@@ -1,4 +1,4 @@
-"""Read one pull request's public data from GitHub with the ``gh`` CLI (docs/BUILD.md 7.1).
+"""Read one pull request's public data from GitHub with the ``gh`` CLI (docs/DESIGN.md 5.1).
 
 Title, body, author login, every changed file (all pages), and the check runs on the PR's
 head commit. Flipside seals on an empty commit at the head of the PR, so the head commit's

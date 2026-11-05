@@ -1,6 +1,5 @@
 # LF everywhere: vectors, fixtures and examples are compared byte for byte.
 * text=auto eol=lf
 # Shell scripts must keep LF or bash fails on Windows checkouts.
-tools/board text eol=lf
 *.sh text eol=lf
 *.jsonl text eol=lf

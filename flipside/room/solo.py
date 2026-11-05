@@ -1,4 +1,4 @@
-"""``flip solo``: one machine, two owners, the full flow on a real local Switch server (M3).
+"""``flip solo``: one machine, two owners, the full flow on a real local Switch server.
 
 Reuses (or creates) the two local users Author and Reviewer, registers each one's agent,
 opens the reviewer-owned shared room and the author's private room, and sets both agents'

@@ -23,7 +23,7 @@ It does not prove the session is genuine (a session forged before sealing is out
 - Large tool outputs that Claude Code stored beside the session: `<session-id>/tool-results/` (read when a tool result points to one).
 - The repo, its PR base ref (`--base`, default `origin/main`), and the changed-file list `git diff --name-only <base>...HEAD`.
 
-Codex sessions are out of scope for M1.
+Codex sessions are out of scope.
 
 ## Sessions
 

@@ -1,4 +1,4 @@
-"""Deterministic reviewer-side rules (docs/BUILD.md section 7): gaps, leaf selection,
+"""Deterministic reviewer-side rules (docs/DESIGN.md section 5): gaps, leaf selection,
 contradictions. Inputs are public: PR text, changed files, check runs, the manifest."""
 
 import posixpath
@@ -259,7 +259,7 @@ def _cap(leaves: Sequence[int]) -> tuple[int, ...]:
 
 
 def select(gap: Gap, manifest: Sequence[dict[str, Any]]) -> Selection:
-    """Leaves requested for a gap (docs/BUILD.md 7.3)."""
+    """Leaves requested for a gap (docs/DESIGN.md 5.3)."""
     steps = steps_of(manifest)
     order = sorted(steps)
     run_class = {"CI": "test", "TESTS": "test", "RERUN": "test", "LINT": "lint", "BUILD": "build"}
@@ -325,7 +325,7 @@ def contradictions(
     verified: Sequence[dict[str, Any]],
     anchored: frozenset[int],
 ) -> list[Contradiction]:
-    """Rules on verified bytes only (docs/BUILD.md 7.4). ``verified`` holds dicts with
+    """Rules on verified bytes only (docs/DESIGN.md 5.4). ``verified`` holds dicts with
     ``i`` and ``leaf`` for leaves that verified OK for question q."""
     out: list[Contradiction] = []
     for v in verified:

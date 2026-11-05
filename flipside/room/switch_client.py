@@ -1,6 +1,6 @@
 """SwitchTransport: one agent's view of a real Switch server (switch-core 0.31.0).
 
-Facts this relies on were proven in kill tests K1, K2 and K4 (docs/BUILD.md section 9):
+Facts this relies on were proven in kill tests K1, K2 and K4 (docs/DESIGN.md section 7):
 
 - An agent posts with its API key (``POST /agents/{id}/message``) and attaches files with
   ``POST /agents/{id}/rooms/{room}/media``. Both return the Switch message id.
