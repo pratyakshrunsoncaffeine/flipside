@@ -158,4 +158,4 @@ False flags: 0.
 | The whole review in Mattermost on switch-core 0.31.0: both people act as their own Mattermost accounts, the author approves in Mattermost (macOS; CI on Ubuntu) | pass | `make demo`, `evidence/demo-mattermost-csv-export-20261105T131047.log` |
 | K5: Switch admits only the author's claimed Mattermost account, takes a card press only from the author, refuses each person changing the other's room (8 checks) | pass | `make k5`, `evidence/k5-20261105T153338.log` |
 | Browser proof check (`site/verify.html`) gives the same verdicts as `flip verify` for the checks a browser can run | pass | `tests/blind/test_browser_verify.py` |
-| Author and reviewer on two machines | not run | - |
+| Author and reviewer on two machines (Mac author, Windows reviewer, private tailnet) | pass | `evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log` |

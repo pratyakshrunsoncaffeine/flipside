@@ -51,6 +51,7 @@ PR #21 stops them through a stop file; `evidence/solo-csv-export-20261105T020718
 | M4: live replay from a clean clone on the second machine, Windows, its own Switch server; same verdicts and coverage lines | `uv run --frozen python -m flipside.cli replay` | `evidence/replay-switch-csv-export-20261105T015811.log` |
 | M3 on the second machine, Windows: live flow, four refusals, both agents killed and restarted | `uv run --frozen python -m flipside.cli solo` | `evidence/solo-csv-export-20261105T015719.log` (on `b946c5a`, agents exit 1 at the end), `evidence/solo-csv-export-20261105T020718.log` (PR #21, agents exit 0) |
 | M2 on the second machine, Windows | `uv run --frozen python -m flipside.cli replay --offline` | `evidence/replay-offline-csv-export-20261105T015907.log` |
+| M2 on two machines over a private tailnet: author-agent and Switch 0.31.0 on the Mac, reviewer-agent on Windows; seal commit 29eb6c3, root 7b9cbb8, 34 leaves; 2 questions, 5 leaves OK, 0 contradictions; the reviewer's request for the whole session refused (room lines 26 and 27) | manual run | `evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log` |
 | M3 with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
 | All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
 | All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
@@ -135,7 +136,7 @@ It is a 65-second film with music, not the demo video above; the interfaces in i
 
 - Questions answered by typing in Slack: not supported. Switch reports a Slack message as `kind: human` with no user id; the agents accept a person's messages only as `user:<switch id>`.
   A card press in Slack is accepted: author-agent matches `@switch-slack-<connection>-<username>` (the id before `:<server>`) against the author's linked accounts.
-- Two machines live (author and reviewer on different laptops): not run.
+- On two machines, the reviewer pressing the author's card: not run, because every card was decided; K2 and K5 check that 403 on one machine.
 - In fixtures, PR data (title, body, changed files, check runs) comes from each case's `case.json`; the GitHub reader ran on the sandbox PR and on team PRs #2 and #7.
 - All sessions and repos in `fixtures/` and `examples/` are synthetic.
   Real Claude Code sessions were sealed only for G4, G6 and G7 (M1 evidence log).
