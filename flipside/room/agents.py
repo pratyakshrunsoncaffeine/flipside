@@ -138,7 +138,8 @@ class AuthorAgent:
                 # file from another pair of rooms (an earlier setup for the same commit)
                 # would make the agent wait on cards that will never be answered here.
                 self.log(
-                    f"author-agent: ignoring state saved for other rooms in {self.cfg.state_path}"
+                    "author-agent: ignoring state saved for other rooms in "
+                    f"{self.cfg.state_path.name}"
                 )
                 return
             self.cards = {

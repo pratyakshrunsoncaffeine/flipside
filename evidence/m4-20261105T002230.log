@@ -25,7 +25,7 @@ Success: no issues found in 57 source files
 
 
 mypy-win32: exit 0, expected 0, PASS
-COMMAND pytest: ['uv', 'run', '--frozen', 'python', '-m', 'pytest', '--basetemp=C:\\Users\\surya\\.codex\\tmp\\gc20261105\\a', '--tb=short']
+COMMAND pytest: ['uv', 'run', '--frozen', 'python', '-m', 'pytest', '--basetemp=C:\\Users\\<user>\\.codex\\tmp\\gc20261105\\a', '--tb=short']
 .......s................................................................ [ 21%]
 ....................s................................................... [ 43%]
 ........................................................................ [ 65%]
@@ -35,7 +35,7 @@ COMMAND pytest: ['uv', 'run', '--frozen', 'python', '-m', 'pytest', '--basetemp=
 
 
 pytest: exit 0, expected 0, PASS
-COMMAND pytest-second: ['uv', 'run', '--frozen', 'python', '-m', 'pytest', '--basetemp=C:\\Users\\surya\\.codex\\tmp\\gc20261105\\b', '--tb=short']
+COMMAND pytest-second: ['uv', 'run', '--frozen', 'python', '-m', 'pytest', '--basetemp=C:\\Users\\<user>\\.codex\\tmp\\gc20261105\\b', '--tb=short']
 .......s................................................................ [ 21%]
 ....................s................................................... [ 43%]
 ........................................................................ [ 65%]

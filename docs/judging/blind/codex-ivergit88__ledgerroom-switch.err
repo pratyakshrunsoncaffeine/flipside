@@ -1,6 +1,6 @@
 OpenAI Codex v0.166.0
 --------
-workdir: /Users/aaravmahajan/flipside/docs/judging/blind
+workdir: docs/judging/blind
 model: gpt-6-luna
 provider: openai
 approval: never
@@ -102,7 +102,7 @@ wsl -d Ubuntu-24.04 -u root -- dockerd --host unix:///run/ledgerroom-docker.sock
 Keep that process running. In another shell use the default WSL user (it has the working Compose plugin):
 
 ```powershell
-wsl -d Ubuntu-24.04 -- docker --host unix:///run/ledgerroom-docker.sock compose --project-name ledgerroom --env-file /mnt/c/Users/Administrator/Desktop/Switch-Hackathon/project/.local/stack.env -f /mnt/c/Users/Administrator/Desktop/Switch-Hackathon/project/infra/switch.compose.yml --profile collab --profile gateway up -d
+wsl -d Ubuntu-24.04 -- docker --host unix:///run/ledgerroom-docker.sock compose --project-name ledgerroom --env-file /mnt/c~/Desktop/Switch-Hackathon/project/.local/stack.env -f /mnt/c~/Desktop/Switch-Hackathon/project/infra/switch.compose.yml --profile collab --profile gateway up -d
 python tools/bootstrap.py --wsl
 ```
 
