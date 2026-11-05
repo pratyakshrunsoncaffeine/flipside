@@ -23,7 +23,7 @@ make replay-offline   # the whole review on an in-process Switch stand-in
 make demo             # Switch 0.31.0 and Mattermost in Docker; both people act in Mattermost
 ```
 
-`make demo` is checked on macOS only; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
+`make demo` is checked on macOS and in CI on Ubuntu; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
 To watch the recorded run play back step by step, open `site/index.html` in a browser.
 To check a disclosed quote without installing anything, open `site/verify.html`.
 
@@ -92,7 +92,7 @@ Terms (seal, leaf, root, manifest, gap, coverage line, page rule) are defined in
 | Path | Needs | Commands |
 |---|---|---|
 | Offline | Git, Python 3.12, [uv](https://docs.astral.sh/uv/) | `make lint test`, `make g8`, `make replay-offline`, `make fixtures` |
-| Real Switch and Mattermost (macOS checked) | Docker with Compose v2 | `make demo`, `make k5`, `make demo-down` |
+| Real Switch and Mattermost (macOS and CI Ubuntu checked) | Docker with Compose v2 | `make demo`, `make k5`, `make demo-down` |
 | Switch Console's local server | Switch Console | `make killtests`, `make solo`, `make replay` |
 | A real PR, author and reviewer each with their own login | Switch logins, `gh` | `flip seal`, `flip setup`, `flip agent` |
 
@@ -159,10 +159,10 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 |---|---|---|
 | Seal gates G1 to G8: proofs, tamper codes, vectors, offline `OK` and `PROOF_FAIL` | `make lint test`, `make g8` | [`evidence/m1-20261104T201854.log`](evidence/m1-20261104T201854.log) |
 | Kill tests K1 to K5 on a real Switch 0.31.0 server: scoped addressing, author-only cards, room ownership, the card in Slack, who Switch admits in Mattermost | `make killtests`, `make k3`, `make k5` | [`k1k2`](evidence/k1k2-20261104T195815.log), [`k3`](evidence/k3-20261105T005334.log), [`k4`](evidence/k4-20261104T202125.log), [`k5`](evidence/k5-20261105T153338.log) |
-| The whole review in Mattermost on real Switch: both people as their own accounts, the author approves the card there, four refusals, both agents killed and restarted (macOS) | `make demo` | [`evidence/demo-mattermost-csv-export-20261105T131047.log`](evidence/demo-mattermost-csv-export-20261105T131047.log) |
+| The whole review in Mattermost on real Switch: both people as their own accounts, the author approves the card there, four refusals, both agents killed and restarted (macOS; the CI `demo` job reruns it on Ubuntu) | `make demo` | [`evidence/demo-mattermost-csv-export-20261105T131047.log`](evidence/demo-mattermost-csv-export-20261105T131047.log) |
 | Offline end to end with the four refusals, and all 9 fixture cases offline and live | `make replay-offline`, `make fixtures`, `make solo-all` | [`replay-offline`](evidence/replay-offline-csv-export-20261104T205047.log), [`fixtures.md`](docs/results/fixtures.md), [`solo-all`](evidence/solo-all-20261104T230152.log) |
 | A clean clone on a second machine (Windows, its own Switch server) reproduces the gates, kill tests, live flow and verdicts | the PowerShell block in [docs/RUNNING.md](docs/RUNNING.md#without-make-windows-powershell) | [`m4`](evidence/m4-20261105T002230.log), [`replay-switch`](evidence/replay-switch-csv-export-20261105T015811.log) |
-| Author and reviewer on two machines over a private tailnet: the author and Switch on a Mac, reviewer-agent on Windows; 2 questions, 5 leaves OK, the reviewer's request for the whole session refused | manual run, both hosts in each log's header | [`author`](evidence/m2-author-20261105T172923.log), [`reviewer`](evidence/m2-reviewer-20261105T172644.log) |
+| Author and reviewer on two machines over a private tailnet: the author and Switch on a Mac, reviewer-agent on Windows; 2 questions, 5 leaves OK, the reviewer's request for the whole session refused | manual run, each side's host in its log header | [`author`](evidence/m2-author-20261105T172923.log), [`reviewer`](evidence/m2-reviewer-20261105T172644.log) |
 | `site/verify.html` gives `flip verify`'s verdict on every pinned vector, in the browser with no install | `FLIP_REQUIRE_NODE=1 uv run pytest tests/blind/test_browser_verify.py` | [VERIFICATION.md](VERIFICATION.md) |
 
 ## Limits
@@ -176,7 +176,7 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
 - On two machines, the reviewer pressing the author's card was not run, because no card was left open; K2 and K5 check that 403 on one machine.
-- `make demo` is checked on macOS only.
+- `make demo` is checked on macOS and in CI on Ubuntu, not on Windows.
 - Typed answers are checked in Mattermost only.
   In Slack (`flip solo --slack`), author-agent accepts the author's card press from their linked Slack account, but Switch reports a message typed in Slack as `kind: human` with no user id, so answers there go through the gateway.
 - `flip setup` creates Switch chats; `make demo` and `flip solo --slack` open the rooms in a chat app.
