@@ -52,3 +52,20 @@ def test_render_ends_with_the_verdict() -> None:
 
 def test_main_exit_code_without_evidence() -> None:
     assert judge.main(["--no-evidence"]) == 0
+
+
+def test_judge_leaves_tracked_files_unchanged() -> None:
+    import subprocess
+
+    def status() -> str:
+        return subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=judge.ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+
+    before = status()
+    assert judge.fixtures_check().ok
+    assert status() == before

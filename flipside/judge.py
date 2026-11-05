@@ -90,7 +90,7 @@ def verify_check(
             manifest.write_bytes(raw.replace(b'"role"', b'"Role"', 1))
             how = how.removeprefix("manifest:")
     path = tmp / f"{cid}.json"
-    path.write_text(json.dumps(d), encoding="utf-8")
+    path.write_text(json.dumps(d), encoding="utf-8", newline="\n")
     args = _verify_args(path, manifest)
     rc, out = _run(args)
     first = out.splitlines()[0] if out else ""
@@ -172,7 +172,7 @@ def review_check() -> Check:
 
 
 def fixtures_check() -> Check:
-    args = [*PY, "replay", "--fixtures"]
+    args = [*PY, "replay", "--fixtures", "--out", str(ROOT / ".flip-judge" / "fixtures.md")]
     rc, out = _run(args)
     m = re.search(r"(\d+)/(\d+) match", out)
     ok = rc == 0 and m is not None and m.group(1) == m.group(2)
@@ -229,7 +229,14 @@ def admission_check(since: float) -> Check:
     """J12, live only: Switch decides who may address author-agent and answer its card."""
     args = [sys.executable, "k5.py"]
     p = subprocess.run(
-        args, cwd=ROOT / "killtests", capture_output=True, text=True, timeout=600, check=False
+        args,
+        cwd=ROOT / "killtests",
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=600,
+        check=False,
     )
     logs = _logs("k5-*.log", since)
     text = logs[-1].read_text(encoding="utf-8", errors="replace") if logs else p.stdout
@@ -287,7 +294,9 @@ def deterministic_check() -> Check:
         if MODEL_SDKS.search(p.read_text(encoding="utf-8"))
     ]
     deps = re.search(
-        r"^dependencies\s*=\s*(\[.*?\])", (ROOT / "pyproject.toml").read_text(), re.S | re.M
+        r"^dependencies\s*=\s*(\[.*?\])",
+        (ROOT / "pyproject.toml").read_text(encoding="utf-8"),
+        re.S | re.M,
     )
     no_deps = deps is not None and deps.group(1).replace(" ", "") == "[]"
     return Check(
@@ -366,14 +375,16 @@ def main(argv: list[str] | None = None) -> int:
     if not a.no_evidence:
         stamp = time.strftime("%Y%m%dT%H%M%S")
         out = ROOT / "evidence" / f"judge-{stamp}"
-        out.with_suffix(".log").write_text(text + "\n", encoding="utf-8")
+        out.with_suffix(".log").write_text(text + "\n", encoding="utf-8", newline="\n")
         record = {
             "local_time": stamp,
             "live": a.live,
             "seconds": round(secs, 1),
             "checks": [asdict(c) for c in checks],
         }
-        out.with_suffix(".json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+        out.with_suffix(".json").write_text(
+            json.dumps(record, indent=2) + "\n", encoding="utf-8", newline="\n"
+        )
         print(f"evidence {out.relative_to(ROOT)}.log and .json")
     return 0 if all(c.ok for c in checks) else 2
 

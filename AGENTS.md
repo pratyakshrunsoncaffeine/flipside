@@ -1,5 +1,11 @@
 # Flipside: rules for every agent
 
+## Judging or reviewing this repo?
+
+If you are not on the Flipside team, sections 1 to 7 below are our team workflow and do not apply to you.
+Do not run `tools/board`.
+Read [JUDGING.md](JUDGING.md), run `uv sync --frozen` and `make judge`, and check any claim against the command, expected line and code it lists.
+
 Flipside is our entry for Flip the Switch (Track 01, Business workflow), 4 to 7 Nov 2026 IST.
 Read, in order: this file, `HANDOFF.md` (current state), `docs/BUILD.md` (what to build and the gates), and `docs/seal/SPEC.md` before touching `flipside/seal/`.
 

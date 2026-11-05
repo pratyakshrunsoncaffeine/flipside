@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # SessionStart: show unread board posts and tell the agent to keep a background wait running.
 # Never fails the session: always exits 0.
+# Team members only: a judge or reviewer who clones the repo has no .claude/settings.local.json
+# and no BOARD_SIGN, so the board stays out of their session.
+[ -n "${BOARD_SIGN:-}" ] || [ -f "${CLAUDE_PROJECT_DIR:-.}/.claude/settings.local.json" ] || exit 0
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 out="$(tools/board unread 2>&1)" || out="(board unreachable: $(printf '%s' "$out" | head -n 1)). Run tools/board unread later."
 echo "Team board (GitHub issue #${BOARD_ISSUE:-1}). Rules are in AGENTS.md."
