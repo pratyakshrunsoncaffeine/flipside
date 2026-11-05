@@ -109,7 +109,7 @@ class Script:
 
     ``author_t`` and ``reviewer_t`` post the scripted attacks as the two agents (a forged
     disclosure, an injected request); they never read agent state. With ``by_hand`` the
-    author's cards are left for the author to answer in their own client (Slack)."""
+    author's cards are left for the author to answer in their own messaging app."""
 
     world: World
     humans: Humans
@@ -124,6 +124,8 @@ class Script:
     decided: set[str] = field(default_factory=set)
     done: set[str] = field(default_factory=set)
     by_hand: bool = False
+    # People typing in a messaging app answer through author-agent: "@<agent> Q1: ...".
+    answer_prefix: str = ""
 
     def step(self, transcript: list[Any]) -> int:
         acts = 0
@@ -138,7 +140,7 @@ class Script:
             for q in qs[-1]["qs"]:
                 k = q["q"]
                 if k not in self.answered and k in self.world.case.answers:
-                    answer = f"Q{k}: {self.world.case.answers[k]}"
+                    answer = f"{self.answer_prefix}Q{k}: {self.world.case.answers[k]}"
                     self.humans.say("author", self.cast.shared, answer)
                     self.answered.add(k)
                     acts += 1
@@ -256,7 +258,7 @@ class Script:
                     self.log(f"script: reviewer answering card {card.id[:8]} refused: {e}")
             answer = "decline" if step in decline else "approve"
             if self.by_hand:
-                self.log(f"script: card {card.id[:8]} waits for the author: {answer} it in Slack")
+                self.log(f"script: card {card.id[:8]} waits for the author: {answer} it in chat")
                 self.decided.add(card.id)
                 continue
             self.humans.answer_card("author", card.id, answer)

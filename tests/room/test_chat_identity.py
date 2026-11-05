@@ -98,3 +98,23 @@ def test_the_authors_chat_offer_in_the_private_room_counts(tmp_path: Path) -> No
     hub.post(priya, "priv", f"{AT} offer Q1 leaf 0")
     s["author"]().step()
     assert len(hub.cards) == before + 1
+
+
+def test_switch_card_buttons_are_matched_without_their_number() -> None:
+    from flipside.room.mattermost import card_actions
+
+    post = {
+        "props": {
+            "attachments": [
+                {
+                    "id": 0,
+                    "actions": [
+                        {"id": "switch1", "name": "1. Approve"},
+                        {"id": "switch2", "name": "2. Decline"},
+                    ],
+                }
+            ]
+        }
+    }
+    assert card_actions(post) == {"Approve": "switch1", "Decline": "switch2"}
+    assert card_actions({"props": {}}) == {}

@@ -1,7 +1,7 @@
 PY ?= uv run --frozen python
 UV_RUN ?= uv run --frozen
 
-.PHONY: help test lint killtests g8 replay-offline fixtures solo solo-all replay
+.PHONY: help test lint killtests g8 replay-offline fixtures solo solo-all replay demo demo-down
 help: ## List targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "%-12s %s\n", $$1, $$2}'
 
@@ -38,3 +38,10 @@ solo-all: ## M5: all 9 fixture cases live on the local Switch server; writes evi
 
 replay: ## M4: fresh local server, recorded inputs, no keys needed (room lane)
 	$(PY) -m flipside.cli replay
+
+demo: ## Switch 0.31.0 + Mattermost in Docker, people act in Mattermost; writes evidence/demo-mattermost-*.log
+	$(PY) -m flipside.cli demo up
+	$(PY) -m flipside.cli demo run
+
+demo-down: ## Remove the demo containers, their data and .flipside-demo/
+	$(PY) -m flipside.cli demo down

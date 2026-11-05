@@ -25,6 +25,7 @@ import sys
 import tempfile
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -33,7 +34,7 @@ from flipside.room.agents import AUTHOR_AGENT_NAME, REVIEWER_AGENT_NAME
 from flipside.room.daemon import write_config
 from flipside.room.protocol import accept
 from flipside.room.replay import DEFAULT_CASE, ROOT, case_timeout, report
-from flipside.room.run import Card, Cast, Log, Result, Script, play
+from flipside.room.run import Card, Cast, Humans, Log, Result, Script, play
 from flipside.room.scenario import World, load_case, materialize
 from flipside.room.setup import (
     OWNER_RULE,
@@ -45,11 +46,12 @@ from flipside.room.setup import (
     private_greeting,
     register,
     shared_greeting,
-    slack_bridge,
 )
+from flipside.room.setup import bridge as find_bridge
 from flipside.room.switch_client import DEFAULT_BASE, Http, SwitchTransport
 
 CREDS = ROOT / "killtests" / ".local-users.json"
+APPS = ("slack", "mattermost")
 CONSOLE_ENV = (
     Path.home()
     / "Library/Application Support/switchdash/local-switch-server/native/run/switch-core.env"
@@ -58,6 +60,12 @@ CONSOLE_ENV = (
 
 def base_url() -> str:
     return os.environ.get("SWITCH_BASE", DEFAULT_BASE)
+
+
+def creds_path() -> Path:
+    """The local users' passwords (mode 0600). ``FLIP_USERS_FILE`` overrides it, so a second
+    Switch server (``flip demo``) keeps its own users apart from the Console server's."""
+    return Path(os.environ.get("FLIP_USERS_FILE", str(CREDS)))
 
 
 def admin_login(base: str) -> Http:
@@ -77,13 +85,14 @@ def person(admin: Http, base: str, role: str) -> tuple[Http, str, str]:
 
     Agent names are unique on a Switch server, so the same two users own the two agents in
     the kill tests and in every solo run. Returns the session, the user id and the name."""
-    creds = json.loads(CREDS.read_text(encoding="utf-8")) if CREDS.exists() else {}
+    path = creds_path()
+    creds = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     existing = {u["email"] for u in admin.get("/gateway/users")}
     if role not in creds:
         email = f"{role}@flipside.local"
         if email in existing:
             raise SystemExit(
-                f"{email} already exists on this Switch server, but {CREDS} has no password "
+                f"{email} already exists on this Switch server, but {path} has no password "
                 "for it; copy that file (mode 0600) from the clone that created the user"
             )
         creds[role] = {
@@ -91,8 +100,8 @@ def person(admin: Http, base: str, role: str) -> tuple[Http, str, str]:
             "password": secrets.token_urlsafe(18),
             "name": role.capitalize(),
         }
-        CREDS.write_text(json.dumps(creds), encoding="utf-8", newline="")
-        os.chmod(CREDS, 0o600)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        write_config(path, creds)  # created 0600: the passwords are never world-readable
     c = creds[role]
     if c["email"] not in existing:
         admin.post(
@@ -153,10 +162,10 @@ class Live:
     author_answerers: list[str] = field(default_factory=list)
 
 
-def bootstrap(world: World, log: Log, slack: bool = False) -> Live:
-    """Users, agents, rooms and policies for one run. Fresh rooms every run. With ``slack``
-    both rooms are private channels on the server's Slack connection, and each person's
-    linked Slack account is added to the channels they are in."""
+def bootstrap(world: World, log: Log, app: str | None = None) -> Live:
+    """Users, agents, rooms and policies for one run. Fresh rooms every run. With ``app``
+    ("slack" or "mattermost") both rooms are private channels on the server's connection to
+    that messaging app, and each person's linked account is added to the channels they are in."""
     base = base_url()
     admin = admin_login(base)
     author_h, author_id, author_name = person(admin, base, "author")
@@ -167,7 +176,7 @@ def bootstrap(world: World, log: Log, slack: bool = False) -> Live:
         f"Switch {base}: author {author_name} user {author_id}, reviewer {reviewer_name} user "
         f"{reviewer_id}; author-agent {a_agent}, reviewer-agent {r_agent}"
     )
-    bridge = slack_bridge(admin) if slack else None
+    bridge = find_bridge(admin, app) if app else None
     n = world.pr.number
     shared = open_room(reviewer_h, f"pr-{n}", r_agent, shared_greeting(n), bridge)
     # Switch matches a person against `users` by their member client id, which the gateway
@@ -186,11 +195,11 @@ def bootstrap(world: World, log: Log, slack: bool = False) -> Live:
     private = open_room(author_h, f"pr-{n}-author", a_agent, private_greeting(n), bridge)
     answerers: list[str] = []
     if bridge:
-        answerers = bridged_ids(author_h, bridge)
+        answerers = bridged_ids(author_h, bridge, app or "slack")
         author_names = linked_names(author_h, bridge)
         invite(reviewer_h, shared, linked_names(reviewer_h, bridge) + author_names)
         invite(author_h, private, author_names)
-        log(f"Slack connection {bridge}: added linked accounts {author_names or 'none'} (author)")
+        log(f"{app} connection {bridge}: added linked accounts {author_names or 'none'} (author)")
     log(
         f"reviewer opened #pr-{n} {shared} and added the author and author-agent; author opened "
         f"#pr-{n}-author {private}; author-agent policy: owner, owner's agents, reviewer-agent "
@@ -214,7 +223,12 @@ def bootstrap(world: World, log: Log, slack: bool = False) -> Live:
 def agent_configs(world: World, live: Live, work: Path) -> dict[str, Path]:
     """Write both agents' config files (mode 0600) and return their paths."""
     c = live.cast
-    common = {"base": live.base, "owner_creds": str(CREDS), "work": str(work), "shared": c.shared}
+    common = {
+        "base": live.base,
+        "owner_creds": str(creds_path()),
+        "work": str(work),
+        "shared": c.shared,
+    }
     pr = world.pr
     cfgs: dict[str, dict[str, Any]] = {
         "author": {
@@ -328,15 +342,18 @@ def run_switch(
     log: Log,
     work: Path,
     restarts: bool = True,
-    slack: bool = False,
+    app: str | None = None,
     press: bool = False,
     pace: float = 1.0,
+    people: Callable[[Live, Log], Humans] | None = None,
 ) -> Result:
     """Play ``world`` on the local Switch server with each agent in its own process;
-    with ``slack`` the rooms are Slack channels (see ``bootstrap``). With ``press`` the
-    author answers their cards in Slack, and the run waits up to 15 minutes for it;
-    ``pace`` is the pause between the people's turns, in seconds."""
-    live = bootstrap(world, log, slack)
+    with ``app`` the rooms are channels in that messaging app (see ``bootstrap``). With
+    ``press`` the author answers their cards in the app, and the run waits up to 15 minutes
+    for it; ``pace`` is the pause between the people's turns, in seconds. ``people`` builds
+    the two humans for the run (default: both act through the gateway); people who type in
+    the messaging app answer questions through author-agent."""
+    live = bootstrap(world, log, app)
     c = live.cast
     agents = Agents(agent_configs(world, live, work), work, log)
     ids = {"author": c.a_agent.split(":", 1)[1], "reviewer": c.r_agent.split(":", 1)[1]}
@@ -356,9 +373,11 @@ def run_switch(
         )
         for role in ("author", "reviewer")
     }
-    humans = SwitchHumans(owners, ids, c.private, log)
+    humans: Humans = people(live, log) if people else SwitchHumans(owners, ids, c.private, log)
     script = Script(world, humans, c, attack["author"], attack["reviewer"], AUTHOR_AGENT_NAME, log)
     script.by_hand = press
+    if people:
+        script.answer_prefix = f"@{AUTHOR_AGENT_NAME} "
     killed: set[str] = set()
 
     def on_round(_rnd: int, transcript: list[Any]) -> None:
@@ -411,12 +430,19 @@ def run_switch(
 
 
 def run_case(
-    case_dir: Path, restarts: bool, slack: bool = False, press: bool = False, pace: float = 1.0
+    case_dir: Path,
+    restarts: bool,
+    app: str | None = None,
+    press: bool = False,
+    pace: float = 1.0,
+    people: Callable[[Live, Log], Humans] | None = None,
+    prefix: str = "solo",
 ) -> tuple[bool, str]:
-    """Run one case live; write its evidence log. Returns the result and the log name."""
+    """Run one case live; write ``evidence/<prefix>-<case>-<time>.log``. Returns the result
+    and the log name."""
     case = load_case(case_dir)
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
-    log_path = ROOT / "evidence" / f"solo-{case.name}-{stamp}.log"
+    log_path = ROOT / "evidence" / f"{prefix}-{case.name}-{stamp}.log"
     lines: list[str] = []
 
     def log(msg: str) -> None:
@@ -433,7 +459,7 @@ def run_case(
         )
         started = time.monotonic()
         result = run_switch(
-            world, log, work, restarts=restarts, slack=slack, press=press, pace=pace
+            world, log, work, restarts=restarts, app=app, press=press, pace=pace, people=people
         )
         log(f"elapsed {time.monotonic() - started:.0f} s")
         diffs = report(result, case.expected, log)
@@ -465,23 +491,32 @@ def main(argv: list[str]) -> int:
     p.add_argument("--no-restart", action="store_true", help="skip the restart test")
     p.add_argument(
         "--slack",
-        action="store_true",
+        action="store_const",
+        const="slack",
+        dest="app",
         help="open the rooms as Slack channels on the server's Slack connection",
+    )
+    p.add_argument(
+        "--mattermost",
+        action="store_const",
+        const="mattermost",
+        dest="app",
+        help="open the rooms as Mattermost channels on the server's Mattermost connection",
     )
     p.add_argument(
         "--press",
         action="store_true",
-        help="with --slack: leave the author's cards for the author to answer in Slack",
+        help="with --slack or --mattermost: leave the author's cards for the author to answer",
     )
     p.add_argument("--pace", type=float, default=1.0, help="seconds between the people's turns")
     a = p.parse_args(argv)
-    if a.press and not a.slack:
-        p.error("--press needs --slack")
+    if a.press and not a.app:
+        p.error("--press needs --slack or --mattermost")
     if not a.all:
-        return 0 if run_case(Path(a.case), not a.no_restart, a.slack, a.press, a.pace)[0] else 1
+        return 0 if run_case(Path(a.case), not a.no_restart, a.app, a.press, a.pace)[0] else 1
     rows = []
     for d in sorted((ROOT / "fixtures" / "cases").iterdir()):
-        ok, name = run_case(d, not a.no_restart, a.slack, a.press, a.pace)
+        ok, name = run_case(d, not a.no_restart, a.app, a.press, a.pace)
         rows.append(f"{'PASS' if ok else 'FAIL'} {d.name} evidence/{name}")
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
     summary = ROOT / "evidence" / f"solo-all-{stamp}.log"

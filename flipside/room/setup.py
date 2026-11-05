@@ -135,20 +135,25 @@ def invite(owner: Http, room: str, names: list[str]) -> None:
         owner.post(f"/gateway/rooms/{room}/users", {"user_names": names})
 
 
-def slack_bridge(admin: Http) -> str:
-    """The active Slack connection on this server, the default one first."""
+def bridge(admin: Http, app: str) -> str:
+    """The active connection to messaging app ``app`` on this server, the default one first."""
     found = [
         b
         for b in admin.get("/gateway/collaborations") or []
-        if b.get("bridge_type") == "slack" and b.get("status") == "active"
+        if b.get("bridge_type") == app and b.get("status") == "active"
     ]
     if not found:
         raise SetupError(
-            "no active Slack connection on this Switch server; connect one in Switch Console "
+            f"no active {app} connection on this Switch server; connect one in Switch Console "
             "(server Home, Messaging apps, Connect)"
         )
     found.sort(key=lambda b: not b.get("is_default"))
     return str(found[0]["bridge_id"])
+
+
+def slack_bridge(admin: Http) -> str:
+    """The active Slack connection on this server, the default one first."""
+    return bridge(admin, "slack")
 
 
 def author_policy(shared: str, reviewer_agent: str) -> dict[str, Any]:

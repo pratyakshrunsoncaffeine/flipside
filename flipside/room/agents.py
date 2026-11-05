@@ -124,6 +124,7 @@ class AuthorAgent:
     log: Log = print
     cards: dict[str, int] = field(default_factory=dict)
     dropped: set[str] = field(default_factory=set)
+    logged: set[str] = field(default_factory=set)
     _rebuilt: Rebuilt | None = None
 
     def _rooms(self) -> list[str]:
@@ -216,6 +217,9 @@ class AuthorAgent:
             if not self.cfg.answered_by_author(oc.answered_by):
                 self.log(f"author-agent ignored card {oc.card[:8]} answered by {oc.answered_by}")
                 continue
+            if i not in decided and oc.card not in self.logged:
+                self.logged.add(oc.card)
+                self.log(f"author-agent card {oc.card[:8]}: {oc.answer} by {oc.answered_by}")
             decided.setdefault(i, "approve" if oc.answer in APPROVE else "author")
         for q, i in pending:
             if i not in decided:
