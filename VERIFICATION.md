@@ -141,8 +141,8 @@ Not recorded yet; its SHA-256 goes here.
 
 ## Launch film on the site
 
-`site/media/flipside-film.mp4`: 64.8 s, 11,487,301 bytes, SHA-256 `bcaf841e33e1c5d73fbd52a7981b50bd50c22576f7a4a1778bf8def0f3d72b48`.
-It is a 65-second film with music, not the demo video above; the interfaces in it are rebuilt with the real text from the evidence logs.
+`site/media/flipside-film.mp4`: 78.0 s, 10,128,592 bytes, SHA-256 `7377051a1c39215e05e69e7852dbda23009b475dcfb96fa406b8d26c9a543035`.
+It is a 78-second film with music, in the site's colours, not the demo video above; the interfaces in it are rebuilt with the real text from the evidence logs.
 `tests/test_site.py` keeps it under 15 MB and pins the vendored three.js r160 by SHA-256.
 
 ## Outside the checked scope
