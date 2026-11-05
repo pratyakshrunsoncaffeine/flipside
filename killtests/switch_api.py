@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import sys
 import threading
 import urllib.error
 import urllib.request
@@ -18,6 +19,15 @@ CONSOLE_ENV = (
     pathlib.Path.home()
     / "Library/Application Support/switchdash/local-switch-server/native/run/switch-core.env"
 )
+
+
+def utf8_stdio() -> None:
+    """Print UTF-8 on every OS: a redirected stream on Windows is cp1252, which cannot hold
+    every character in a Switch reply (same as flipside/cli.py)."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8")
 
 
 def env_file() -> pathlib.Path:
