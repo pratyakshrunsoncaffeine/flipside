@@ -23,11 +23,17 @@ jobs:
     defaults:
       run:
         shell: bash
+    env:
+      FLIP_REQUIRE_NODE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
+      # Node runs the verify page's script in tests/blind; FLIP_REQUIRE_NODE turns a skip into a failure.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - name: Install dev tools
         run: uv sync --frozen
       - name: Lint
