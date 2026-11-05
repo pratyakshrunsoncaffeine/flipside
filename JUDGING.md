@@ -2,7 +2,7 @@
 
 This page is for judges and for the coding agents judges use (Claude Code, Codex, others).
 Every claim in the README maps to one command, the line it should print, and the code behind it.
-Nothing here needs keys, accounts or network access, except the optional Docker step.
+After `git clone` and `uv sync --frozen`, nothing here needs keys, accounts or network access, except the optional Docker step.
 
 ## Paths
 
@@ -65,7 +65,9 @@ Without Switch there is no second owner: the reviewer could command author-agent
 |---|---|---|
 | Only the author's own account may address author-agent | Switch addressing policy plus claimed Mattermost identity | J12 (K5.a to K5.c), refusal 1 in J8 |
 | Only the author may answer the approval card | Switch approval cards: HTTP 403 for anyone else | J12 (K5.d to K5.f), `card_403` in J8 |
-| The private room stays private | Switch private channel visibility | K5.g, K5.h in `evidence/k5-*.log` |
+| Each owner's room settings change only by that owner | Switch room ownership: the other owner's edit is refused | J12 (K5.g, K5.h) |
+
+The approval card shows the author the requested chunk in full, so the Switch server holds it before the author decides; only approved chunks reach the reviewer's room.
 
 `make replay-offline` uses `FakeSwitch`, an in-process model of what K1, K2, K4 and K5 measured on a real server.
 It holds both sides' keys in one process, so it proves the flow, not the two-owner boundary; `make judge-live` proves the boundary.
