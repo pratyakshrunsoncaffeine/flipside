@@ -41,15 +41,16 @@ The page runs the proof checks in the browser; the Git checks still need `flip v
 Flipside needs a server that two owners share and that enforces each owner's rules on the other's people and agents.
 That server is Switch.
 
-| What Switch does in the review | Without it | Evidence |
+| What Switch enforces | What the live runs show | Evidence |
 |---|---|---|
-| author-agent's scoped addressing policy: only its owner, the owner's agents and reviewer-agent may address it, and only in `#pr-<n>` | the reviewer can command author-agent directly | K4 (6/6), [`evidence/k4-20261104T202125.log`](evidence/k4-20261104T202125.log); refusal 1 in every run |
-| Approval cards that only an addresser can answer | the reviewer can approve their own request | K2, [`evidence/k1k2-20261104T195815.log`](evidence/k1k2-20261104T195815.log); refusal 4 (HTTP 403) |
-| Each room belongs to the person who made it | the reviewer can rewrite the author's private room | K5 (8/8), [`evidence/k5-20261105T153338.log`](evidence/k5-20261105T153338.log) |
-| A person claims their Mattermost account in Switch | anyone in the channel can press the author's card | K5, `make demo` |
+| author-agent's scoped addressing policy: only its owner, the owner's agents and reviewer-agent may address it, and only in `#pr-<n>` | Switch refuses the reviewer's message telling author-agent to paste the session | K4 (6/6), [`evidence/k4-20261104T202125.log`](evidence/k4-20261104T202125.log); refusal 1 in every run |
+| Approval cards that only an addresser can answer | Switch answers HTTP 403 when the reviewer answers the author's card | K2, [`evidence/k1k2-20261104T195815.log`](evidence/k1k2-20261104T195815.log); refusal 4 (HTTP 403) |
+| Each room belongs to the person who made it | Switch refuses each person changing the other's room | K5 (8/8), [`evidence/k5-20261105T153338.log`](evidence/k5-20261105T153338.log) |
+| A person claims their Mattermost account in Switch | Switch takes a card press only from the author's claimed account | K5, `make demo` |
 
 `make replay-offline` runs on `FakeSwitch`, an in-process copy of what K1, K2 and K4 measured on a real server.
-It holds both owners' keys in one process, so it shows the flow, not the two-owner boundary; the live logs show the boundary.
+It holds both owners' keys in one process, so it shows the flow, not the two-owner boundary.
+The boundary is shown only by the live runs on Switch.
 
 ## Technical execution
 
@@ -68,7 +69,8 @@ Every log is listed in [VERIFICATION.md](VERIFICATION.md).
 ## Creativity and impact
 
 Tests and model reviewers check what a change does.
-Flipside asks why it was made and checks the answer against the agent session that made it, while the author keeps the session.
+Flipside asks why it was made, and the author answers with steps from the agent session that made it, while keeping the rest of the session.
+Each disclosed quote is verified against the session sealed into the PR; the author's typed answer is checked against that evidence only where a deterministic rule exists.
 The case it is built for: one team's agent writes a PR into code another team owns, and the owners need the reason behind a change the PR description does not mention.
 
 ## What it does not prove
