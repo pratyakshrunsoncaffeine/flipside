@@ -1,14 +1,14 @@
 # Verification record
 
-Recorded 4 Nov 2026, 21:15 IST, updated 22:10 IST, by the lead's agent on the lead's machine.
+Recorded 4 Nov 2026, 21:15 IST, updated 22:10 IST, on a Mac.
 Machine: macOS 26.1, Python 3.12.2 (uv), git 2.50.1, local Switch server switch-core 0.31.0 at `http://127.0.0.1:52370`.
 Every line below is backed by a command that passed or an evidence file in `evidence/`.
 
-Windows offline update: 5 Nov 2026, run started 00:22:30 IST, by Pratyaksh's Codex on Pratyaksh's machine.
-Fresh remote clone of main at `44852e64d44893210112fc647e1e32aa4de2193d`, Python 3.12.6, offline gates, Windows, no make.
+Windows offline update: 5 Nov 2026, run started 00:22:30 IST, on a Windows 11 machine.
+Fresh remote clone of main at `44852e64d44893210112fc647e1e32aa4de2193d`, Python 3.12.6, offline checks, Windows, no make.
 The Windows offline counts are pinned to that tested commit; the CI rows below describe the current workflow.
 
-Windows live update: 5 Nov 2026, runs from 01:56 to 02:08 IST, by the lead's agent on Pratyaksh's machine.
+Windows live update: 5 Nov 2026, runs from 01:56 to 02:08 IST, on the same Windows 11 machine.
 Windows 11 (10.0.26300), Python 3.12.6, git 2.55.0, Switch Console 0.40.1 (switch-core 0.31.0, the same as the Mac) with its own local server at `http://127.0.0.1:52115`.
 Fresh remote clone of main at `b946c5a`, `uv sync --frozen`, then the README's "Without make" live commands with `FLIP_SWITCH_ENV` and `SWITCH_BASE` set.
 
@@ -30,7 +30,7 @@ The two full test runs took 160.51 and 158.89 seconds, each with 328 passed and 
 Make is absent, so the exact command argv for `uv sync --frozen`, ruff check/format, strict mypy (default and win32), both pytest runs, both G8 outcomes, offline replay and all nine fixtures were run directly and are preserved in the log.
 The G8 original returns `OK` with exit 0; the forged quote returns `PROOF_FAIL` with exit 2.
 Pytest uses separate short temporary directories to avoid Windows path-length failures in the synthetic home/session tests.
-The live replay portion of M4 then ran on the same Windows machine with its own Switch server (Windows live update above).
+The live replay then ran on the same Windows machine with its own Switch server (Windows live update above).
 `flip replay` passed with verdicts `OK` 1 and `PROOF_FAIL` 1, the other three refusals in its summary (`switch_refusals` 1, `dropped_requests` 1, `card_403` 1), and the coverage lines of the Mac's run after #17 (`evidence/solo-csv-export-20261105T010413.log`): `auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)` and `reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)`.
 The Mac's replay log (`evidence/replay-switch-csv-export-20261104T210939.log`) predates #17, so it says "withheld" where both newer logs say "not disclosed"; the counts are the same.
 On `b946c5a` both agents exited with code 1 at the end of each live run: on Windows a signal from the parent is `TerminateProcess`, which skipped the agents' shutdown.
@@ -38,7 +38,7 @@ PR #21 stops them through a stop file; `evidence/solo-csv-export-20261105T020718
 
 ## Judge run from a fresh clone
 
-Recorded 5 Nov 2026, 20:19 to 20:21 IST, by Aarav's Claude on the Mac (macOS 26.1, Docker 28.1.1).
+Recorded 5 Nov 2026, 20:19 to 20:21 IST, on a second Mac (macOS 26.1, Docker 28.1.1).
 Fresh clone of branch `67-judge-kit` from GitHub, `uv sync --frozen`, `make lint`, then `make judge-live`.
 
 | Check | Result | Evidence |
@@ -55,20 +55,20 @@ Fresh clone of branch `67-judge-kit` from GitHub, `uv sync --frozen`, `make lint
 |---|---|---|
 | K1, K2 (9/9) | `make killtests` | `evidence/k1k2-20261104T195815.log` |
 | K4 (6/6, three runs) | `make killtests` | `evidence/k4-20261104T202125.log`, `evidence/k4-20261104T202158.log`, `evidence/k4-20261104T202207.log` |
-| M1: G1 to G8 | `make lint test`, `make g8` | `evidence/m1-20261104T201854.log` |
-| M2: offline flow | `make replay-offline` | `evidence/replay-offline-csv-export-20261104T205047.log` |
-| M3: live flow, twice, four refusals, restart | `make solo` | `evidence/solo-csv-export-20261104T210302.log`, `evidence/solo-csv-export-20261104T210641.log` |
-| M4: live replay on this machine | `make replay` | `evidence/replay-switch-csv-export-20261104T210939.log` |
-| M4 partial: second-machine offline gates, Windows, no make; two full test passes, G8, replay-offline, fixtures 9/9 | Exact `uv` argv in the log | `evidence/m4-20261105T002230.log` |
+| Seal core: G1 to G8 | `make lint test`, `make g8` | `evidence/m1-20261104T201854.log` |
+| Offline flow | `make replay-offline` | `evidence/replay-offline-csv-export-20261104T205047.log` |
+| Live flow, twice, four refusals, restart | `make solo` | `evidence/solo-csv-export-20261104T210302.log`, `evidence/solo-csv-export-20261104T210641.log` |
+| Live replay on this machine | `make replay` | `evidence/replay-switch-csv-export-20261104T210939.log` |
+| Second machine, offline checks, Windows, no make; two full test passes, G8, replay-offline, fixtures 9/9 | Exact `uv` argv in the log | `evidence/m4-20261105T002230.log` |
 | K1, K2 (9/9) and K4 (6/6) on the second machine, Windows | README "Without make" live block | `evidence/k1k2-20261105T015630.log`, `evidence/k4-20261105T015655.log` |
-| M4: live replay from a clean clone on the second machine, Windows, its own Switch server; same verdicts and coverage lines | `uv run --frozen python -m flipside.cli replay` | `evidence/replay-switch-csv-export-20261105T015811.log` |
-| M3 on the second machine, Windows: live flow, four refusals, both agents killed and restarted | `uv run --frozen python -m flipside.cli solo` | `evidence/solo-csv-export-20261105T015719.log` (on `b946c5a`, agents exit 1 at the end), `evidence/solo-csv-export-20261105T020718.log` (PR #21, agents exit 0) |
-| M2 on the second machine, Windows | `uv run --frozen python -m flipside.cli replay --offline` | `evidence/replay-offline-csv-export-20261105T015907.log` |
-| M2 on two machines over a private tailnet: author-agent and Switch 0.31.0 on the Mac, reviewer-agent on Windows; seal commit 29eb6c3, root 7b9cbb8, 34 leaves; 2 questions, 5 leaves OK, 0 contradictions; the reviewer's request for the whole session refused (room lines 26 and 27) | manual run | `evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log` |
-| M3 with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
+| Live replay from a clean clone on the second machine, Windows, its own Switch server; same verdicts and coverage lines | `uv run --frozen python -m flipside.cli replay` | `evidence/replay-switch-csv-export-20261105T015811.log` |
+| Live flow on the second machine, Windows: live flow, four refusals, both agents killed and restarted | `uv run --frozen python -m flipside.cli solo` | `evidence/solo-csv-export-20261105T015719.log` (on `b946c5a`, agents exit 1 at the end), `evidence/solo-csv-export-20261105T020718.log` (PR #21, agents exit 0) |
+| Offline flow on the second machine, Windows | `uv run --frozen python -m flipside.cli replay --offline` | `evidence/replay-offline-csv-export-20261105T015907.log` |
+| Two machines over a private tailnet: author-agent and Switch 0.31.0 on the Mac, reviewer-agent on Windows; seal commit 29eb6c3, root 7b9cbb8, 34 leaves; 2 questions, 5 leaves OK, 0 contradictions; the reviewer's request for the whole session refused (room lines 26 and 27) | manual run | `evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log` |
+| Live flow with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
 | All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
 | All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
-| M5: 9 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
+| 9 fixture cases | `make fixtures` | `docs/results/fixtures.md` |
 | Real session end to end: `claude -p` made the change in a synthetic sandbox repo, `flip seal`, `flip setup` (three steps), both `flip agent` processes, people via `flip chat`; 2 questions, 8 leaves OK, 0 contradictions | manual run | `evidence/real-session-20261104T224823.log` |
 | The same sealed PR on GitHub (`kadoo69/flipside-sandbox#1`, private, with a GitHub Actions check run): reviewer cloned from GitHub, `flip setup reviewer --github`, reviewer-agent read the PR with `gh api`; 2 questions, 2 answered, 8 leaves OK, 0 contradictions | manual run | `evidence/github-pr-20261105T002706.log` |
 | All 9 fixture cases live, twice, after one-card-per-leaf | `make solo-all` | `evidence/solo-all-20261104T225437.log` (9/9), `evidence/solo-all-20261104T230152.log` (9/9) |
@@ -88,7 +88,7 @@ The first `make solo-all` run (`evidence/solo-all-20261104T213925.log`) passed 6
 - csv-export: the forged copy landed after the brief, so the brief had no `PROOF_FAIL`; the run summary now counts verdicts in the room (`tests/room/test_run.py`).
 - reseal-after-questions: the restarted author-agent crashed because the session had been rewritten; it now withholds `session_changed` (`tests/room/test_agents.py`).
 
-## Switch message ids (M3, `evidence/solo-csv-export-20261104T210641.log`)
+## Switch message ids (live flow, `evidence/solo-csv-export-20261104T210641.log`)
 
 | Message | Switch id |
 |---|---|
@@ -156,12 +156,12 @@ It is a 78-second film with music, in the site's colours, not the demo video abo
 - On two machines, the reviewer pressing the author's card: not run, because every card was decided; K2 and K5 check that 403 on one machine.
 - In fixtures, PR data (title, body, changed files, check runs) comes from each case's `case.json`; the GitHub reader ran on the sandbox PR and on team PRs #2 and #7.
 - All sessions and repos in `fixtures/` and `examples/` are synthetic.
-  Real Claude Code sessions were sealed only for G4, G6 and G7 (M1 evidence log).
+  Real Claude Code sessions were sealed only for G4, G6 and G7 (seal core evidence log).
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room (`users: "*"`): Switch matches people by a member client id that the gateway does not expose.
   Only the author and the reviewer are members, and reviewer-agent acts only on answers from the PR author's sender id.
 - `make replay` used the already-running local server, not a fresh one.
 
-`evidence/solo-all-20261104T221502.log` passed 9/9 but is not gate evidence.
+`evidence/solo-all-20261104T221502.log` passed 9/9 but is not counted as evidence.
 It started after the C14 fix and before C15 and the `PreToolUse:` prefix, and the fixtures were regenerated while it ran.
 The two runs above use the committed code.
 
