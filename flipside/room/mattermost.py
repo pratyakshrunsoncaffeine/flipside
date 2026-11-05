@@ -95,6 +95,8 @@ class MattermostHumans:
     log: Log
     seen: dict[str, tuple[str, str, str]] = field(default_factory=dict)
     press_wait: float = 20.0
+    confirm_wait: float = 8.0
+    presses: int = 3
 
     def say(self, who: str, room: str, body: str, mention_agent: str | None = None) -> str:
         """Post as ``who`` in Mattermost. A mention is plain ``@<agent name>`` text, as a
@@ -122,9 +124,29 @@ class MattermostHumans:
             self.gateway[who].post(path, {"answer": answer})
             self.log(f"{who} answered card {card[:8]} through the gateway: {answer}")
             return
-        post, action = self.find_button(title, ACTION_NAMES[answer])
-        self.people[who].call("POST", f"/posts/{post}/actions/{action}", {})
-        self.log(f"author pressed {ACTION_NAMES[answer]} on card {card[:8]} in Mattermost")
+        # Mattermost accepts a press even when Switch does not record it (seen in CI when the
+        # press came in the same second the card appeared), so wait until Switch closes the card.
+        for attempt in range(1, self.presses + 1):
+            post, action = self.find_button(title, ACTION_NAMES[answer])
+            self.people[who].call("POST", f"/posts/{post}/actions/{action}", {})
+            self.log(f"author pressed {ACTION_NAMES[answer]} on card {card[:8]} in Mattermost")
+            if self.closed(who, card):
+                return
+            self.log(f"press {attempt} on card {card[:8]} did not reach Switch; pressing again")
+        raise MattermostError(
+            f"{self.presses} presses on card {card[:8]} never reached Switch; it is still open"
+        )
+
+    def closed(self, who: str, card: str) -> bool:
+        """True once Switch no longer lists ``card`` as open for ``who``."""
+        deadline = time.monotonic() + self.confirm_wait
+        while True:
+            rows = self.gateway[who].get("/gateway/agent-sessions/approvals") or []
+            if not any(r.get("requestId") == card and r.get("state") == "open" for r in rows):
+                return True
+            if time.monotonic() > deadline:
+                return False
+            time.sleep(0.5)
 
     def find_button(self, title: str, name: str) -> tuple[str, str]:
         """The newest card post in the author's private channel that shows ``title`` and

@@ -1,0 +1,71 @@
+PASS  J1   A disclosed step proves itself against the sealed root
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest examples/manifest.json .flip-judge/J1.json  # shipped disclosure
+        expect: exit 0, OK
+        got:    exit 0, OK leaf 5 (session 0, step 5, chunk 0) against seal ae44db8 in commit 5db0364
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J2   Editing one word of a disclosed step is caught
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest examples/manifest.json .flip-judge/J2.json  # leaf text: one word edited
+        expect: exit 2, PROOF_FAIL
+        got:    exit 2, PROOF_FAIL leaf 5 does not hash up to root ae44db8
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J3   A step cannot be re-salted to fit
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest examples/manifest.json .flip-judge/J3.json  # salt replaced
+        expect: exit 2, PROOF_FAIL
+        got:    exit 2, PROOF_FAIL leaf 5 does not hash up to root ae44db8
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J4   A step cannot pass as a different step
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest examples/manifest.json .flip-judge/J4.json  # same text claimed as another step
+        expect: exit 2, MANIFEST_MISMATCH
+        got:    exit 2, MANIFEST_MISMATCH leaf 6 differs in role, step
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J5   A truncated proof is refused
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest examples/manifest.json .flip-judge/J5.json  # one proof hash dropped
+        expect: exit 2, BAD_SIZE
+        got:    exit 2, BAD_SIZE i=5 n=10, trailer n=10, proof length 3
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J6   A proof counts only for the commit the question named
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest examples/manifest.json .flip-judge/J6.json  # disclosure names a different commit
+        expect: exit 2, WRONG_COMMIT
+        got:    exit 2, WRONG_COMMIT disclosure names fffffff, the question named 5db0364
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J7   The public manifest cannot change after sealing
+        run:    uv run flip verify --bundle examples/seal.bundle --commit 5db036430948438e277be3ee5d90ebe582cb278d --manifest .flip-judge/J7-manifest.json .flip-judge/J7.json  # public manifest edited by one byte
+        expect: exit 2, MANIFEST_HASH
+        got:    exit 2, MANIFEST_HASH manifest SHA-256 differs from the trailer
+        code:   flipside/seal/verify.py, flipside/seal/merkle.py
+PASS  J8   The whole review runs: question, own-words answer, one approved step, four refusals, a brief that says what was not shown
+        run:    uv run flip replay --offline --no-evidence
+        expect: RESULT PASS; card_403 1, dropped_requests 1, switch_refusals 1, OK 1, PROOF_FAIL 1; coverage names the steps not disclosed
+        got:    exit 0; {"card_403": 1, "dropped_requests": 1, "switch_refusals": 1, "verdicts": {"OK": 1, "PROOF_FAIL": 1}}; coverage: auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6); reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)
+        code:   flipside/room/replay.py, flipside/room/agents.py, flipside/room/rules.py
+PASS  J9   Questions come from fixed rules: 9 labelled cases, 2 of them adversarial, give the expected questions and verdicts
+        run:    uv run flip replay --fixtures --out .flip-judge/fixtures.md
+        expect: 9/9 match
+        got:    9/9 match
+        code:   flipside/room/rules.py, fixtures/
+PASS  J0   Pinned Switch 0.31.0 and Mattermost start in Docker; the case plays with both people
+        run:    uv run flip demo up && uv run flip demo run
+        expect: exit 0
+        got:    exit 0
+        code:   flipside/room/demo.py
+PASS  J10  The same review ran now on real Switch 0.31.0 and Mattermost, both people on their own accounts
+        run:    read evidence/demo-mattermost-csv-export-20261105T211213.log
+        expect: RESULT PASS on switch, four refusals live, no step errors, Switch message ids
+        got:    all lines present; 14 Switch message ids
+        code:   flipside/room/demo.py, flipside/room/switch_client.py, .github/workflows/
+PASS  J12  Switch, not Flipside, decides who is the author: only the author's claimed Mattermost account may address author-agent or answer its approval card
+        run:    cd killtests && python3 k5.py
+        expect: K5 n/n passed (claimed author admitted; reviewer and unclaimed stranger refused)
+        got:    exit 0; K5 8/8 passed; K5.g, K5.h, K5.a, K5.b, K5.c, K5.d, K5.e, K5.f
+        code:   killtests/k5.py, flipside/room/setup.py, flipside/room/mattermost.py
+PASS  J13  All 9 labelled cases, honest and adversarial, play on real Switch and Mattermost and give their expected questions and verdicts
+        run:    uv run flip demo run --case fixtures/cases/<case> --no-restart  # for each case
+        expect: 9/9 RESULT PASS
+        got:    9/9 RESULT PASS
+        code:   flipside/room/demo.py, fixtures/cases/
+PASS  J11  No model decides anything: questions, verdicts and coverage are standard-library Python
+        run:    scan flipside/**/*.py for model SDK imports; read pyproject.toml dependencies
+        expect: no model SDK import; dependencies = []
+        got:    no model SDK import; dependencies = []
+        code:   flipside/, pyproject.toml
+RESULT PASS 14/14 checks in 206.8 s

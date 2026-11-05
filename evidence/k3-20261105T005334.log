@@ -12,4 +12,4 @@
 2026-11-05T00:53:42 WAITING up to 600s: press Approve on the card in Slack channel #pr-k3-1105005335-author
 2026-11-05T00:54:12 outcome {"sessionId": "722a5d7f-4299-43e4-9a52-3a04e3d632b9", "requestId": "d3296617f88d4376a0129426d0a22ea2", "kind": "approval", "state": "answered", "answer": "approve", "answers": null, "answeredBy": "@switch-slack-f56432e5-e42d-4795-85d0-54f7fe94938b-aaravmahajan069:localhost", "answeredAt": "2026-11-0
 2026-11-05T00:54:12 PASS K3.d the author's button press in Slack reaches author-agent: answer approve, answeredBy @switch-slack-f56432e5-e42d-4795-85d0-54f7fe94938b-aaravmahajan069:localhost (author's Slack identities ['@switch-slack-f56432e5-e42d-4795-85d0-54f7fe94938b-aaravmahajan069:'])
-2026-11-05T00:54:12 RESULT PASS (4/4); log /Users/aaravmahajan/gateplus-kadoo69/evidence/k3-20261105T005334.log
+2026-11-05T00:54:12 RESULT PASS (4/4); log evidence/k3-20261105T005334.log

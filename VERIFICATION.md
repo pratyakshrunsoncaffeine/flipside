@@ -36,6 +36,19 @@ The Mac's replay log (`evidence/replay-switch-csv-export-20261104T210939.log`) p
 On `b946c5a` both agents exited with code 1 at the end of each live run: on Windows a signal from the parent is `TerminateProcess`, which skipped the agents' shutdown.
 PR #21 stops them through a stop file; `evidence/solo-csv-export-20261105T020718.log` shows both exiting 0 and logging `stopped`.
 
+## Judge run from a fresh clone
+
+Recorded 5 Nov 2026, 20:19 to 20:21 IST, by Aarav's Claude on the Mac (macOS 26.1, Docker 28.1.1).
+Fresh clone of branch `67-judge-kit` from GitHub, `uv sync --frozen`, `make lint`, then `make judge-live`.
+
+| Check | Result | Evidence |
+|---|---|---|
+| `make judge-live` from the fresh clone: 7 seal checks, offline review, 9 fixtures, Docker stack, review on real Switch 0.31.0 and Mattermost, K5, no model | 13/13 PASS in 96.8 s | `evidence/judge-20261105T202021.log`, `.json` |
+| The review that run played on real Switch | RESULT PASS, four refusals live, 14 Switch message ids | `evidence/demo-mattermost-csv-export-20261105T201917.log` |
+| K5 in that run | 8/8 passed | `evidence/k5-20261105T201936.log` |
+| `make judge-live` with J13 (all 9 labelled cases on real Switch), 20:47 to 20:50 IST | 14/14 PASS in 192.0 s; every case RESULT PASS | `evidence/judge-20261105T205018.log`; the 9 `evidence/demo-mattermost-<case>-` logs from 20:48 to 20:50 IST |
+| `make judge` offline on the Mac | 11/11 PASS in 11.6 s; reads only committed logs; tracked files unchanged | `evidence/judge-20261105T210243.log` |
+
 ## Gates
 
 | Gate | Command | Evidence |

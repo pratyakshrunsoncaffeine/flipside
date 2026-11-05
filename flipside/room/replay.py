@@ -224,7 +224,9 @@ def fixtures_report(out: Path) -> int:
 
 def main(argv: list[str]) -> int:
     if argv[:1] == ["--fixtures"]:
-        return fixtures_report(ROOT / "docs" / "results" / "fixtures.md")
+        # --out keeps the committed report untouched (flip judge writes to .flip-judge/).
+        out = Path(argv[2]) if argv[1:2] == ["--out"] and len(argv) > 2 else None
+        return fixtures_report(out or ROOT / "docs" / "results" / "fixtures.md")
     p = argparse.ArgumentParser(prog="flip replay")
     p.add_argument("--offline", action="store_true", help="run on FakeSwitch in this process")
     p.add_argument("--case", default=str(DEFAULT_CASE))

@@ -46,6 +46,8 @@ jobs:
         run: |
           make replay-offline
           make fixtures
+      - name: Judge (every README claim, offline)
+        run: make judge
 
   # The whole review on a real Switch 0.31.0 server with Mattermost, in Docker (README Status row
   # for `make demo`). Ubuntu runners ship Docker with Compose v2; demo.py pulls Switch's pinned
@@ -60,15 +62,20 @@ jobs:
           python-version: "3.12"
       - name: Install
         run: uv sync --frozen
-      - name: make demo
-        run: make demo
-      # Only the evidence log is uploaded; .flipside-demo/ holds this run's generated secrets.
-      - name: Upload the demo log
+      # judge-live runs `flip demo up` and `flip demo run` (what `make demo` runs), then K5,
+      # and checks the logs this run wrote.
+      - name: make judge-live
+        run: make judge-live
+      # Only the evidence logs are uploaded; .flipside-demo/ holds this run's generated secrets.
+      - name: Upload the demo, K5 and judge logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: demo-mattermost-log
-          path: evidence/demo-mattermost-*.log
+          path: |
+            evidence/demo-mattermost-*.log
+            evidence/k5-*.log
+            evidence/judge-*
           if-no-files-found: warn
       - name: Container state on failure
         if: failure()

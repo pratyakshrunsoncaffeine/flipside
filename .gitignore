@@ -18,3 +18,4 @@ __pycache__/
 .pytest-tmp/
 .ogate/
 .claude/settings.local.json
+.flip-judge/

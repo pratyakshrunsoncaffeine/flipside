@@ -18,11 +18,13 @@ All fixtures are synthetic.
 
 ```
 uv sync --frozen
+make judge            # offline, about 10 s: every claim below as 11 PASS/FAIL checks
 make g8               # offline: a real proof prints OK, a forged one PROOF_FAIL
 make replay-offline   # the whole review on an in-process Switch stand-in
 make demo             # Switch 0.31.0 and Mattermost in Docker; both people act in Mattermost
 ```
 
+Judging, or asking an agent to judge? [JUDGING.md](JUDGING.md) maps each claim to a command, the line it prints and the code; `make judge-live` re-runs the review on real Switch in Docker.
 `make demo` is checked on macOS and in CI on Ubuntu; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
 To watch the recorded run play back step by step, open `site/index.html` in a browser.
 To check a disclosed quote without installing anything, open `site/verify.html`.
