@@ -23,7 +23,9 @@ from flipside.room.protocol import (
     accept,
     decode,
     encode,
+    from_owner,
     parse_answer,
+    parse_relayed_answer,
     parse_request,
 )
 from flipside.room.rules import Gap, PRData, Selection, asked, contradictions, gaps, select
@@ -185,6 +187,7 @@ class AuthorAgent:
         if not any(o["t"] == "seal" and o.get("commit") == self.cfg.commit for o in mine):
             self.publish_seal()
             acts += 1
+        acts += self.relay_answers(msgs, mine)
         done = {
             (o["q"], o["i"])
             for o in mine
@@ -237,7 +240,7 @@ class AuthorAgent:
         out: list[tuple[int, int]] = []
         leaves = load_manifest(self.manifest)
         for m in self.t.read(self.cfg.private):
-            if m.sender != self.cfg.author_user or m.addressed is False:
+            if not from_owner(m, self.cfg.author_user):
                 continue
             if not m.body.startswith(f"@{self.cfg.agent_name} "):
                 continue
@@ -252,6 +255,41 @@ class AuthorAgent:
                     (q, i) for i, lf in enumerate(leaves) if lf["session"] == 0 and lf["step"] == k
                 ]
         return out
+
+    def relay_answers(self, shared: list[Msg], mine: list[dict[str, Any]]) -> int:
+        """Post the author's answers, typed in either room as ``@<agent> Q<k>: text``, to the
+        shared room as ``answer`` objects. A person in a messaging app has no Switch user id,
+        so only author-agent, which Switch addresses for the owner alone, can vouch that an
+        answer is the author's. Each source message is relayed once."""
+        relayed = {o["src"] for o in mine if o["t"] == "answer"}
+        prefix = f"@{self.cfg.agent_name} "
+        acts = 0
+        for m in shared + self.t.read(self.cfg.private):
+            if (
+                m.id in relayed
+                or not m.body.startswith(prefix)
+                or not from_owner(m, self.cfg.author_user)
+            ):
+                continue
+            a = parse_answer(m.body[len(prefix) :])
+            if a is None:
+                continue
+            q, text = a
+            obj = {
+                "t": "answer",
+                "v": 1,
+                "commit": self.cfg.commit,
+                "q": q,
+                "text": text,
+                "src": m.id,
+            }
+            first = text.splitlines()[0] if text else ""
+            line = f"{self.cfg.author_name} answered Q{q}: {first[:200]}"
+            mid = self.t.post(self.cfg.shared, encode(line, obj))
+            self.log(f"author-agent relayed the author's answer to Q{q} from {m.id} as {mid}")
+            relayed.add(m.id)
+            acts += 1
+        return acts
 
     def wanted(self, m: Msg, n: int) -> list[tuple[int, int]]:
         """Leaves a message validly requests. Logs and drops everything else once."""
@@ -455,6 +493,10 @@ class ReviewerAgent:
         for m in msgs:
             if m.sender == self.cfg.pr_author and (a := parse_answer(m.body)):
                 answers.setdefault(a[0], a[1])
+            elif (o := accept(m, self.roles())) and o["t"] == "answer":
+                r = parse_relayed_answer(o)
+                if r is not None and r[0] == rnd.commit:
+                    answers.setdefault(r[1], r[2])
         verdicted = {o.get("ref") for o in mine if o["t"] == "verdict"}
         verdicts: list[dict[str, Any]] = [o for o in mine if o["t"] == "verdict"]
         withheld: list[dict[str, Any]] = []

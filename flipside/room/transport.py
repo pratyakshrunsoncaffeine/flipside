@@ -94,10 +94,21 @@ class FakeSwitch:
         self._seq = itertools.count(1)
         self._system: set[str] = set()
         self.log: list[str] = []
+        self.claims: dict[str, str] = {}
 
     def user(self, uid: str, name: str) -> str:
         sid = f"user:{uid}"
         self.names[sid] = name
+        return sid
+
+    def person(self, pid: str, name: str, claimed_by: str | None = None) -> str:
+        """A person typing in a bridged messaging app. Switch reports them as a human with no
+        user id; ``claimed_by`` is the Switch user who claimed the account (S1), so an owner
+        rule addresses them as that user."""
+        sid = f"human:{pid}"
+        self.names[sid] = name
+        if claimed_by:
+            self.claims[sid] = claimed_by
         return sid
 
     def agent(self, aid: str, name: str, owner: str) -> str:
@@ -120,7 +131,7 @@ class FakeSwitch:
         for r in a.policy:
             if r.rooms and room not in r.rooms:
                 continue
-            if r.owner and sender == a.owner:
+            if r.owner and a.owner in (sender, self.claims.get(sender)):
                 return True
             if r.owner_agents and sender in self.agents and self.agents[sender].owner == a.owner:
                 return True
