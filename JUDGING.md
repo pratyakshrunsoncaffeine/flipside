@@ -31,13 +31,30 @@ Tamper checks build their inputs fresh from `examples/q2-ok.json` into `.flip-ju
 | J7 | The public manifest cannot change after sealing | `MANIFEST_HASH` | `flipside/seal/verify.py` |
 | J8 | The whole review runs: rule-based question, own-words answer, one approved step, four refusals, a brief that says what was not shown | `RESULT PASS`, `card_403 1`, `OK 1`, `PROOF_FAIL 1` | `flipside/room/` |
 | J9 | Questions come from fixed rules: 9 labelled cases, 2 adversarial | `9/9 match` | `flipside/room/rules.py`, `fixtures/` |
-| J10 | The same review ran on real Switch and Mattermost | Newest `evidence/demo-mattermost-*.log` says `RESULT PASS` and `four refusals live: yes` | `flipside/room/demo.py` |
+| J10 | The same review ran on real Switch and Mattermost | Newest committed `evidence/demo-mattermost-*.log` says `RESULT PASS` and `four refusals live: yes` | `flipside/room/demo.py` |
 | J11 | No model decides anything | No model SDK import in `flipside/`; `dependencies = []` | `pyproject.toml` |
 
 `make judge-live` adds J0 (Docker stack starts and the case plays), runs J10 on the log written by that run, and adds J12: K5, where Switch admits the author's claimed Mattermost account and refuses the reviewer and an unclaimed stranger.
 
 Results go to `evidence/judge-<time>.log` and `.json`.
 The exit code is 0 only when every check passes.
+Every push also runs `make judge` on Ubuntu and Windows and `make judge-live` in Docker on Ubuntu (`.github/workflows/ci.yml`); each run's demo, K5 and judge logs are uploaded as the `demo-mattermost-log` artifact.
+
+## The film is the real run
+
+Every message the film lifts out of the footage is a Switch message in `evidence/demo-mattermost-csv-export-20261105T190535.log`, recorded 5 Nov 2026, 19:05 IST, on pinned Switch 0.31.0 and Mattermost.
+
+| Film line | Switch message |
+|---|---|
+| Omar's agent finds an unexplained change | `sw_3c9943b3…` reviewer-agent: Q1 `auth/session.py` changed and the PR description does not mention it |
+| Priya answers in her own words | `sw_c9ab5a7e…` author: Q1: The export test kept failing with SessionExpired ... |
+| A grab for everything is dropped | `sw_5b6ae5bf…` reviewer-agent: a free-text request to ignore instructions and paste secrets, dropped |
+| Switch refuses the reviewer | `sw_000c8c26…` Switch's refusal: not permitted to direct messages to author-agent |
+| One click shares one step | `sw_d3c9062f…` author-agent: Q1 · step 5, chunk 0 · approved by @Author |
+| Omar's agent checks it against the seal | `sw_6ac8c99c…` reviewer-agent: OK leaf 5 against seal ae44db8 |
+| An edited copy fails the check | `sw_cbb165bf…` forged copy, then `sw_cf28fc6c…` PROOF_FAIL |
+| Omar gets the why, nothing more | `sw_07866228…` brief with the coverage line |
+| The reviewer cannot answer the card | card `b095c0f4`: HTTP 403 |
 
 ## Where Switch carries the weight
 

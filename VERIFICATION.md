@@ -46,7 +46,7 @@ Fresh clone of branch `67-judge-kit` from GitHub, `uv sync --frozen`, `make lint
 | `make judge-live`: 7 seal checks, offline review, 9 fixtures, Docker stack, review on real Switch 0.31.0 and Mattermost, K5, no model | 13/13 PASS in 96.8 s | `evidence/judge-20261105T202021.log`, `.json` |
 | The review that run played on real Switch | RESULT PASS, four refusals live, 14 Switch message ids | `evidence/demo-mattermost-csv-export-20261105T201917.log` |
 | K5 in that run | 8/8 passed | `evidence/k5-20261105T201936.log` |
-| `make judge` offline on the Mac | 11/11 PASS in 10.9 s; tracked files unchanged | `evidence/judge-20261105T202530.log` |
+| `make judge` offline on the Mac | 11/11 PASS in 8.1 s; reads only committed logs; tracked files unchanged | `evidence/judge-20261105T203937.log` |
 
 ## Gates
 

@@ -69,3 +69,25 @@ def test_judge_leaves_tracked_files_unchanged() -> None:
     before = status()
     assert judge.fixtures_check().ok
     assert status() == before
+
+
+def test_recorded_live_check_reads_only_committed_logs(tmp_path: Path) -> None:
+    # A demo log that exists only on this machine must not back the claim a judge reads.
+    import subprocess
+
+    stray = judge.ROOT / "evidence" / "demo-mattermost-zz-untracked-99991231T235959.log"
+    stray.write_text("RESULT PASS csv-export (switch\n", encoding="utf-8", newline="\n")
+    try:
+        c = judge.live_evidence_check()
+    finally:
+        stray.unlink()
+    tracked = subprocess.run(
+        ["git", "ls-files", "evidence/"],
+        cwd=judge.ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    ).stdout.split()
+    read = c.command.removeprefix("read ")
+    assert read in tracked

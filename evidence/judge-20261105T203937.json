@@ -1,7 +1,7 @@
 {
-  "local_time": "20261105T202530",
+  "local_time": "20261105T203937",
   "live": false,
-  "seconds": 10.9,
+  "seconds": 8.1,
   "checks": [
     {
       "id": "J1",
@@ -115,7 +115,7 @@
     {
       "id": "J10",
       "claim": "The same review ran (recorded) on real Switch 0.31.0 and Mattermost, both people on their own accounts (re-run live: `make judge-live`, needs Docker)",
-      "command": "read evidence/demo-mattermost-csv-export-20261105T190535.log",
+      "command": "read evidence/demo-mattermost-csv-export-20261105T201917.log",
       "expect": "RESULT PASS on switch, four refusals live, no step errors, Switch message ids",
       "got": "all lines present; 14 Switch message ids",
       "ok": true,

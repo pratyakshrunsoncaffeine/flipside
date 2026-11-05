@@ -188,10 +188,26 @@ def fixtures_check() -> Check:
     )
 
 
+def _tracked(pattern: str) -> list[Path]:
+    """Committed evidence files matching ``pattern``: what every clone of the repo holds."""
+    p = subprocess.run(
+        ["git", "ls-files", "--", f"evidence/{pattern}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+    return sorted(ROOT / line for line in p.stdout.split())
+
+
 def _logs(pattern: str, since: float | None) -> list[Path]:
-    """Evidence logs matching ``pattern``, oldest first; only those written after ``since``."""
+    """Without ``since``: committed logs only, so a judge can open the file the check read.
+    With ``since``: logs this run wrote, oldest first."""
+    if since is None:
+        return _tracked(pattern)
     logs = sorted((ROOT / "evidence").glob(pattern))
-    return [p for p in logs if since is None or p.stat().st_mtime >= since]
+    return [p for p in logs if p.stat().st_mtime >= since]
 
 
 def live_evidence_check(since: float | None = None) -> Check:
