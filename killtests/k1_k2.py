@@ -338,7 +338,7 @@ def main() -> int:
     except HTTPError as e:
         check(
             "K2.a the reviewer cannot answer the author's approval",
-            e.status in (401, 403, 404, 409),
+            e.status == 403 and "NOT_AUTHORIZED" in e.body,  # only Switch's refusal counts
             f"{e.status} {e.body[:200]}",
         )
     try:

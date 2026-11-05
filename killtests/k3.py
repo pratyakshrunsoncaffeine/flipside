@@ -213,7 +213,7 @@ def main() -> int:
     except HTTPError as e:
         check(
             "K3.c the reviewer cannot answer the card",
-            e.status in (401, 403, 404, 409),
+            e.status == 403 and "NOT_AUTHORIZED" in e.body,  # only Switch's refusal counts
             f"{e.status} {e.body[:160]}",
         )
 
