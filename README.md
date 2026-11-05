@@ -34,8 +34,8 @@ make demo             # Switch 0.31.0 and Mattermost in Docker; both people act 
 
 Judging, or asking an agent to judge? [JUDGING.md](JUDGING.md) maps each claim to a command, the line it prints and the code; `make judge-live` re-runs the review on real Switch in Docker.
 `make demo` is checked on macOS and in CI on Ubuntu; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
-To watch the recorded run play back step by step, open `site/index.html` in a browser.
-To check a disclosed quote without installing anything, open `site/verify.html`.
+To watch the recorded run play back step by step, open the [site](https://pratyakshrunsoncaffeine.github.io/gateplus/) (or `site/index.html` locally).
+To check a disclosed quote without installing anything, open [verify.html](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html) (or `site/verify.html`).
 
 ## Why not just ask the author
 
