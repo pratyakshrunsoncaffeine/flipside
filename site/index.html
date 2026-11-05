@@ -359,7 +359,7 @@ footer { padding-block: 120px 40px; }
   .chatroom .members, .chatroom .panel { display: none; }
   .chatroom .msgs { height: 360px; }
   section.link { padding-block: 120px 0; }
-  nav.top .links a:not(:first-child) { display: none; }
+  nav.top .links a:not(:last-child) { display: none; }
   .hero { min-height: 0; }
   .hero .in { grid-template-columns: minmax(0, 1fr); padding-block: 120px 24px; gap: 48px; }
   .hero h1 { font-size: clamp(40px, 11.6vw, 72px); }
@@ -407,7 +407,7 @@ footer { padding-block: 120px 40px; }
       <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="7.2" fill="#f8f6f1" stroke="#d8d2c6"/><rect x="4.5" y="5.5" width="17" height="14" rx="5" fill="#0d0e11"/><rect x="9" y="9.6" width="2.4" height="4.6" rx="1.2" fill="#fff4e2"/><rect x="14.6" y="9.6" width="2.4" height="4.6" rx="1.2" fill="#fff4e2"/></svg>
       Flipside
     </a>
-    <div class="links"><a href="#link">How it connects</a><a href="#player">The replay</a><a href="#how">How it works</a><a href="#film">The film</a></div>
+    <div class="links"><a href="#link">How it connects</a><a href="#player">The replay</a><a href="#how">How it works</a><a href="#film">The film</a><a href="verify.html">Check a quote</a></div>
   </div>
 </nav>
 
@@ -596,6 +596,7 @@ footer { padding-block: 120px 40px; }
     <div>
       <h2 id="runh" class="rise">Run the whole review yourself.</h2>
       <p class="rise">One command starts Switch and Mattermost in Docker, signs in both people and plays the review. The checks are plain Python with no model in the loop.</p>
+      <p class="rise"><a class="textlink" href="verify.html">Check a disclosed quote in your browser</a></p>
     </div>
     <div class="term rise">
       <div class="bar"><i></i><i></i><i></i><button type="button" id="copy">Copy</button></div>
@@ -618,6 +619,7 @@ footer { padding-block: 120px 40px; }
     </div>
     <div class="foot">
       <nav aria-label="Project">
+        <a href="verify.html">Check a quote</a>
         <a href="https://github.com/pratyakshrunsoncaffeine/gateplus">Source</a>
         <a href="https://github.com/pratyakshrunsoncaffeine/gateplus/blob/main/VERIFICATION.md">Evidence</a>
         <a href="https://github.com/sandbox-quantum/switch">Switch</a>
