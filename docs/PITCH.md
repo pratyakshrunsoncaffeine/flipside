@@ -4,7 +4,8 @@ Question the other team's coding agent. Switch won't let you drive it.
 
 Every pull request has a flipside: the agent session that wrote it.
 When one team's agent writes a change and another team owns the code, Flipside lets the owning team question that session in a Switch room without the author handing it over.
-Each answer is a quote from the session sealed into the PR's commit, checked by the questioning team, and the author approves the exact bytes before they leave their machine.
+Each disclosed quote comes from the session sealed into the PR's commit and is checked by the questioning team.
+The full session stays on the author's machine; a requested chunk goes to the author's own approval card, and reaches the reviewer only if the author approves those exact bytes.
 
 Track 01, Business workflow.
 Runs end to end on a local Switch server (switch-core 0.31.0), with each agent in its own process; the offline check needs no accounts.
@@ -97,7 +98,7 @@ The four refusals, each live on Switch and logged in `evidence/solo-*.log`:
 | Two owners' agents meet without sharing machines or keys | Agents keep their owner; one room holds agents from two owners | K1, K4 |
 | Agents act only on what Switch addressed to them | `payload.addressed` on each agent's event stream | K1, `flipside/room/switch_client.py` |
 | The manifest travels with the seal message | Agent media upload (`/agents/{id}/rooms/{room}/media`) | `make solo` |
-| Teams stay in their chat app | Slack, Discord, Mattermost, Teams, Telegram bridges (`bridges/collaboration/`) | K3 (the card in Slack), `flip solo --slack --press`; answers typed in Slack are not accepted yet |
+| Teams stay in their chat app | Slack, Discord, Mattermost, Teams, Telegram bridges (`bridges/collaboration/`) | Mattermost: each person claims their account in Switch, so typed answers and the card press count only from the author (K5 8/8, `make demo`); Slack: the card press only (K3, `flip solo --slack --press`) |
 
 ## What is deterministic
 
@@ -154,4 +155,7 @@ False flags: 0.
 | Approval card in Slack with buttons; the reviewer gets 403; the author's press reaches author-agent (K3, 4 checks) | pass | `evidence/k3-20261105T005334.log` |
 | The live flow in Slack channels; the author approves in Slack | pass | `evidence/solo-csv-export-20261105T011603.log` |
 | Clean clone on a second machine (Windows, its own Switch server) reproduces the verdicts and coverage lines | pass | `evidence/replay-switch-csv-export-20261105T015811.log` |
+| The whole review in Mattermost on switch-core 0.31.0: both people act as their own Mattermost accounts, the author approves in Mattermost (macOS) | pass | `make demo`, `evidence/demo-mattermost-csv-export-20261105T131047.log` |
+| K5: Switch admits only the author's claimed Mattermost account, takes a card press only from the author, refuses each person changing the other's room (8 checks) | pass | `make k5`, `evidence/k5-20261105T153338.log` |
+| Browser proof check (`site/verify.html`) gives the same verdicts as `flip verify` for the checks a browser can run | pass | `tests/blind/test_browser_verify.py` |
 | Author and reviewer on two machines | not run | - |

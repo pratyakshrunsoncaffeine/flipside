@@ -7,7 +7,8 @@ Prove what your coding agent did, without handing over the session.
 When one team's agent writes a pull request and another team owns the code, the reason behind each change lives only in the author's agent session.
 Flipside seals that session into the PR as one Merkle root in a commit trailer.
 The owning team's agent asks about gaps it finds in public PR data and requests specific sealed steps.
-The author approves each exact chunk on a Switch approval card before it leaves their machine.
+The full session stays on the author's machine.
+Each requested chunk goes first to an approval card only the author can answer, and reaches the reviewer only if the author approves it.
 The reviewer's agent checks every quote against the sealed root and posts a brief that says what was not shown.
 
 Flip the Switch, Track 01 (Business workflow).
@@ -31,7 +32,7 @@ To check a disclosed quote without installing anything, open `site/verify.html`.
 | | Outcome checks (tests, CI, model reviewers) | Asking the author in chat | Flipside |
 |---|---|---|---|
 | Says why the change was made | No: they check the result | Yes, but the answer may itself be agent-written | Yes, with the session step behind the answer |
-| The session stays with the author | Not needed | Yes | Yes: only chunks the author approves leave the machine |
+| The session stays with the author | Not needed | Yes | Yes: a requested chunk goes to the author's own card; only approved chunks reach the reviewer |
 | A quote can be checked | Not applicable | No | Yes, offline, against a root sealed before review began |
 | Who decides what is shared | Not applicable | The author, unchecked | The author, chunk by chunk, on a card only they can answer |
 | A model decides the outcome | Model reviewers: yes; tests and CI: no | Not applicable | Never: rules, proofs and coverage are deterministic Python |
@@ -63,7 +64,7 @@ The coverage line says what was not shown.
 The attempts to pull the whole session were refused, one by Switch and one by author-agent.
 
 Asking the author in chat gives an answer that may itself be agent-written, with no way to check it against what the agent did.
-Here every quote is proven to be in the session sealed into the PR, and the author approves each chunk before it leaves their machine.
+Here every quote is proven to be in the session sealed into the PR, and the author approves each chunk before the reviewer sees it.
 Reviewers already say this out loud: an r/ExperiencedDevs post announcing a refusal to review AI-generated PRs drew 1,560 points and 406 comments in May 2026 ([thread](https://www.reddit.com/r/ExperiencedDevs/comments/1towli9/)).
 One reply sums up the gap: "I can tell even the answer to the question was AI generated."
 
@@ -273,6 +274,7 @@ K1 to K5 are kill tests of the Switch behaviour Flipside relies on; G1 to G8 are
 
 ## Limits
 
+- A requested chunk is shown in full on the author's private approval card, so the Switch server holds it before the author decides; only approved chunks reach the reviewer's room.
 - A session forged before sealing is not caught; the seal proves the evidence did not change after review began.
 - Work done outside the agent has no session evidence; the `UNSEALED` gap asks about it.
 - The manifest is public: step count, roles, tool names, repo paths, chunk counts, command classes and test outcomes.
