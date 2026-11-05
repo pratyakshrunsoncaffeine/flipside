@@ -290,3 +290,11 @@ def test_show_prints_the_card_text(capsys: pytest.CaptureFixture[str]) -> None:
     assert chat.run(cfg, a, H("http://fake")) == 0
     out = capsys.readouterr().out
     assert "Disclose step 5 chunk 0" in out and "TIMEOUT_SECONDS to 120" in out
+
+
+def test_private_greeting_states_the_boundary_without_overclaiming() -> None:
+    """The seal and its public manifest reach the shared room without a card (issue #58)."""
+    text = setup.private_greeting(142)
+    assert "Nothing from your session leaves" not in text
+    assert "#pr-142" in text
+    assert "seal" in text and "manifest" in text
