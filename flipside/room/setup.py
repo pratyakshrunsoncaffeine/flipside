@@ -78,7 +78,8 @@ def shared_greeting(pr: int) -> str:
 def private_greeting(pr: int) -> str:
     return (
         f"Flipside approvals for PR #{pr}. Only you and author-agent are in this room. "
-        "Nothing from your session leaves it until you approve a card."
+        f"No session step reaches #pr-{pr} until you approve its card here; only the seal "
+        "and its public manifest are shared without one."
     )
 
 
