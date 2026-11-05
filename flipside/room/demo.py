@@ -211,6 +211,12 @@ def archive_stale_channels(mma: MM) -> int:
     return gone
 
 
+def quiet_banner(mma: MM) -> None:
+    """Turn off Mattermost's "Preview Mode: Email notifications" banner: the demo sends no
+    email, and the banner sits over every channel the people use."""
+    mma.call("PUT", "/config/patch", {"EmailSettings": {"EnablePreviewModeBanner": False}})
+
+
 def quiet_greetings(conf: dict[str, str], bridge: str) -> None:
     """Turn off Switch's generic "mention me anytime" post when an agent joins a channel;
     each Flipside room says what it is for in its own description."""
@@ -327,7 +333,9 @@ def run(case: Path, restarts: bool, press: bool, pace: float) -> int:
     conf = _read_conf(DIR / "stack.conf")
     quiet_greetings(conf, wait_ready(conf, timeout=60))
     print(f"cleared {clear_rooms(conf)} review rooms from earlier runs")
-    print(f"archived {archive_stale_channels(mm_admin(conf))} stale review channels")
+    mma = mm_admin(conf)
+    quiet_banner(mma)
+    print(f"archived {archive_stale_channels(mma)} stale review channels")
     from flipside.room import solo
 
     people = people_for(conf)

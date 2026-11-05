@@ -210,3 +210,18 @@ def test_a_run_archives_review_channels_no_room_bridges_any_more() -> None:
     mm = FakeMM()
     assert demo.archive_stale_channels(mm) == 2  # type: ignore[arg-type]
     assert mm.deleted == ["/channels/shared", "/channels/old"]
+
+
+def test_a_run_turns_off_mattermosts_email_preview_banner() -> None:
+    """The demo sends no email, so Mattermost's "Preview Mode" banner is only noise (issue #63)."""
+    calls: list[tuple[str, str, object]] = []
+
+    class FakeMM:
+        def call(self, method: str, path: str, body: object = None) -> object:
+            calls.append((method, path, body))
+            return {}
+
+    demo.quiet_banner(FakeMM())  # type: ignore[arg-type]
+    assert calls == [
+        ("PUT", "/config/patch", {"EmailSettings": {"EnablePreviewModeBanner": False}})
+    ]
