@@ -211,10 +211,12 @@ def archive_stale_channels(mma: MM) -> int:
     return gone
 
 
-def match_site_url(mma: MM) -> None:
-    """Set Mattermost's site URL to the address the demo prints. Mattermost refuses the live
-    connection from any other origin, so new posts would show only after a channel switch."""
-    mma.call("PUT", "/config/patch", {"ServiceSettings": {"SiteURL": MM_BASE}})
+def allow_printed_origin(mma: MM) -> None:
+    """Let the browser at the address the demo prints open Mattermost's live connection.
+    Switch's compose file pins the site URL to http://localhost:8065 (an environment
+    setting the API cannot change), and Mattermost refuses the websocket from any other
+    origin with a 403, so at 127.0.0.1 new posts showed only after a channel switch."""
+    mma.call("PUT", "/config/patch", {"ServiceSettings": {"AllowCorsFrom": MM_BASE}})
 
 
 def quiet_banner(mma: MM) -> None:
@@ -341,7 +343,7 @@ def run(case: Path, restarts: bool, press: bool, pace: float) -> int:
     print(f"cleared {clear_rooms(conf)} review rooms from earlier runs")
     mma = mm_admin(conf)
     quiet_banner(mma)
-    match_site_url(mma)
+    allow_printed_origin(mma)
     print(f"archived {archive_stale_channels(mma)} stale review channels")
     from flipside.room import solo
 

@@ -227,9 +227,9 @@ def test_a_run_turns_off_mattermosts_email_preview_banner() -> None:
     ]
 
 
-def test_a_run_points_mattermosts_site_url_at_the_address_it_prints() -> None:
-    """Mattermost refuses live updates from an origin other than its site URL, so a person
-    who opens the printed address saw new posts only after switching channels (issue #63)."""
+def test_a_run_lets_the_printed_address_open_mattermosts_live_connection() -> None:
+    """Mattermost refused the websocket from 127.0.0.1 with a 403, so a person who opened the
+    printed address saw new posts only after switching channels (issue #63)."""
     calls: list[tuple[str, str, object]] = []
 
     class FakeMM:
@@ -237,5 +237,5 @@ def test_a_run_points_mattermosts_site_url_at_the_address_it_prints() -> None:
             calls.append((method, path, body))
             return {}
 
-    demo.match_site_url(FakeMM())  # type: ignore[arg-type]
-    assert calls == [("PUT", "/config/patch", {"ServiceSettings": {"SiteURL": demo.MM_BASE}})]
+    demo.allow_printed_origin(FakeMM())  # type: ignore[arg-type]
+    assert calls == [("PUT", "/config/patch", {"ServiceSettings": {"AllowCorsFrom": demo.MM_BASE}})]
