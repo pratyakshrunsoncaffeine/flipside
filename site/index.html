@@ -78,7 +78,7 @@ nav.top .links a:hover { color: var(--amber-ink); }
 .scene h1 .ln { display: inline-block; overflow: hidden; padding-bottom: .1em; margin-bottom: -.1em; vertical-align: top; }
 .scene h1 .ln > span { display: inline-block; }
 .scene h1 .amb { color: var(--amber-ink); }
-.botwrap { width: min(46vh, 74vw, 460px); aspect-ratio: 1; will-change: transform; }
+.botwrap { height: min(100% - 24px, 46vh, 74vw, 460px); aspect-ratio: 1; will-change: transform; } /* never taller than its row */
 .scene .stagebot { position: relative; translate: none; width: 100%; height: 100%; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
 .scene .stagebot canvas, .flipbtn canvas, .mark .endbot canvas { position: absolute; left: -20%; top: -20%; width: 140%; height: 140%; display: block; pointer-events: none; } /* room for the hop and the shadow */
 .hbot { display: grid; justify-items: center; gap: 28px; text-align: center; will-change: transform, opacity; }
@@ -90,7 +90,7 @@ nav.top .links a:hover { color: var(--amber-ink); }
 .beats li.on, .beats li.done { color: var(--ink); }
 .beats i { display: block; height: 4px; border-radius: 4px; background: #d5d1c9; overflow: hidden; }
 .beats i::after { content: ""; display: block; height: 100%; width: var(--fill, 0%); background: var(--ink); border-radius: inherit; }
-.beatcard { min-height: 112px; background: var(--night); color: var(--p-ink); border-radius: 24px; padding: 16px 18px; display: grid; align-content: start; gap: 10px;
+.beatcard { min-height: 164px; background: var(--night); color: var(--p-ink); border-radius: 24px; padding: 16px 18px; display: grid; align-content: start; gap: 10px;
   box-shadow: 0 30px 60px -36px rgba(18,19,22,.5); transition: opacity .28s ease, transform .5s var(--ease); }
 .beatcard.out { opacity: 0; transform: translateY(-8px); transition-duration: .22s; }
 .beatcard.pre { opacity: 0; transform: translateY(14px); transition: none; }
@@ -102,7 +102,6 @@ nav.top .links a:hover { color: var(--amber-ink); }
 .beatcard .who { font-size: 14px; font-weight: 650; display: flex; align-items: center; gap: 7px; }
 .beatcard .tag { font-size: 10px; font-weight: 700; letter-spacing: .06em; padding: 2px 5px; border-radius: 5px; background: var(--p-2); color: var(--p-ink-2); }
 .beatcard .say2 { margin-top: 3px; font-size: 14px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.beatcard .say2.bad { color: var(--p-red); } .beatcard .say2.good { color: var(--p-green); }
 .beatcard .btns { display: flex; gap: 8px; margin-left: 38px; }
 .beatcard .btns span { font-size: 13px; font-weight: 650; padding: 7px 12px; border-radius: 9px; background: var(--p-2); color: var(--p-ink-2); transition: background-color .25s ease, color .25s ease, transform .15s ease; }
 .beatcard .btns span.yes { background: var(--p-green); color: #06210d; }
@@ -412,6 +411,7 @@ footer { padding-block: 120px 40px; }
   .scene { height: auto; }
   .pin { position: relative; height: auto; min-height: 100svh; gap: 32px; }
   .beatwrap { position: relative; left: auto; bottom: auto; translate: none; opacity: 1; justify-self: center; }
+  .botwrap { height: auto; width: min(46vh, 74vw, 460px); }
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .js .rise { opacity: 1; transform: none; }
   .js .shutter { clip-path: none; }
@@ -558,7 +558,7 @@ footer { padding-block: 120px 40px; }
     </div>
     <div class="ledger">
       <ol class="moves">
-        <li data-s="1"><span class="no">1</span><div><h3>Seal</h3><p>The author's agent seals its session into the commit. Only the seal and a public list of steps leave the laptop.</p></div></li>
+        <li data-s="1"><span class="no">1</span><div><h3>Seal</h3><p>The author's agent seals its session into the commit as one short fingerprint. Only the fingerprint and a public list of steps leave the laptop.</p></div></li>
         <li data-s="2"><span class="no">2</span><div><h3>Ask</h3><p>The reviewer's agent asks about one step, by its number. A free-text grab for everything is dropped.</p></div></li>
         <li data-s="3"><span class="no">3</span><div><h3>Approve</h3><p>The author sees exactly what would be shared, in private, and decides. Switch lets only the author answer.</p></div></li>
         <li data-s="4"><span class="no">4</span><div><h3>Verify</h3><p>The reviewer's agent checks the step against the seal. Change one word and the check fails.</p></div></li>
@@ -566,14 +566,14 @@ footer { padding-block: 120px 40px; }
       <aside class="record" id="record" data-s="1" aria-label="Review record for PR #142">
         <header><span>PR #142</span><span>commit b43b8d0</span></header>
         <dl>
-          <div class="r" data-on="1"><dt>seal</dt><dd>ae44db8 · 10 steps</dd></div>
+          <div class="r" data-on="1"><dt>seal</dt><dd>10 steps · fingerprint ae44db8</dd></div>
           <div class="r" data-on="1"><dt>session</dt><dd>on the author's laptop</dd></div>
-          <div class="r" data-on="2"><dt>question</dt><dd><span data-v="1">none yet</span><span data-v="2 3 4">Q1 · step 5</span></dd></div>
+          <div class="r" data-on="2"><dt>question</dt><dd><span data-v="1">none yet</span><span data-v="2 3 4">about step 5</span></dd></div>
           <div class="r" data-on="2 3"><dt>step 5</dt><dd><span data-v="1">sealed</span><span data-v="2">asked for</span><span data-v="3">waiting for the author</span><span data-v="4">shared</span></dd></div>
           <div class="r" data-on="3"><dt>who can approve</dt><dd>the author only</dd></div>
-          <div class="r" data-on="3"><dt>reviewer presses</dt><dd><span data-v="1 2">n/a</span><span data-v="3 4">403 · refused by Switch</span></dd></div>
-          <div class="r" data-on="4"><dt>check</dt><dd><span data-v="1 2 3">not run</span><span data-v="4" class="ok">OK against ae44db8</span></dd></div>
-          <div class="r" data-on="4"><dt>edited copy</dt><dd><span data-v="1 2 3">n/a</span><span data-v="4" class="bad">PROOF_FAIL</span></dd></div>
+          <div class="r" data-on="3"><dt>reviewer presses</dt><dd><span data-v="1 2">n/a</span><span data-v="3 4">refused by Switch</span></dd></div>
+          <div class="r" data-on="4"><dt>check</dt><dd><span data-v="1 2 3">not run</span><span data-v="4" class="ok">matches the seal</span></dd></div>
+          <div class="r" data-on="4"><dt>edited copy</dt><dd><span data-v="1 2 3">n/a</span><span data-v="4" class="bad">does not match</span></dd></div>
         </dl>
       </aside>
     </div>
@@ -690,6 +690,30 @@ footer { padding-block: 120px 40px; }
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const mount = (id, opts) => (window.Flip ? window.Flip.mount($(id), opts) : null);
+  // Each real message keeps the words Switch recorded; one plain line under it says what happened.
+  const PLAIN = {
+    attachment: (s) => ["", `${esc(s.text)} · the public list of sealed steps`],
+    seal: (s, r) => ["amber", `session sealed · ${r.seal.leaves} steps · fingerprint ${esc(r.seal.root)}`],
+    request: (s) => ["", `asks to see step ${esc((s.leaves || []).join(", "))}`],
+    human: () => ["green", "typed in Mattermost · Switch let it through"],
+    relay: () => ["", "relayed from the author's own account"],
+    injection: () => ["red", "dropped · free text is not a request"],
+    "human-tag": () => ["", "typed in Mattermost · not the author"],
+    "switch-refusal": () => ["red", "refused by Switch · only the author may ask author-agent"],
+    disclosure: (s, r, step) => ["amber", `step ${step} shared · with its proof`],
+    "verdict-ok": () => ["green", "matches the seal · not a word changed"],
+    forged: () => ["red", "one word edited"],
+    "verdict-fail": () => ["red", "does not match the seal · rejected"],
+    brief: () => ["green", "to the reviewer · the session stayed with the author"],
+    press: () => ["green", "accepted · the author's own account"],
+  };
+  const plain = (s) => {
+    const r = window.RUN, f = PLAIN[s.kind];
+    if (!f || !r) return "";
+    const step = r.chapters.flatMap((c) => c.steps).find((x) => x.kind === "card")?.leaf ?? "";
+    const [tone, text] = f(s, r, step);
+    return `<span class="chip${tone ? " " + tone : ""}">${text}</span>`;
+  };
 
   // Entrances: each part of a section rises once as it comes into view, staggered by its place among its neighbours.
   const io = new IntersectionObserver((es) => es.forEach((e) => {
@@ -719,9 +743,9 @@ footer { padding-block: 120px 40px; }
   const BEATS = [
     { label: "Seal", s: find("seal"), flip: { side: 1, mood: "neutral", hop: true } },
     { label: "Ask", s: find("request"), flip: { side: 0, mood: "neutral" } },
-    { label: "Refuse", s: find("switch-refusal"), tone: "bad", flip: { side: 0, mood: "wary", shake: true } },
+    { label: "Refuse", s: find("switch-refusal"), flip: { side: 0, mood: "wary", shake: true } },
     { label: "Approve", s: find("card"), card: true, flip: { side: 0, mood: "squint" } },
-    { label: "Verify", s: find("verdict-ok"), tone: "good", flip: { side: 1, mood: "happy", hop: true } },
+    { label: "Verify", s: find("verdict-ok"), flip: { side: 1, mood: "happy", hop: true } },
   ].filter((b) => b.s);
   const scene = $("top"), htop = $("htop"), hbot = $("hbot"), wrap = $("beatwrap"), botw = $("botwrap"), card = $("beatcard"), beatsEl = $("beats");
   beatsEl.innerHTML = BEATS.map((b) => `<li><i></i>${b.label}</li>`).join("");
@@ -730,7 +754,7 @@ footer { padding-block: 120px 40px; }
     const st = b.s, priv = st.room === "private";
     const room = `<div class="room">${priv ? LOCK : "#"} ${priv ? `pr-${window.RUN.pr}-author` : `pr-${window.RUN.pr}`}</div>`;
     const btns = b.card ? '<div class="btns"><span class="yes">1. Approve</span><span>2. Decline</span></div>' : "";
-    return `${room}<div class="row"><div class="av">${HFACE}</div><div><div class="who">${esc(st.who.replace("flipside-", ""))}<span class="tag">AGENT</span></div><div class="say2 ${b.tone || ""}">${esc(st.text)}</div></div></div>${btns}`;
+    return `${room}<div class="row"><div class="av">${HFACE}</div><div><div class="who">${esc(st.who.replace("flipside-", ""))}<span class="tag">AGENT</span></div><div class="say2">${esc(st.text)}</div>${plain(st)}</div></div>${btns}`;
   };
   // Showing a beat: the card crossfades, Flip reacts once.
   let shown = -1, pressed = false;
@@ -745,7 +769,14 @@ footer { padding-block: 120px 40px; }
   const ss = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   // Scroll drives a target; the drawn state eases toward it every frame, so a flick glides and a reversal never jumps.
   let target = 0, now = 0, raf = 0;
-  const measure = () => { const r = scene.getBoundingClientRect(); target = clamp(-r.top / Math.max(1, r.height - innerHeight), 0, 1); };
+  // Once the beats show, Flip sits centred in the space above them, as large as fits, at most 1.08x.
+  let lift = 0, grow = 1;
+  const measure = () => {
+    const r = scene.getBoundingClientRect(), H = botw.offsetHeight, top = 24, bottom = wrap.offsetTop - 16;
+    target = clamp(-r.top / Math.max(1, r.height - innerHeight), 0, 1);
+    grow = clamp((bottom - top) / H, 0.6, 1.08);
+    lift = botw.offsetTop + H / 2 - (top + bottom) / 2;
+  };
   function render() {
     now += (target - now) * 0.14;
     if (Math.abs(target - now) < 5e-4) now = target;
@@ -756,7 +787,7 @@ footer { padding-block: 120px 40px; }
     hbot.style.opacity = 1 - ss(0.02, 0.14, now);
     hbot.style.transform = `translateY(${36 * a}px)`;
     hbot.style.visibility = a > 0.98 ? "hidden" : "";
-    botw.style.transform = `translateY(${-9 * a}vh) scale(${1 + 0.08 * a})`;
+    botw.style.transform = `translateY(${-lift * a}px) scale(${1 + (grow - 1) * a})`;
     wrap.style.opacity = w;
     wrap.style.transform = `translateY(${28 * (1 - w)}px)`;
     const bp = clamp((now - 0.24) / 0.68, 0, 1) * BEATS.length;
@@ -818,7 +849,7 @@ footer { padding-block: 120px 40px; }
   $("privname").textContent = `pr-${RUN.pr}-author`;
   $("sharedname").textContent = `pr-${RUN.pr}`;
   $("source").textContent = RUN.source;
-  $("sealhead").textContent = `root ${RUN.seal.root} · ${RUN.seal.leaves} leaves · commit ${RUN.seal.commit}`;
+  $("sealhead").textContent = `${RUN.seal.leaves} steps · fingerprint ${RUN.seal.root}`;
 
   // Chapters double as the progress bar: one segment each, filled as its steps play.
   $("chapters").style.setProperty("--n", RUN.chapters.length);
@@ -838,26 +869,17 @@ footer { padding-block: 120px 40px; }
     const human = s.who === "author-person" ? "auth" : s.who === "reviewer-person" ? "rev" : "";
     let cls = "msg", av = isAgent ? `<div class="av bot">${FACE}</div>` : `<div class="av ${human}">${esc(name.slice(0, 2).toUpperCase())}</div>`, extra = "", text = esc(s.text);
     const sw = s.sw ? `<code class="sw" title="Switch message id">${esc(s.sw)}</code>` : "";
+    extra = plain(s);
     switch (s.kind) {
-      case "attachment": text = ""; extra = `<span class="chip">file · ${esc(s.text)} · the public list of sealed steps</span>`; break;
-      case "seal": extra = `<span class="chip amber">sealed · root ${esc(RUN.seal.root)} · ${RUN.seal.leaves} leaves</span>`; break;
-      case "request": extra = `<span class="chip">asks for step ${esc((s.leaves || []).join(", "))} by number</span>`; break;
-      case "human": extra = `<span class="chip green">typed in Mattermost · Switch let it through</span>`; break;
-      case "relay": extra = `<span class="chip">relayed from the author's own account</span>`; break;
-      case "injection": cls += " dropped"; extra = `<span class="chip red">dropped · free text is not a request</span>`; break;
-      case "human-tag": extra = `<span class="chip">typed in Mattermost · not the author</span>`; break;
-      case "switch-refusal": cls += " refusal"; av = `<div class="av sys">S</div>`; extra = `<span class="chip red">refused by Switch · only the author may ask author-agent</span>`; break;
-      case "disclosure": extra = `<span class="chip amber">step ${leaf ?? ""} shared · with its proof</span>`; break;
-      case "verdict-ok": extra = `<span class="chip green">proof OK against seal ${esc(RUN.seal.root)}</span>`; break;
-      case "forged": extra = `<span class="chip red">one word edited</span>`; break;
-      case "verdict-fail": extra = `<span class="chip red">PROOF_FAIL · rejected</span>`; break;
-      case "brief": extra = `<span class="chip green">to the reviewer · the session stayed with the author</span>`; break;
+      case "attachment": text = ""; break;
+      case "injection": cls += " dropped"; break;
+      case "switch-refusal": cls += " refusal"; av = `<div class="av sys">S</div>`; break;
       case "card":
         text = ""; extra = `<div class="card" id="card"><div class="t">${esc(s.text)}</div><div class="k">Only the author can answer. Switch checks who presses.</div><div class="btns"><span class="approve" id="approve">1. Approve</span><span class="decline">2. Decline</span></div></div>`; break;
       case "card-403":
-        av = `<div class="av sys">S</div>`; text = ""; extra = `<div class="note">The reviewer tried to answer the card · 403 · ${esc(s.text)}</div>`; break;
+        av = `<div class="av sys">S</div>`; text = ""; extra = `<div class="note">The reviewer pressed Approve. Switch refused: "${esc(s.text)}"</div>`; break;
       case "press":
-        text = `Pressed <b>${esc(s.text)}</b> in Mattermost.`; extra = `<span class="chip green">accepted · the author's claimed account</span>`; break;
+        text = `Pressed <b>${esc(s.text)}</b> in Mattermost.`; break;
     }
     if (s.reconstructed) extra += `<span class="chip">reconstructed from the run log</span>`;
     const server = s.kind === "switch-refusal" || s.kind === "card-403";
@@ -890,7 +912,7 @@ footer { padding-block: 120px 40px; }
       while (!cur.leaf) { onPath.add(cur); const left = leaf < cur.l.hi; sibs.add(left ? cur.r : cur.l); cur = left ? cur.l : cur.r; }
     }
     const isPath = (a, b) => onPath.has(a) && (onPath.has(b) || (b.leaf && b.lo === leaf));
-    let s = `<svg viewBox="0 0 ${W} 166" role="img" aria-label="Merkle tree of ${n} sealed leaves">`;
+    let s = `<svg viewBox="0 0 ${W} 166" role="img" aria-label="The seal: ${n} sealed steps hashed into one fingerprint">`;
     edges.forEach(([a, b]) => { s += `<path class="edge" data-path="${isPath(a, b) ? 1 : 0}" d="M${a.x} ${a.y} C ${a.x} ${(a.y + b.y) / 2}, ${b.x} ${(a.y + b.y) / 2}, ${b.x} ${b.y}"/>`; });
     inner.forEach((d) => {
       if (d === root) s += `<rect class="root" x="${d.x - 40}" y="${d.y - 14}" width="80" height="27" rx="8"/><text class="rt" x="${d.x}" y="${d.y + 4.5}" text-anchor="middle">${esc(RUN.seal.root)}</text>`;
