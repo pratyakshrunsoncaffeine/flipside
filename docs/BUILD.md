@@ -138,7 +138,8 @@ Parsers read only the JSON block, and accept a message only from the sender the 
 |---|---|---|
 | `seal` | author-agent | `{"t":"seal","v":1,"pr":142,"commit":"<sha>","root":"<hex>","n":212,"manifest":"<hex>","mxc":"<media uri>"}` |
 | `questions` | reviewer-agent | `{"t":"questions","v":1,"commit":"<sha>","qs":[{"q":1,"gap":"SCOPE","file":"auth/session.py","text":"…"}]}` |
-| answer | PR author (human) | Free text starting `Q<k>:`; no JSON |
+| answer | PR author (human) | Free text starting `Q<k>:`; no JSON. In a messaging-app room the author types `@flipside-author-agent Q<k>: <text>` in either room instead |
+| `answer` | author-agent, relaying the author | `{"t":"answer","v":1,"commit":"<sha>","q":1,"text":"…","src":"<author message id>"}`; posted once per source message that Switch addressed to author-agent for its owner |
 | `request` | reviewer-agent, addressed to author-agent | `{"t":"request","v":1,"commit":"<sha>","q":1,"leaves":[41,57]}` |
 | `disclosure` | author-agent | The SPEC disclosure object plus `"t":"disclosure","q":1` |
 | `withheld` | author-agent | `{"t":"withheld","v":1,"commit":"<sha>","q":1,"i":57,"reason":"author|secret_scan|session_changed"}` |

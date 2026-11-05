@@ -19,7 +19,20 @@ REFUSAL = (
     "You're not permitted to direct messages to me in this room - my operator has "
     "restricted who can address me here."
 )
+UNLINKED_REFUSAL = (
+    "I only take instructions from my owner, and this chat account isn't linked to a Switch "
+    "user yet - so I can't tell whether that's you. If it is, link this account to your Switch "
+    "user in Switch Console and try again."
+)
 FORBIDDEN_ANSWER = "You may not address this agent, so you may not answer it."
+# Fragments of Switch's two refusal wordings that hold with either dash (switch-core 0.31.0):
+# a known sender the policy does not admit, and a chat account no Switch user claimed (K5).
+_REFUSAL_MARKS = ("not permitted to direct messages to me", "isn't linked to a Switch user")
+
+
+def is_refusal(body: str) -> bool:
+    """True when ``body`` is one of Switch's own addressing refusals."""
+    return any(k in body for k in _REFUSAL_MARKS)
 
 
 class Forbidden(PermissionError):
@@ -94,10 +107,21 @@ class FakeSwitch:
         self._seq = itertools.count(1)
         self._system: set[str] = set()
         self.log: list[str] = []
+        self.claims: dict[str, str] = {}
 
     def user(self, uid: str, name: str) -> str:
         sid = f"user:{uid}"
         self.names[sid] = name
+        return sid
+
+    def person(self, pid: str, name: str, claimed_by: str | None = None) -> str:
+        """A person typing in a bridged messaging app. Switch reports them as a human with no
+        user id; ``claimed_by`` is the Switch user who claimed the account (S1), so an owner
+        rule addresses them as that user."""
+        sid = f"human:{pid}"
+        self.names[sid] = name
+        if claimed_by:
+            self.claims[sid] = claimed_by
         return sid
 
     def agent(self, aid: str, name: str, owner: str) -> str:
@@ -120,7 +144,7 @@ class FakeSwitch:
         for r in a.policy:
             if r.rooms and room not in r.rooms:
                 continue
-            if r.owner and sender == a.owner:
+            if r.owner and a.owner in (sender, self.claims.get(sender)):
                 return True
             if r.owner_agents and sender in self.agents and self.agents[sender].owner == a.owner:
                 return True
@@ -148,7 +172,9 @@ class FakeSwitch:
             return mid
         for agent in self._mentions(body, room):
             if agent != sender and not self.may_address(sender, agent, room):
-                self.post(agent, room, f"@{self.names[sender]} {REFUSAL}", system=True)
+                unlinked = sender.startswith("human:") and sender not in self.claims
+                text = UNLINKED_REFUSAL if unlinked else REFUSAL
+                self.post(agent, room, f"@{self.names[sender]} {text}", system=True)
         return mid
 
     def read(self, reader: str, room: str) -> list[Msg]:

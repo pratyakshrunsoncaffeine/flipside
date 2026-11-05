@@ -10,11 +10,12 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-TYPES = ("seal", "questions", "request", "disclosure", "withheld", "verdict", "brief")
+TYPES = ("seal", "questions", "answer", "request", "disclosure", "withheld", "verdict", "brief")
 AUTHOR_AGENT, REVIEWER_AGENT = "author_agent", "reviewer_agent"
 SENDER = {
     "seal": AUTHOR_AGENT,
     "questions": REVIEWER_AGENT,
+    "answer": AUTHOR_AGENT,
     "request": REVIEWER_AGENT,
     "disclosure": AUTHOR_AGENT,
     "withheld": AUTHOR_AGENT,
@@ -107,6 +108,32 @@ def parse_request(obj: dict[str, Any], n: int) -> Request | None:
     if not all(_int(i) and 0 <= i < n for i in leaves) or len(set(leaves)) != len(leaves):
         return None
     return Request(commit, q, tuple(leaves))
+
+
+def parse_relayed_answer(obj: dict[str, Any]) -> tuple[str, int, str] | None:
+    """Fixed schema for author-agent's relay of the author's chat answer: exactly t, v,
+    commit (40 hex), q (int >= 1), text (str), src (the author's message id).
+    Returns (commit, q, text)."""
+    if sorted(obj) != ["commit", "q", "src", "t", "text", "v"] or obj["t"] != "answer":
+        return None
+    commit, q, text, src = obj["commit"], obj["q"], obj["text"], obj["src"]
+    if not isinstance(commit, str) or not _HEX40.match(commit) or not _int(q) or q < 1:
+        return None
+    if not isinstance(text, str) or not isinstance(src, str) or not src:
+        return None
+    return commit, q, text
+
+
+def from_owner(m: Msg, owner: str) -> bool:
+    """True when ``m`` is the owner's own message, as Switch decided it.
+
+    In a Switch chat the owner's sender id is ``user:<id>``; Switch must not have refused it.
+    In a bridged messaging app every person is ``human:<client id>`` with no user id, so the
+    owner is known only by Switch's addressing decision: under the agent's owner-only rule
+    for people, a bridged message is addressed only when the owner claimed that account."""
+    if m.sender == owner:
+        return m.addressed is not False
+    return m.sender.startswith("human:") and m.addressed is True
 
 
 def parse_answer(body: str) -> tuple[int, str] | None:
