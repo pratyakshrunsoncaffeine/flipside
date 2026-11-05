@@ -59,3 +59,33 @@ def test_by_hand_waits_for_the_author_and_finishes_after_their_answer(tmp_path: 
     hub.answer(au, card, "approve")  # the author presses Approve in their client
     after = run(12)
     assert "disclosure" in after and "brief" in after
+
+
+def test_a_refusal_to_an_unlinked_reviewer_account_is_counted(tmp_path: Path) -> None:
+    """The reviewer types in a chat app from an account nobody claimed: Switch refuses them
+    with its unlinked wording, and the run still counts Switch's refusal."""
+    world = materialize(load_case(CSV), tmp_path / "w")
+    hub = FakeSwitch()
+    au = hub.user("u-a", "priya")
+    ru = hub.person("mm-omar", "omar")
+    aa = hub.agent("a-a", replay.AUTHOR_AGENT_NAME, au)
+    ra = hub.agent("a-r", replay.REVIEWER_AGENT_NAME, au)
+    shared = hub.room("pr-142", [au, ru, aa, ra])
+    private = hub.room("pr-142-author", [au, aa])
+    hub.set_policy(aa, [Rule(owner=True), Rule(agents=(ra,), rooms=(shared,))], by=au)
+    cast = Cast(au, ru, aa, ra, shared, private, "priya", "omar")
+    at, rt = FakeTransport(hub, aa), FakeTransport(hub, ra)
+    author = replay.author_agent(world, at, cast, tmp_path, lambda _m: None)
+    reviewer = replay.reviewer_agent(world, rt, cast, lambda _m: None, replay.FakeClock())
+    humans = FakeHumans(hub, {"author": au, "reviewer": ru})
+    script = Script(world, humans, cast, at, rt, replay.AUTHOR_AGENT_NAME, lambda _m: None)
+    play(
+        world,
+        script,
+        lambda: hub.read(au, shared),
+        lambda _m: None,
+        author_step=author.step,
+        reviewer_step=reviewer.step,
+    )
+    assert any("isn't linked" in m.body for m in hub.messages if m.sender == aa)
+    assert len(script.refusals.switch_refusal) == 1

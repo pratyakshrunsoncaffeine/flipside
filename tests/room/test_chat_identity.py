@@ -9,7 +9,7 @@ from typing import Any
 from flipside.room import replay
 from flipside.room.protocol import decode
 from flipside.room.scenario import load_case, materialize
-from flipside.room.transport import REFUSAL, FakeSwitch
+from flipside.room.transport import FakeSwitch, is_refusal
 from tests.room.test_agents import CSV, Clock, setup
 
 
@@ -62,7 +62,7 @@ def test_an_unclaimed_person_cannot_answer_for_the_author(tmp_path: Path) -> Non
     hub.post(omar, "pr", f"{AT} Q1: it was fine, ship it")
     s["author"]().step()
     assert objs(hub, "answer") == []
-    assert any(m.body.endswith(REFUSAL) for m in hub.messages if m.sender == "agent:aa")
+    assert any(is_refusal(m.body) for m in hub.messages if m.sender == "agent:aa")
 
 
 def test_a_relayed_answer_is_posted_once_across_restarts(tmp_path: Path) -> None:

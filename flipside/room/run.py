@@ -18,7 +18,7 @@ from typing import Any, Protocol
 
 from flipside.room.protocol import AUTHOR_AGENT, REVIEWER_AGENT, accept, decode, encode
 from flipside.room.scenario import World, reseal
-from flipside.room.transport import Forbidden, Transport
+from flipside.room.transport import Forbidden, Transport, is_refusal
 from flipside.seal.prove import prove
 
 Log = Callable[[str], None]
@@ -319,7 +319,7 @@ def play(
     transcript = read_all()
     for m in transcript:
         o = decode(m.body)
-        if "not permitted to direct messages" in m.body and m.sender == script.cast.a_agent:
+        if is_refusal(m.body) and m.sender == script.cast.a_agent:
             script.refusals.switch_refusal.append(f"{m.id}: {m.body[:120]}")
         if o and o["t"] == "verdict" and o["code"] != "OK" and m.sender == script.cast.r_agent:
             script.refusals.forged_verdict.append(f"{m.id}: leaf {o['i']} {o['code']}")
