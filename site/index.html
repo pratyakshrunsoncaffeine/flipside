@@ -286,11 +286,10 @@ section.how { padding-block: 200px 0; }
 /* Showcase: the film and the real Mattermost screens, one at a time, beside spare text. */
 section.show { padding-block: 160px; }
 .show .in { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
-.plate { position: relative; align-self: center; border-radius: 32px; overflow: hidden; background: var(--stone); aspect-ratio: 16 / 10; }
+.plate { position: relative; align-self: center; border-radius: 32px; overflow: hidden; background: var(--stone); aspect-ratio: 16 / 9; }
 .plate > * { position: absolute; inset: 0; width: 100%; height: 100%; }
 .plate video { object-fit: cover; display: block; background: var(--stone); }
-.plate .playfilm { border: 0; padding: 0; background: rgba(18,19,22,.16); display: grid; place-items: center; cursor: pointer; transition: background-color .3s ease; }
-.plate .playfilm:hover { background: rgba(18,19,22,.06); }
+.plate .playfilm { border: 0; padding: 28px; background: none; display: grid; place-items: end start; cursor: pointer; } /* the poster stays readable; the button sits in its corner */
 .plate .playfilm span { width: 104px; height: 104px; border-radius: 31px; background: var(--amber); color: var(--ink); display: grid; place-items: center; transition: transform .25s var(--ease); }
 .plate .playfilm:hover span { transform: scale(1.06); }
 .plate .playfilm svg { width: 30px; height: 30px; margin-left: 5px; }
@@ -402,8 +401,9 @@ footer { padding-block: 120px 40px; }
   section.show, section.run { padding-block: 130px; }
   section.shots { padding-block: 130px 0; }
   .mark .endbot { width: 72px; }
-  .plate .playfilm span { width: 68px; height: 68px; border-radius: 20px; }
-  .plate .playfilm svg { width: 22px; height: 22px; margin-left: 3px; }
+  .plate .playfilm { padding: 16px; }
+  .plate .playfilm span { width: 52px; height: 52px; border-radius: 16px; }
+  .plate .playfilm svg { width: 18px; height: 18px; margin-left: 3px; }
   .mark .word { font-size: 18vw; }
 }
 @media (prefers-reduced-motion: reduce) {
