@@ -69,7 +69,7 @@ Not done:
 | Coverage says "not disclosed"; "withheld" is only an author decision | Lead's contract decision (board, 4 Nov); the brief's "withheld" count meant author declines |
 | K3 bridged room uses `channel_type: channel_private` and a live agent connection | Bridged rooms need `channel_type`; without a connected agent Switch shows "Host offline" and no buttons |
 | The review stays in Switch rooms; Slack is shown for the card | Slack senders are not Switch user ids (Dead ends) |
-| PR CI: Ubuntu required, Windows `continue-on-error`, macOS on `main` only | macOS PR jobs were cancelled for lack of runners |
+| PR CI: Ubuntu and Windows must pass, macOS on `main` only and non-blocking | macOS jobs were cancelled for lack of runners; Windows green on every PR since #7 |
 
 ## Dead ends
 
