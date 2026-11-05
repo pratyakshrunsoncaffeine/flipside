@@ -131,7 +131,7 @@ The AI agent in the story is the author's coding agent (Claude Code): it wrote t
 | `#pr-<n>` (private) | Author, Reviewer, both agents | Seal, questions, the author's answers, disclosed quotes with proofs, the brief |
 | `#pr-<n>-author` (private) | Author, `flipside-author-agent` | Approval cards; only the author can answer them |
 
-`make demo` creates both channels in Mattermost through Switch's bridge, with each person on their own Mattermost account; the author's account is claimed in Switch, so Switch addresses author-agent for the author alone.
+`make demo` creates both channels in Mattermost through Switch's bridge, with each person on their own Mattermost account; the author's account is claimed in Switch, so Switch counts only that account as the author for author-agent's policy and for the approval card (K5).
 `flip setup` creates the same two rooms as Switch chats for a real PR between two machines ([docs/RUNNING.md](docs/RUNNING.md)).
 Policies are set with `PUT /gateway/agents/{id}/addressing-policy` (`flipside/room/setup.py`, `author_policy` and `reviewer_policy`).
 
