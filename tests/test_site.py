@@ -83,3 +83,9 @@ def test_run_js_is_built_from_its_evidence_log() -> None:
     run = build.build((ROOT / source).read_text(encoding="utf-8"), source)
     body = __import__("json").dumps(run, ensure_ascii=False, indent=1)
     assert (SITE / "run.js").read_text(encoding="utf-8").endswith(f"window.RUN = {body};\n")
+
+
+def test_the_hidden_attribute_always_hides() -> None:
+    """A class rule with `display` beat `[hidden]`, so the film's play button stayed over the film."""
+    page = (SITE / "index.html").read_text(encoding="utf-8")
+    assert __import__("re").search(r"\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}", page)
