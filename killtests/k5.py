@@ -9,6 +9,8 @@ K5: in a Mattermost channel bridged to a Switch room, Switch alone decides who a
     K5.d the reviewer presses Approve on author-agent's card in Mattermost: no outcome.
     K5.e an account nobody claimed presses Decline on that card: no outcome.
     K5.f the author presses Approve on that card: outcome approve, by the author's account.
+    K5.g the reviewer cannot rename the author's private room or rewrite its instructions.
+    K5.h the author cannot rewrite the instructions of the reviewer's shared room.
 
 Rooms, agents and policies come from the same bootstrap `make demo` uses, so the policies
 under test are the product's. The card sits in the shared room so that every person can
@@ -38,7 +40,7 @@ from flipside.room.protocol import Msg  # noqa: E402
 from flipside.room.replay import DEFAULT_CASE  # noqa: E402
 from flipside.room.scenario import load_case, materialize  # noqa: E402
 from flipside.room.setup import invite  # noqa: E402
-from flipside.room.switch_client import SwitchTransport  # noqa: E402
+from flipside.room.switch_client import Http, SwitchError, SwitchTransport  # noqa: E402
 from flipside.room.transport import is_refusal  # noqa: E402
 
 LOG = ROOT / "evidence" / f"k5-{dt.datetime.now().strftime('%Y%m%dT%H%M%S')}.log"
@@ -152,6 +154,15 @@ def press(who: str, mm: MM, channel: str, title: str, name: str) -> str:
     return said
 
 
+def refused(h: Http, room: str, body: dict[str, Any]) -> str:
+    """'refused' when Switch refuses ``h`` changing ``room``; otherwise what it accepted."""
+    try:
+        h.request("PATCH", f"/gateway/rooms/{room}", body)
+    except (SwitchError, PermissionError) as e:
+        return f"refused ({type(e).__name__}: {str(e)[:80]})"
+    return "accepted"
+
+
 def outcome(t: SwitchTransport, card: str, wait: float) -> Any:
     deadline = time.monotonic() + wait
     while True:
@@ -178,9 +189,13 @@ def main() -> int:
     }
     mm["stranger"] = stranger(conf)
     invite(live.reviewer_h, c.shared, [STRANGER])
-    shared = str(live.author_h.get(f"/gateway/rooms/{c.shared}")["external_channel_id"])
+    shared = demo.channels(live)[c.shared]
     log(f"Mattermost connection {bridge}; shared room {c.shared} is channel {shared}")
     log(f"{STRANGER} added to the channel; no Switch user claimed it")
+    said = refused(live.reviewer_h, c.private, {"name": "renamed", "instructions": "reviewer"})
+    check("K5.g reviewer changes the author's private room", said.startswith("refused"), said)
+    said = refused(live.author_h, c.shared, {"instructions": "author wrote this"})
+    check("K5.h author changes the reviewer's shared room", said.startswith("refused"), said)
     a_id = c.a_agent.split(":", 1)[1]
     with tempfile.TemporaryDirectory(prefix="flip-k5-tap-") as tap:
         t = SwitchTransport(

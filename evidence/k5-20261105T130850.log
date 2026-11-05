@@ -1,0 +1,23 @@
+13:08:51 Switch http://127.0.0.1:8100: author Author user be09c59b-22a9-43ae-b8d4-f39f71db61f1, reviewer Reviewer user a47ea618-947b-47dd-8889-3eb0dfc450cb; author-agent 60b41ca1-5696-463a-b2c8-551d9a211d5d, reviewer-agent d9266c3b-4051-4214-acc5-5c08865541e3
+13:08:52 mattermost connection ac9e4e71-373d-4e2d-94b7-d2ea1cf50e8f: added linked accounts ['author-person'] (author)
+13:08:52 reviewer opened #pr-142 952f2f2a-35e3-4e5f-8d2c-01d9e8928720 and added the author and author-agent; author opened #pr-142-author 4a2a900a-a370-468d-9f0e-a5b46a6b67a9; author-agent policy: owner, owner's agents, reviewer-agent in #pr-142 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-142
+13:08:54 Mattermost connection ac9e4e71-373d-4e2d-94b7-d2ea1cf50e8f; shared room 952f2f2a-35e3-4e5f-8d2c-01d9e8928720 is channel 7bg77ytq8bdbxdcyhno3aacgqo
+13:08:54 stranger-person added to the channel; no Switch user claimed it
+13:08:54 PASS K5.g reviewer changes the author's private room refused (Forbidden: Not authorized to write this resource)
+13:08:54 PASS K5.h author changes the reviewer's shared room refused (Forbidden: Not authorized to write this resource)
+13:08:59 author: sw_02de7fbd430ed96620da1a05c67cb63e sender human:1217f1b1-9bb7-43e6-9fcc-d0dec070bac9 addressed True; refusals after it 0
+13:08:59 PASS K5.a author tags author-agent addressed=True refused=False (want addressed=True)
+13:09:03 reviewer: sw_b03022c8178ed6000720b04204f0b7ba sender human:20f6ea93-0de1-465f-b597-d9c908ad8340 addressed False; refusals after it 1
+13:09:03   refusal sw_fdf326cc643e4cc1aaa6006b75ea7aaf: @reviewer-person You're not permitted to direct messages to me in this room — my operator has restricted who can address
+13:09:03 PASS K5.b reviewer tags author-agent addressed=False refused=True (want addressed=False)
+13:09:07 stranger: sw_6d27b1324b89213df5415b6285ac26c5 sender human:0ef3a184-3d3d-4196-a96a-261a383970be addressed False; refusals after it 1
+13:09:07   refusal sw_96d3605caf3140deb4df8a0a7bfb13d3: @stranger-person I only take instructions from my owner, and this chat account isn't linked to a Switch user yet — so I 
+13:09:07 PASS K5.c stranger tags author-agent addressed=False refused=True (want addressed=False)
+13:09:07 author-agent opened card 6764a00f-e5eb-4f72-b1b3-a5845f5ad2b1 'K5 card 6764a00f' in the shared room
+13:09:09 reviewer pressed Approve on post 9gfik687dfrw9mh35fchfp5gnh: Mattermost said {"status": "OK", "trigger_id": "h6g9tp8jxfbebcoyts1hh7375y"}
+13:09:21 PASS K5.d reviewer presses Approve: no outcome outcome=None
+13:09:21 stranger pressed Decline on post 9gfik687dfrw9mh35fchfp5gnh: Mattermost said {"status": "OK", "trigger_id": "ta5nznn18p8w3p4xgs191tow3r"}
+13:09:33 PASS K5.e unclaimed account presses Decline: no outcome outcome=None
+13:09:33 author pressed Approve on post 9gfik687dfrw9mh35fchfp5gnh: Mattermost said {"status": "OK", "trigger_id": "a1oxhhy8atyx3my91ontp8o7po"}
+13:09:33 PASS K5.f author presses Approve: outcome approve by the author's account outcome=Outcome(card='6764a00f-e5eb-4f72-b1b3-a5845f5ad2b1', answer='approve', answered_by='@switch-mattermost-ac9e4e71-373d-4e2d-94b7-d2ea1cf50e8f-author-person:localhost')
+13:09:33 K5 8/8 passed

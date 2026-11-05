@@ -62,9 +62,9 @@ Endpoints are from the running 0.31.0 server's `/gateway/openapi.json`.
 |---|---|---|---|
 | Know which person is the author, in their own chat app | Claimed bridge identity plus owner-only addressing | `POST /collaborations/{bridge}/identities`, `PUT /agents/{id}/addressing-policy` | S1 passed |
 | Only the author releases bytes | Approval card answered in Mattermost by the claimed author | `/agent-sessions/.../approvals` | K3 passed in Slack; rerun in Mattermost |
-| One visible path out of the private room | Linked room from the author's room to `#pr-<n>`, labelled "disclosures" | `POST /rooms/{room}/linked-rooms` | spike S2: what a link permits |
-| Every agent in the room follows the rules | Room instructions on both rooms | room `instructions` field | spike S3: write path |
-| A record neither side can rewrite | Room documents: public seal manifest and "Disclosure log", creator-only edit | `/documents`, `/rooms/{room}/documents/{doc}` | M5 |
+| One visible path out of the private room | Linked room from the author's room to `#pr-<n>`, labelled "disclosures" | `POST /rooms/{room}/linked-rooms`, agent op `link_rooms` | S2 done: a link is a label only; it grants no read (reviewer-agent reading the author's room: 403), and any member agent can link its room to any room id, so Flipside must not trust a link |
+| Every agent in the room follows the rules | Room instructions on both rooms | room `instructions` field, agent op `update_room` | S3 done: a room's creator and its member agents can set them; a bridged room must be created private, or anyone in the workspace can rewrite them (fixed, K5.g and K5.h) |
+| A running record in the room | Room-scoped documents: seal manifest and "Disclosure log" | agent ops `create_room_document`, `update_room_document`, `load_internal_documents` | S5 done: another agent cannot edit or delete one (403), but the writing agent's owner can edit it and the room's creator can detach it, so it is a view, not evidence; integrity stays with the seal root |
 | A team installs Flipside in one step | A Switch room template for the two rooms, policies and instructions | `/templates`, `/rooms/from-template-document` | spike S4 |
 | Two teams on different chat apps | Author's team in Slack, reviewer's team in Mattermost, one Switch room each | bridges | stretch after M2 |
 
