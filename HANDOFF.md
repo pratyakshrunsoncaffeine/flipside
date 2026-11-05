@@ -33,7 +33,8 @@ Open PRs:
 
 Unmerged branch, no PR yet:
 - `34-site-replay` (Aarav, pushed, based on #33's branch): the static site in `site/`. Open the PR after #33 merges, with the `pr` skill.
-  The board post (5 Nov) asks the lead for a yes on the vendored three.js (670 KB, MIT), the 11.5 MB film in `site/media/`, and GitHub Pages (needs the repo public).
+  PR #38. The lead approved the vendored three.js (pinned, MIT) and the film (under 15 MB, SHA-256 in VERIFICATION).
+  The repo stays private (Pratyaksh, 5 Nov), so there is no GitHub Pages: the site must work from `site/index.html` or a local server (`site/README.md`).
 
 Done:
 - Everything listed in `VERIFICATION.md`: K1/K2 9/9, K3 4/4 (Slack card), K4 6/6, K5 8/8 (Mattermost), G1 to G8, M4 on Windows, a real Claude Code session, a real sealed GitHub PR.
@@ -128,7 +129,6 @@ Board: `tools/board unread`, `tools/board post "[Aarav's Claude] ..."`; keep one
 
 ## Open questions
 
-- The lead: vendored three.js, the 11.5 MB film in the repo, and GitHub Pages for `site/` (board, 5 Nov).
 - Demo narration: macOS `say` (free, local) or an ElevenLabs key (rotate the key that was shared in chat).
 - Whether to run the full review inside Slack channels for the demo (needs the identity change in Dead ends), or show only the card in Slack.
 
