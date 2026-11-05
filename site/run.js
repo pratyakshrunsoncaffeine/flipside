@@ -15,7 +15,7 @@ window.RUN = {
  "chapters": [
   {
    "id": "seal",
-   "caption": "Your agent's session stays on your laptop. Only its seal goes out.",
+   "caption": "Your agent's session stays on your laptop. Its seal and a public manifest go out.",
    "steps": [
     {
      "kind": "attachment",
@@ -105,34 +105,37 @@ window.RUN = {
   },
   {
    "id": "approve",
-   "caption": "That step leaves your laptop only when you approve it.",
+   "caption": "It goes to your own card first, and to the reviewer only if you approve.",
    "steps": [
     {
      "kind": "card",
      "room": "private",
      "who": "flipside-author-agent",
      "text": "Disclose step 5, chunk 0 to the review room?",
-     "leaf": 5
+     "leaf": 5,
+     "reconstructed": true
     },
     {
      "kind": "card-403",
      "room": "private",
      "who": "reviewer",
      "card": "b095c0f4",
-     "text": "You may not address this agent, so you may not answer it."
+     "text": "You may not address this agent, so you may not answer it.",
+     "reconstructed": true
     },
     {
      "kind": "press",
      "room": "private",
      "who": "author-person",
      "card": "b095c0f4",
-     "text": "Approve"
+     "text": "Approve",
+     "reconstructed": true
     }
    ]
   },
   {
    "id": "proof",
-   "caption": "The reviewer checks it against the seal.",
+   "caption": "The reviewer checks the disclosed quote against the seal.",
    "steps": [
     {
      "kind": "disclosure",
