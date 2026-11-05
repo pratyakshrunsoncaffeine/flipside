@@ -18,7 +18,7 @@ All fixtures are synthetic.
 
 ```
 uv sync --frozen
-make judge            # offline, about 10 s: every claim below as 11 PASS/FAIL checks
+make judge            # offline, under a minute: every claim below as 11 PASS/FAIL checks
 make g8               # offline: a real proof prints OK, a forged one PROOF_FAIL
 make replay-offline   # the whole review on an in-process Switch stand-in
 make demo             # Switch 0.31.0 and Mattermost in Docker; both people act in Mattermost
