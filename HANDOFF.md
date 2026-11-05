@@ -38,7 +38,7 @@ Open work:
 Done:
 - M2 two machines: Mac author with Switch, Windows reviewer-agent over a private tailnet (`evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log`).
 - Everything listed in `VERIFICATION.md`: K1/K2 9/9, K3 4/4 (Slack card), K4 6/6, K5 8/8 (Mattermost), G1 to G8, M4 on Windows, a real Claude Code session, a real sealed GitHub PR.
-- The launch film v6 (`~/Desktop/flipside-launch-v6.mp4`, 64.8 s; sources in `~/flipside-video/film2/`); copied into `site/media/flipside-film.mp4`.
+- The launch film v13 (78.0 s, v12 recoloured to the site palette) is `site/media/flipside-film.mp4`; size and SHA-256 are in VERIFICATION.md.
 - The site (`site/index.html`), sections in order: hero with Flip (the bot, live Three.js); "Two laptops, one Switch room" diagram after the Switch hackathon page (agents wired to a switch that turns on, then a chat room with members, messages and a room panel); the replay player (the dock with Flip, play and chapter bars sits at the top of the player, over both rooms and the seal tree); real Slack and Mattermost screens; How it works in four colour fields; the film; Run it; footer.
   Every message in the replay and the diagram comes from `site/run.js`, which `site/build.py` writes from `evidence/demo-mattermost-csv-export-20261105T132112.log`.
   Design direction: tasteskill "one-motif" (seed 405919273, palette and type kept): Flip's puck, a rounded square with 30% corners, is the hero field, the buttons, the film frame and the end mark. The amber "why." in the hero is a deliberate brand exception from the film.

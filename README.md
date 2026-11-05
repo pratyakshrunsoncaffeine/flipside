@@ -2,7 +2,7 @@
 
 Prove what your coding agent did, without handing over the session.
 
-[![Flipside, the 65 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
+[![Flipside, the 78 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
 
 When one team's agent writes a pull request and another team owns the code, the reason behind each change lives only in the author's agent session.
 Flipside seals that session into the PR as one Merkle root in a commit trailer.
