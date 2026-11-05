@@ -35,7 +35,7 @@ Seal, verify, gaps, selection, contradictions, coverage and the page rule are de
 ## Status
 
 Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
-K1 to K5 are kill tests of the Switch behaviour Flipside relies on; G1 to G8 are the seal's gates (proofs, tamper codes, test vectors, the offline `OK` / `PROOF_FAIL` check).
+K1 to K5 are kill tests of the Switch behaviour Flipside relies on; G1 to G8 are the seal checks (proofs, tamper codes, test vectors, the offline `OK` / `PROOF_FAIL` check).
 
 | Check | Command |
 |---|---|
@@ -45,7 +45,7 @@ K1 to K5 are kill tests of the Switch behaviour Flipside relies on; G1 to G8 are
 | Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
 | The live flow in Slack channels (`flip solo --slack --press`): the author approves the card in Slack; 4 refusals, 0 duplicate posts | `evidence/solo-csv-export-20261105T011603.log`, `evidence/solo-csv-export-20261105T011603-slack-card.png` |
 | K3: author-agent's approval card renders in Slack with Approve and Decline buttons; the reviewer gets 403; the author's button press in Slack reaches author-agent (4/4) | `evidence/k3-20261105T005334.log`, `evidence/k3-slack-card-20261105T005334-before.png` |
-| Seal core gates G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
+| Seal checks G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
 | Offline end to end, with the four refusals | `make replay-offline` |
 | 9 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
 | Live end to end on local Switch with the four refusals, each agent in its own process, both killed with SIGKILL and restarted without duplicate posts | `make solo` |

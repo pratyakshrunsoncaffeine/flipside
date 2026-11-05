@@ -118,7 +118,7 @@ Evaluated in this order; at most five questions per round, the rest listed in th
 | `RERUN` | `TESTS` did not apply (no pass claim) and the last `cmd: test` result that ran has `ok: false` | "The last sealed test run failed (step `<t>`) and no later test run is sealed. Was it fixed?" |
 | `SIZE` | Added plus deleted lines, lockfiles excluded, exceed 400 | "This PR changes `<n>` lines (lockfiles excluded; limit 400). Can it be split? If not, which part should the reviewer read first?" |
 
-`LINT`, `BUILD`, `RERUN` and `SIZE` are ported from Gate v1 (the team's earlier Ownership Gate prototype).
+`LINT`, `BUILD`, `RERUN` and `SIZE` are ported from the team's earlier Ownership Gate prototype.
 They come after the four rules above, so they are asked only when fewer than five gaps fire before them.
 
 The honest cases (`fixtures/cases/honest-*`) must give zero gaps.

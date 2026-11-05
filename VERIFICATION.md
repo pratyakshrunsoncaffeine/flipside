@@ -49,9 +49,9 @@ Fresh clone of branch `67-judge-kit` from GitHub, `uv sync --frozen`, `make lint
 | `make judge-live` with J13 (all 9 labelled cases on real Switch), 20:47 to 20:50 IST | 14/14 PASS in 192.0 s; every case RESULT PASS | `evidence/judge-20261105T205018.log`; the 9 `evidence/demo-mattermost-<case>-` logs from 20:48 to 20:50 IST |
 | `make judge` offline on the Mac | 11/11 PASS in 11.6 s; reads only committed logs; tracked files unchanged | `evidence/judge-20261105T210243.log` |
 
-## Gates
+## Checks
 
-| Gate | Command | Evidence |
+| Check | Command | Evidence |
 |---|---|---|
 | K1, K2 (9/9) | `make killtests` | `evidence/k1k2-20261104T195815.log` |
 | K4 (6/6, three runs) | `make killtests` | `evidence/k4-20261104T202125.log`, `evidence/k4-20261104T202158.log`, `evidence/k4-20261104T202207.log` |
