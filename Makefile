@@ -33,19 +33,19 @@ k5: ## K5: who Switch admits in Mattermost; needs `flip demo up`; writes evidenc
 k3: ## K3: approval card in Slack; needs a Slack connection on the local server and SLACK_BOT_TOKEN_FILE
 	cd killtests && python3 k3.py
 
-replay-offline: ## M2: CSV-export scenario over FakeTransport (room lane)
+replay-offline: ## CSV-export scenario over FakeTransport
 	$(PY) -m flipside.cli replay --offline
 
-fixtures: ## M5: run all 9 fixture cases offline; writes docs/results/fixtures.md
+fixtures: ## run all 9 fixture cases offline; writes docs/results/fixtures.md
 	$(PY) -m flipside.cli replay --fixtures
 
-solo: ## M3: two owners on the local Switch server, full flow over SwitchTransport (room lane)
+solo: ## two owners on the local Switch server, full flow over SwitchTransport
 	$(PY) -m flipside.cli solo
 
-solo-all: ## M5: all 9 fixture cases live on the local Switch server; writes evidence/solo-all-*.log
+solo-all: ## all 9 fixture cases live on the local Switch server; writes evidence/solo-all-*.log
 	$(PY) -m flipside.cli solo --all
 
-replay: ## M4: fresh local server, recorded inputs, no keys needed (room lane)
+replay: ## fresh local server, recorded inputs, no keys needed
 	$(PY) -m flipside.cli replay
 
 demo: ## Switch 0.31.0 + Mattermost in Docker, people act in Mattermost; writes evidence/demo-mattermost-*.log

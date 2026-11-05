@@ -151,7 +151,7 @@ Policies are set with `PUT /gateway/agents/{id}/addressing-policy` (`flipside/ro
 It holds both sides' keys in one process, so it proves nothing about two owners.
 With two real owners, the refusals need a shared server that enforces each owner's policy on the other's people and agents: that is Switch, which stops the reviewer from commanding author-agent or answering the author's card.
 
-Facts verified against switch-core 0.31.0 are in `docs/BUILD.md` section 9.
+Facts verified against switch-core 0.31.0 are in [docs/DESIGN.md](docs/DESIGN.md#7-switch-facts-switch-core-0310-verified) section 7.
 
 ## Status
 

@@ -1,4 +1,4 @@
-"""Room protocol (docs/BUILD.md section 6).
+"""Room protocol (docs/DESIGN.md section 4).
 
 Every machine message is one human-readable line, then one fenced JSON block.
 Parsers read only the JSON block, and accept a message only from the sender the

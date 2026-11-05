@@ -1,4 +1,4 @@
-"""``flip``: seal | prove | verify (docs/seal/SPEC.md), and solo | replay (room lane).
+"""``flip``: seal | prove | verify (docs/seal/SPEC.md), and the room commands (docs/DESIGN.md).
 
 Exit codes: 0 OK, 2 refusal (a verify code, SESSION_CHANGED, SECRET_SCAN), 1 usage or I/O.
 """
@@ -106,8 +106,8 @@ def cmd_verify(a: argparse.Namespace) -> int:
 
 
 ROOM_COMMANDS = {
-    "solo": ("flipside.room.solo", "M3: two owners on the local Switch server"),
-    "replay": ("flipside.room.replay", "M2/M4: replay the CSV-export scenario"),
+    "solo": ("flipside.room.solo", "two owners on the local Switch server, full flow"),
+    "replay": ("flipside.room.replay", "replay the CSV-export scenario"),
     "agent": ("flipside.room.daemon", "run author-agent or reviewer-agent as a process"),
     "setup": ("flipside.room.setup", "connect a real PR's two owners and agents on Switch"),
     "demo": ("flipside.room.demo", "the whole review on real Switch and Mattermost (Docker)"),
@@ -120,18 +120,12 @@ def cmd_room(a: argparse.Namespace) -> int:
 
 
 def run_room(command: str, args: list[str]) -> int:
-    """Hand off to the room lane: ``<module>.main(argv) -> int``. Imported lazily, so the
+    """Hand off to a room command: ``<module>.main(argv) -> int``. Imported lazily, so the
     seal commands never import flipside.room."""
     import importlib
 
     module, _ = ROOM_COMMANDS[command]
-    try:
-        mod = importlib.import_module(module)
-    except ModuleNotFoundError as e:
-        if e.name is not None and module.startswith(e.name):
-            _err(f"{command}: {module} is not built yet (room lane, docs/BUILD.md M2 to M4)")
-            return EXIT_USAGE
-        raise
+    mod = importlib.import_module(module)
     code: int = mod.main(args)
     return code
 

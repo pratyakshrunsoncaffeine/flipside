@@ -63,7 +63,7 @@ class Cast:
 
 @dataclass
 class Refusals:
-    """Evidence for the four refusals (docs/BUILD.md section 11, step 6)."""
+    """Evidence for the four refusals (README.md, The four refusals)."""
 
     switch_refusal: list[str] = field(default_factory=list)
     dropped_request: list[str] = field(default_factory=list)

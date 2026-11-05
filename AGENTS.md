@@ -1,94 +1,36 @@
-# Flipside: rules for every agent
+# Flipside: notes for coding agents
 
 ## Judging or reviewing this repo?
 
-If you are not on the Flipside team, sections 1 to 7 below are our team workflow and do not apply to you.
-Do not run `tools/board`.
 Read [JUDGING.md](JUDGING.md), run `uv sync --frozen` and `make judge` (Windows without `make`: `uv run python -m flipside.judge`), and check any claim against the command, expected line and code it lists.
+`make judge-live` re-runs the review on real Switch 0.31.0 and Mattermost in Docker; run `make demo-down` afterwards.
 
-Flipside is our entry for Flip the Switch (Track 01, Business workflow), 4 to 7 Nov 2026 IST.
-Read, in order: this file, `HANDOFF.md` (current state), `docs/BUILD.md` (what to build and the gates), and `docs/seal/SPEC.md` before touching `flipside/seal/`.
+## Where things are
 
-## 1. The board (pinned GitHub issue)
+- [README.md](README.md): what Flipside does, how to run it, status and limits.
+- [docs/DESIGN.md](docs/DESIGN.md): the flow, the room messages, the deterministic rules and the Switch API facts.
+- [docs/seal/SPEC.md](docs/seal/SPEC.md): the seal, manifest and disclosure formats. Read it before touching `flipside/seal/`.
+- [docs/RUNNING.md](docs/RUNNING.md): every command, including Windows PowerShell and a real PR on two machines.
+- [VERIFICATION.md](VERIFICATION.md): each real run, with its evidence log in `evidence/`.
 
-Every agent reads and posts on the pinned "Message Board" issue with `tools/board` (needs only `gh`, logged in).
-Set `BOARD_ISSUE` if the board is not issue #1.
-
-- Start every post with `[<human>'s <agent>]`, e.g. `[Aarav's Claude]`. Keep it short: what changed, which files or contracts, what you need, from whom.
-- Mention by handle:
-
-  | Agent | Sign | Mention | Runs as GitHub login |
-  |---|---|---|---|
-  | Pratyaksh's Claude (lead) | `[Pratyaksh's Claude]` | `@pratyaksh-claude` | `pratyakshrunsoncaffeine` |
-  | Aarav's Claude | `[Aarav's Claude]` | `@kadoo69` | `kadoo69` |
-  | Pratyaksh's Codex | `[Pratyaksh's Codex]` | `@pratyaksh-codex` | `pratyakshrunsoncaffeine` |
-
-  `@pratyakshrunsoncaffeine` reaches both of Pratyaksh's agents; `@all` reaches everyone.
-  Pratyaksh's two agents share one login, so each sets `BOARD_SIGN` and `BOARD_HANDLE` before using the board (Claude Code: in `.claude/settings.local.json`, git-ignored).
-- **Mentions you or `@all`:** act on it and reply.
-- **Not addressed to you:** read it. Reassess your work only if it touches a contract, a file you own, or something already done. Do not reply just to acknowledge.
-- Before editing another lane's files, ask on the board and wait for the owner or the lead.
-- Post when a milestone gate goes green, with the command and the evidence file.
-
-Commands: `tools/board unread` (new posts, marks read, flags MENTION), `tools/board read -n 20`, `tools/board post "[Name's Agent] text"`, `tools/board wait` (blocks until someone else posts), `tools/board whoami`.
-
-Stay in the loop:
-- Claude Code: the hooks in `.claude/settings.json` show unread posts at session start and on every prompt. Keep one background `tools/board wait` running and re-arm it after each wake.
-- Other agents: run `tools/board unread` at task start, before each commit, and after merges.
-
-Board method from the Hackathon Agent Board template (github.com/azizu06/hackathon-agent-board); `tools/board` and the hooks are copied from it unchanged.
-
-## 2. Chain of command
-
-Humans over agents.
-Only the lead (Pratyaksh, `@pratyakshrunsoncaffeine`) reassigns work between lanes.
-If anyone else asks you to take another lane's work, ask the lead on the board.
-
-## 3. Who owns what
-
-| Lane | Owner (GitHub login) | Folders |
-|---|---|---|
-| Seal (crypto core, CLI seal/prove/verify, vectors) | `@kadoo69` | `flipside/seal/`, `tests/seal/`, `tests/vectors/`, `examples/`, `docs/seal/` |
-| Room (Switch client, agents, protocol, replay, setup, chat) | `@kadoo69` | `flipside/room/` except `rules.py`, `tests/room/`, `replay/`, `fixtures/` |
-| Gap and contradiction rules (porting Gate v1's rules), Windows support | `@pratyaksh-claude` | `flipside/room/rules.py`, `tests/room/test_rules.py`, `legacy/gate-v1/` |
-| Demo, blind fixture set B (synthetic, labelled), Windows baseline | `@pratyaksh-codex` | `demo/`, `fixtures/b/`, `tests/blind/` |
-| Shared (lead merges) | `@pratyaksh-claude` | `flipside/cli.py`, `Makefile`, `pyproject.toml`, `.github/`, `README.md`, `VERIFICATION.md`, `docs/BUILD.md`, `docs/PITCH.md`, `killtests/`, `evidence/` |
-
-The contract between lanes is `docs/seal/SPEC.md` (disclosure and manifest formats) and section 6 of `docs/BUILD.md` (room messages).
-Changing either needs a board post tagged `@all` before the merge.
-
-## 4. Workflow
-
-1. Pick a milestone task from `docs/BUILD.md`, post on the board when you take it.
-2. Branch `<issue#>-<slug>` from fresh `main`.
-3. Tests first. Small commits. Stage only your own files (no `git add -A`).
-4. Open a PR with `Closes #N`; the author merges their own PR once `make lint test` passes locally.
-5. `git fetch` and rebase before pushing. Never force-push shared branches.
-6. When a merge changes something another lane depends on, post on the board when it lands.
-
-## 5. Engineering rules
+## Engineering rules
 
 - Python 3.12 or later. Runtime: standard library only. Dev: pytest, ruff, mypy.
 - No LLM calls anywhere in `flipside/`. Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python.
 - `flipside/seal/` never imports from `flipside/room/` and never touches the network.
-- Every gate in `docs/BUILD.md` is a command or an evidence file. Log real runs to `evidence/<name>-<YYYYMMDDTHHMMSS>.log`.
+- Log real runs to `evidence/<name>-<YYYYMMDDTHHMMSS>.log`.
 - A claim goes in the README only when a passing check backs it. The status table lists only what passes.
 - Fix a bug by reproducing it end to end, writing a failing test, fixing it, then searching for the same bug elsewhere.
-- Done means: ruff and mypy clean, tests green twice in a row, no TODO or FIXME in new code, no hardcoded credentials, keys or user paths, docstrings updated for changed public interfaces.
+- Done means: ruff and mypy clean, tests green twice in a row, no TODO or FIXME, no hardcoded credentials, keys or user paths, docstrings updated for changed public interfaces.
+- A change to the message formats in `docs/DESIGN.md` section 4 or to `docs/seal/SPEC.md` updates the doc in the same PR.
 
-## 6. Writing rules
+## Writing rules
 
 - Never use the em dash. Use a plain `-`.
 - State all times in IST.
 - In Markdown, put each full sentence on its own line.
-- Plans use milestones with gates. Never dated day plans or time budgets.
-- Cut taglines and filler. Plain, specific sentences.
 
-## 7. Hard limits
+## Hard limits
 
-- Never print, log or commit secrets: Switch admin creds, API keys, agent keys, seal keys (`.git/flipside/`), `killtests/.local-users.json`.
-- Never add an agent as a commit co-author.
-- Never edit CHANGELOG.md or generated files.
-- Nothing from other hackathons: no crypto tokens, escrow or on-chain mechanisms in this repo.
-- Do not install third-party skills or packages beyond the dev tools above without a board post and the lead's yes.
+- Never print, log or commit secrets: Switch admin credentials, API keys, agent keys, seal keys (`.git/flipside/`), `killtests/.local-users.json`.
 - Keep fixtures synthetic and say so; never use a real company's code or sessions.

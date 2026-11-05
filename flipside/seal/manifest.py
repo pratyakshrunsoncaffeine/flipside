@@ -1,6 +1,6 @@
 """Leaf objects and the public manifest (docs/seal/SPEC.md, Leaves and Manifest).
 
-This is the manifest loader the room lane imports.
+This is the manifest loader the room commands import.
 """
 
 import re
