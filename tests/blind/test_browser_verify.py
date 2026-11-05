@@ -358,7 +358,8 @@ const file = (id, bytes) => {
   assert.doesNotMatch(elements.status.textContent, /Proof checks OK/);
   const disclosure = file('disclosure', proof);
   manifest.resolve(); await manifest.done;
-  assert.equal(elements.manifest.value, 'MALFORMED NEW MANIFEST', 'Other file must not cancel this read');
+  assert.equal(elements.manifest.value, 'MALFORMED NEW MANIFEST',
+    'Other file must not cancel this read');
   assert.equal(elements.check.disabled, true, 'Second file is still pending');
   disclosure.resolve(); await disclosure.done;
   assert.equal(elements.check.disabled, false);
