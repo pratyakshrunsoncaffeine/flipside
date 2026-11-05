@@ -58,3 +58,28 @@ def test_the_run_is_told_in_story_order_and_keeps_every_switch_id() -> None:
 
 def test_the_same_log_builds_the_same_script() -> None:
     assert build.build(LOG, "e") == build.build(LOG, "e")
+
+
+SITE = ROOT / "site"
+_REF = __import__("re").compile(r'(?:src|href)="([^"#:]+)"')
+
+
+def test_every_local_file_the_page_links_to_exists() -> None:
+    page = (SITE / "index.html").read_text(encoding="utf-8")
+    refs = {r for r in _REF.findall(page) if not r.startswith("data")}
+    assert refs, "the page links to no local files"
+    missing = sorted(r for r in refs if not (SITE / r).is_file())
+    assert missing == []
+
+
+def test_site_sources_have_no_em_dash_outside_switch_text() -> None:
+    for name in ("index.html", "flip.js", "build.py"):
+        assert "—" not in (SITE / name).read_text(encoding="utf-8"), name
+
+
+def test_run_js_is_built_from_its_evidence_log() -> None:
+    first = (SITE / "run.js").read_text(encoding="utf-8").splitlines()[0]
+    source = first.split(" from ", 1)[1].removesuffix(". Do not edit.")
+    run = build.build((ROOT / source).read_text(encoding="utf-8"), source)
+    body = __import__("json").dumps(run, ensure_ascii=False, indent=1)
+    assert (SITE / "run.js").read_text(encoding="utf-8").endswith(f"window.RUN = {body};\n")
