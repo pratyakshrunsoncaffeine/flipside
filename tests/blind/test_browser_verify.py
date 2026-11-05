@@ -45,9 +45,12 @@ vm.runInThisContext(input.script, {filename: 'site/verify.html#verify-core'});
 
 
 def page_codes(cases: list[dict[str, str]]) -> list[str]:
-    """Run the script shipped in the page, failing rather than skipping without Node."""
+    """Run the shipped script; missing Node is fatal in CI and optional locally."""
     node = shutil.which("node")
-    assert node, "Browser parity is mandatory: install Node 22+ (CI uses setup-node)."
+    if node is None:
+        if os.environ.get("FLIP_REQUIRE_NODE") == "1":
+            pytest.fail("Browser parity is mandatory in CI: Node 22+ must be on PATH.")
+        pytest.skip("Browser parity needs Node 22+; set FLIP_REQUIRE_NODE=1 to require it.")
     html = PAGE.read_text(encoding="utf-8")
     core = re.search(r'<script id="verify-core">(.*?)</script>', html, re.S)
     assert core, "Page must ship the core exercised by this parity gate"
@@ -302,3 +305,14 @@ def test_page_is_local_and_names_git_checks_without_claiming_them() -> None:
         assert code in html
     assert "run flip verify" in html
     assert "Git checks not run" in html
+
+
+@pytest.mark.parametrize("required", [False, True])
+def test_missing_node_is_optional_locally_but_fatal_in_ci(
+    required: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(shutil, "which", lambda _: None)
+    monkeypatch.setenv("FLIP_REQUIRE_NODE", "1" if required else "0")
+    expected = pytest.fail.Exception if required else pytest.skip.Exception
+    with pytest.raises(expected):
+        page_codes([])

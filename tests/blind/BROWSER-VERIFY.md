@@ -14,7 +14,9 @@ For a local bundle, add `--bundle seal.bundle`.
 Earlier Git failures take precedence over the browser's checks in the full CLI.
 
 Run `uv run --frozen pytest tests/blind/test_browser_verify.py` with Node 22+ on PATH.
-This mandatory test extracts the actual `verify-core` script from the shipped HTML and executes it with Node WebCrypto; it never skips when Node is missing.
+The test extracts the actual `verify-core` script from the shipped HTML and executes it with Node WebCrypto.
+CI sets `FLIP_REQUIRE_NODE=1` and installs Node 22, so a missing Node fails the gate.
+On local Python-only installations, Node-dependent cases skip unless that variable is set.
 No npm dependencies or browser download is required.
 The gate compares the real `flip verify` subprocess with every pinned `tests/vectors/*.json` case, both G8 examples, and ordered malformed, metadata, size and tamper cases.
 Synthetic vector seals are put in a temporary Git commit so the CLI's Git checks pass before comparing browser-checkable verdict codes.
