@@ -23,7 +23,7 @@ make replay-offline   # the whole review on an in-process Switch stand-in
 make demo             # Switch 0.31.0 and Mattermost in Docker; both people act in Mattermost
 ```
 
-`make demo` is checked on macOS only; everything else also runs on Windows (see Quick start).
+`make demo` is checked on macOS only; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
 To watch the recorded run play back step by step, open `site/index.html` in a browser.
 To check a disclosed quote without installing anything, open `site/verify.html`.
 
@@ -85,128 +85,19 @@ sequenceDiagram
     RA->>R: OK per leaf, brief with coverage
 ```
 
-### Terms
+Terms (seal, leaf, root, manifest, gap, coverage line, page rule) are defined in [docs/REFERENCE.md](docs/REFERENCE.md#terms).
 
-| Term | Meaning |
-|---|---|
-| Seal | An empty commit on the PR with a `Flipside-Seal: v1 root=… n=… manifest=…` trailer, made by `flip seal` |
-| Leaf | One salted chunk of one step of the author's agent session; the unit the author approves and the reviewer verifies |
-| Root | The Merkle root over all leaves; a leaf with a valid inclusion proof was in the session when it was sealed |
-| Manifest | Public metadata per step (role, tool, files, command class, test outcome), never text |
-| Gap | A deterministic rule hit on public PR data that becomes a question (`CI`, `TESTS`, `SCOPE`, `UNSEALED`, `LINT`, `BUILD`, `RERUN`, `SIZE`) |
-| Coverage line | Per changed file: sealed steps, disclosed, not disclosed |
-| Page rule | When reviewer-agent posts the brief and mentions the reviewer: every question answered and every requested leaf settled, or a timeout |
-| Gateway | Switch's HTTP API for people (`/gateway/...`); agents use the agent API |
+## Run it yourself
 
-## Quick start
+| Path | Needs | Commands |
+|---|---|---|
+| Offline | Git, Python 3.12, [uv](https://docs.astral.sh/uv/) | `make lint test`, `make g8`, `make replay-offline`, `make fixtures` |
+| Real Switch and Mattermost (macOS checked) | Docker with Compose v2 | `make demo`, `make k5`, `make demo-down` |
+| Switch Console's local server | Switch Console | `make killtests`, `make solo`, `make replay` |
+| A real PR, author and reviewer each with their own login | Switch logins, `gh` | `flip seal`, `flip setup`, `flip agent` |
 
-Offline, no Switch and no accounts (Git, Python 3.12, [uv](https://docs.astral.sh/uv/) and make; on Windows without make, see below):
-
-```
-uv sync --frozen
-make lint test
-make g8
-make replay-offline
-make fixtures
-```
-
-`make g8` verifies `examples/q2-ok.json` (`OK`) and `examples/q2-forged.json` (`PROOF_FAIL`) with no network.
-`make replay-offline` plays the CSV-export case end to end on an in-process Switch stand-in and writes `evidence/replay-offline-*.log`.
-`make fixtures` runs all 9 cases and writes `docs/results/fixtures.md`.
-
-Live, on a local Switch server (Switch Console's built-in server, `http://127.0.0.1:52370` on macOS; set `SWITCH_BASE` for another address):
-
-```
-make killtests
-make solo
-make replay
-```
-
-`make solo` creates two local users (Author, Reviewer), registers each one's agent, opens both rooms and sets the scoped policies.
-Each agent then runs as its own process (`flip agent`); both are killed with SIGKILL mid-flow and restarted.
-It writes `evidence/solo-*.log` with every Switch message id.
-`make solo-all` does the same for all 9 fixture cases.
-
-### Without make (Windows PowerShell)
-
-The same targets, run directly:
-
-```
-uv sync --frozen
-uv run --frozen ruff check flipside tests docs/seal/example.py examples fixtures killtests demo
-uv run --frozen ruff format --check flipside tests docs/seal/example.py examples fixtures killtests demo
-uv run --frozen mypy
-uv run --frozen pytest
-$c = Get-Content examples/commit.txt
-uv run --frozen python -m flipside.cli verify --bundle examples/seal.bundle --commit $c --manifest examples/manifest.json examples/q2-ok.json
-uv run --frozen python -m flipside.cli verify --bundle examples/seal.bundle --commit $c --manifest examples/manifest.json examples/q2-forged.json; $LASTEXITCODE
-uv run --frozen python -m flipside.cli replay --offline
-uv run --frozen python -m flipside.cli replay --fixtures
-```
-
-The first verify prints `OK`; the forged one prints `PROOF_FAIL` and `$LASTEXITCODE` is 2.
-On Windows, give pytest a short temporary folder if a path is too long: `uv run --frozen pytest --basetemp=C:/t/run1`.
-
-Live, point the tools at the Console's local server first.
-On Windows the Console writes `%APPDATA%\switchdash\local-switch-server\native\run\switch-core.env`, and its `SERVER_PORT` line gives the port (52115 on our machine, not 52370):
-
-```
-$env:FLIP_SWITCH_ENV = "$env:APPDATA\switchdash\local-switch-server\native\run\switch-core.env"
-$env:SWITCH_BASE = "http://127.0.0.1:" + ((Select-String -Path $env:FLIP_SWITCH_ENV -Pattern '^SERVER_PORT=(\d+)').Matches[0].Groups[1].Value)
-cd killtests; uv run --frozen python k1_k2.py; uv run --frozen python k4.py; cd ..
-uv run --frozen python -m flipside.cli solo
-uv run --frozen python -m flipside.cli replay
-```
-
-## The review in Mattermost (`make demo`)
-
-`make demo` needs Docker with Compose v2 and no other accounts or keys.
-It fetches Switch's published Compose file for release 0.31.0, checks it against a pinned digest, and starts switch-core, PostgreSQL and Mattermost bound to 127.0.0.1.
-It creates the Author and the Reviewer as Switch users and as Mattermost users, and each person claims their own Mattermost account in Switch, so Switch can tell the author's messages and button presses from anyone else's.
-Server secrets and the two logins are written to `.flipside-demo/` (mode 0600, git-ignored).
-
-Then it plays the CSV-export case: both people type in the bridged Mattermost channels as themselves, the author approves author-agent's card in Mattermost, the four refusals happen, and both agents are killed and restarted.
-It writes `evidence/demo-mattermost-<case>-<time>.log` with every Switch message id.
-
-```
-make demo                    # up, then run
-flip demo logins             # the two local Mattermost logins, to watch at http://127.0.0.1:8065
-flip demo run --press        # leave the card for you: log in as the Author and press 1. Approve
-make k5                      # who Switch admits in Mattermost (8 checks)
-make demo-down               # remove the containers, their data and .flipside-demo/
-```
-
-Checked on macOS only: Docker Desktop would not install on our Windows test machine (a Windows Insider build).
-Windows runs everything offline and the live flow on Switch Console's local server.
-
-## Run it on a real PR
-
-Each side uses their own Switch login, kept in a creds file (`{"me": {"email": ..., "password": ...}}`, mode 0600).
-
-Author, on the PR branch:
-
-```
-flip seal --base origin/main && git push       # empty seal commit; keys stay in .git/flipside/
-flip setup author --pr 142 --creds me.json --as me
-# send the printed flip-join line to the reviewer, get theirs back, then:
-flip setup author --join "<reviewer's line>"
-flip agent author --config author-agent.json
-```
-
-Reviewer, in a clone with the PR fetched (`git fetch origin pull/142/head`):
-
-```
-flip setup reviewer --join "<author's line>" --github acme/shop --pr 142 --creds me.json --as me
-flip agent reviewer --config reviewer-agent.json
-```
-
-The join lines carry ids only.
-Config files are written mode 0600, since they hold the agent's API key.
-The reviewer reads the PR title, body, changed files and check runs with `gh api`; `--pr-json FILE --head SHA` replaces GitHub.
-The page-rule timeout is `FLIP_ANSWER_TIMEOUT` seconds (default 1800).
-
-On a Switch server with no chat app, people use `flip chat --config <their agent's config>`:
-`read`, `say "Q1: ..."`, `cards`, `show <card>` (the exact text a card discloses) and `answer <card> approve|decline`.
+`make demo` starts pinned Switch 0.31.0 with Mattermost on 127.0.0.1; both people act as their own Mattermost accounts and the author approves the card there.
+Every command, the Windows PowerShell versions and the real-PR setup are in [docs/RUNNING.md](docs/RUNNING.md).
 
 ## The four refusals
 
@@ -219,16 +110,8 @@ On a Switch server with no chat app, people use `flip chat --config <their agent
 
 ## How it works
 
-1. `flip seal` turns the author's Claude Code session (with subagents) into salted leaves, builds an RFC 9162 Merkle tree, and commits an empty seal commit with a `Flipside-Seal: v1 root=… n=… manifest=…` trailer.
-   Keys and salts stay in `.git/flipside/`.
-   Spec: `docs/seal/SPEC.md`.
-2. author-agent posts the seal and the public manifest (step metadata, no text) in the reviewer's room `#pr-<n>`.
-3. reviewer-agent finds gaps with deterministic rules (`CI`, `TESTS`, `SCOPE`, `UNSEALED`, `LINT`, `BUILD`, `RERUN`, `SIZE`), asks up to five questions, and requests the leaves that would answer them (`flipside/room/rules.py`).
-4. author-agent secret-scans each requested leaf, then opens one approval card per leaf in the author's private room `#pr-<n>-author`.
-   The author can offer more steps there: `@flipside-author-agent offer Q1 step 3`.
-5. On approve, author-agent re-checks the sealed prefix and posts the disclosure with its inclusion proof.
-   On decline it posts `withheld`.
-6. reviewer-agent verifies each disclosure (`flipside/seal/verify.py`), checks contradictions on verified bytes only, and posts the brief, which mentions the reviewer.
+`flip seal` commits the session's Merkle root; author-agent posts the seal and a public manifest; reviewer-agent asks about gaps found by deterministic rules and requests leaves by number; the author approves each leaf on a private card; reviewer-agent verifies each disclosure against the root and posts the brief.
+The six steps in detail are in [docs/REFERENCE.md](docs/REFERENCE.md#how-it-works); the seal format is `docs/seal/SPEC.md`.
 
 No LLM runs anywhere in `flipside/`.
 Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python on the standard library.
@@ -251,26 +134,13 @@ Facts verified against switch-core 0.31.0 are in `docs/BUILD.md` section 9.
 
 ## Status
 
-Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
-K1 to K5 are kill tests of the Switch behaviour Flipside relies on; G1 to G8 are the seal's gates (proofs, tamper codes, test vectors, the offline `OK` / `PROOF_FAIL` check).
+Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/REFERENCE.md#status) and the evidence in `VERIFICATION.md`.
 
-| Check | Command |
-|---|---|
-| The whole review in Mattermost on a real Switch 0.31.0 server: both people act as their own Mattermost accounts, the author approves the card in Mattermost, four refusals, both agents killed and restarted (macOS) | `make demo`, `evidence/demo-mattermost-csv-export-20261105T131047.log` |
-| K5 (8/8): in Mattermost, Switch addresses the author's claimed account, refuses the reviewer's and an unclaimed account's tag, takes a card press only from the author, and refuses each person changing the other's room | `make k5`, `evidence/k5-20261105T153338.log` |
-| The author presses Approve by hand in the Mattermost web app | `flip demo run --press`, `evidence/demo-mattermost-card-20261105T1318-after.png` |
-| Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
-| The live flow in Slack channels (`flip solo --slack --press`): the author approves the card in Slack; 4 refusals, 0 duplicate posts | `evidence/solo-csv-export-20261105T011603.log`, `evidence/solo-csv-export-20261105T011603-slack-card.png` |
-| K3: author-agent's approval card renders in Slack with Approve and Decline buttons; the reviewer gets 403; the author's button press in Slack reaches author-agent (4/4) | `evidence/k3-20261105T005334.log`, `evidence/k3-slack-card-20261105T005334-before.png` |
-| Seal core gates G1 to G8; ruff and mypy clean; the test suite green twice | `make lint test`, `make g8` |
-| Offline end to end, with the four refusals | `make replay-offline` |
-| 9 fixture cases match their expected outcomes, offline and live | `make fixtures`, `make solo-all` |
-| Live end to end on local Switch with the four refusals, each agent in its own process, both killed with SIGKILL and restarted without duplicate posts | `make solo` |
-| GitHub PR reader, on canned data and one public PR | `tests/room/test_github.py` |
-| A real Claude Code session, sealed, connected with `flip setup`, both agents as processes, people via `flip chat`: 2 questions, 8 leaves verified, brief | `evidence/real-session-20261104T224823.log` |
-| The same sealed PR on GitHub, read with `gh api` (title, body, files, check runs): 2 questions, 8 leaves verified, 0 contradictions | `evidence/github-pr-20261105T002706.log` |
-| CI on Ubuntu and Windows | `.github/workflows/ci.yml` |
-| Clean clone on a second machine (Windows, its own Switch server): kill tests, live flow and `flip replay` reproduce the Mac's verdicts and coverage lines | `evidence/replay-switch-csv-export-20261105T015811.log` |
+- The whole review on real Switch 0.31.0 in Mattermost, four refusals, both agents killed and restarted (`make demo`, macOS).
+- K5 8/8: Switch admits only the author's claimed Mattermost account, in the rooms each owner controls (`make k5`).
+- Seal gates G1 to G8, ruff and mypy clean, the suite green on Ubuntu and Windows CI.
+- 9 fixture cases match their expected outcomes, offline and live; a real Claude Code session and a real GitHub PR, sealed and reviewed.
+- The approval card in Slack, answerable only by the author (K3).
 
 ## Limits
 

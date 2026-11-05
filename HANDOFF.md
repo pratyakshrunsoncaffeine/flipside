@@ -124,7 +124,7 @@ uv run pytest tests/test_site.py                                  # links, em da
 node ~/.claude/skills/design-taste-frontend/scripts/inspect.mjs http://127.0.0.1:8765/index.html
 ```
 
-A real PR by hand: README section "Run it on a real PR" (`flip seal`, `flip setup` three steps, `flip agent`, `flip chat`).
+A real PR by hand: `docs/RUNNING.md` section "Run it on a real PR" (`flip seal`, `flip setup` three steps, `flip agent`, `flip chat`).
 Board: `tools/board unread`, `tools/board post "[Aarav's Claude] ..."`; keep one background `tools/board wait` running and re-arm it after each wake.
 
 ## Open questions
