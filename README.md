@@ -27,7 +27,7 @@ make fixtures
 `make replay-offline` plays the CSV-export case end to end on an in-process Switch stand-in and writes `evidence/replay-offline-*.log`.
 `make fixtures` runs all 9 cases and writes `docs/results/fixtures.md`.
 
-Live, on a local Switch server (Switch Console's built-in server at `http://127.0.0.1:52370`):
+Live, on a local Switch server (Switch Console's built-in server, `http://127.0.0.1:52370` on macOS; set `SWITCH_BASE` for another address):
 
 ```
 make killtests
@@ -60,9 +60,12 @@ uv run --frozen python -m flipside.cli replay --fixtures
 The first verify prints `OK`; the forged one prints `PROOF_FAIL` and `$LASTEXITCODE` is 2.
 On Windows, give pytest a short temporary folder if a path is too long: `uv run --frozen pytest --basetemp=C:/t/run1`.
 
-Live, set `FLIP_SWITCH_ENV` to the Console's `switch-core.env` file first, then:
+Live, point the tools at the Console's local server first.
+On Windows the Console writes `%APPDATA%\switchdash\local-switch-server\native\run\switch-core.env`, and its `SERVER_PORT` line gives the port (52115 on our machine, not 52370):
 
 ```
+$env:FLIP_SWITCH_ENV = "$env:APPDATA\switchdash\local-switch-server\native\run\switch-core.env"
+$env:SWITCH_BASE = "http://127.0.0.1:" + ((Select-String -Path $env:FLIP_SWITCH_ENV -Pattern '^SERVER_PORT=(\d+)').Matches[0].Groups[1].Value)
 cd killtests; uv run --frozen python k1_k2.py; uv run --frozen python k4.py; cd ..
 uv run --frozen python -m flipside.cli solo
 uv run --frozen python -m flipside.cli replay
@@ -151,6 +154,7 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 | A real Claude Code session, sealed, connected with `flip setup`, both agents as processes, people via `flip chat`: 2 questions, 8 leaves verified, brief | `evidence/real-session-20261104T224823.log` |
 | The same sealed PR on GitHub, read with `gh api` (title, body, files, check runs): 2 questions, 8 leaves verified, 0 contradictions | `evidence/github-pr-20261105T002706.log` |
 | CI on Ubuntu and Windows | `.github/workflows/ci.yml` |
+| Clean clone on a second machine (Windows, its own Switch server): kill tests, live flow and `flip replay` reproduce the Mac's verdicts and coverage lines | `evidence/replay-switch-csv-export-20261105T015811.log` |
 
 ## Limits
 

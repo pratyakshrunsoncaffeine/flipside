@@ -8,6 +8,10 @@ Windows offline update: 5 Nov 2026, run started 00:22:30 IST, by Pratyaksh's Cod
 Fresh remote clone of main at `44852e64d44893210112fc647e1e32aa4de2193d`, Python 3.12.6, offline gates, Windows, no make.
 The Windows offline counts are pinned to that tested commit; the CI rows below describe the current workflow.
 
+Windows live update: 5 Nov 2026, runs from 01:56 to 02:08 IST, by the lead's agent on Pratyaksh's machine.
+Windows 11 (10.0.26300), Python 3.12.6, git 2.55.0, Switch Console 0.40.1 (switch-core 0.31.0, the same as the Mac) with its own local server at `http://127.0.0.1:52115`.
+Fresh remote clone of main at `b946c5a`, `uv sync --frozen`, then the README's "Without make" live commands with `FLIP_SWITCH_ENV` and `SWITCH_BASE` set.
+
 ## Test counts
 
 | OS | Command | Result |
@@ -26,7 +30,11 @@ The two full test runs took 160.51 and 158.89 seconds, each with 328 passed and 
 Make is absent, so the exact command argv for `uv sync --frozen`, ruff check/format, strict mypy (default and win32), both pytest runs, both G8 outcomes, offline replay and all nine fixtures were run directly and are preserved in the log.
 The G8 original returns `OK` with exit 0; the forged quote returns `PROOF_FAIL` with exit 2.
 Pytest uses separate short temporary directories to avoid Windows path-length failures in the synthetic home/session tests.
-There is no Switch endpoint on this Windows machine; the live replay portion of M4 remains open.
+The live replay portion of M4 then ran on the same Windows machine with its own Switch server (Windows live update above).
+`flip replay` passed with verdicts `OK` 1 and `PROOF_FAIL` 1, the other three refusals in its summary (`switch_refusals` 1, `dropped_requests` 1, `card_403` 1), and the coverage lines of the Mac's run after #17 (`evidence/solo-csv-export-20261105T010413.log`): `auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)` and `reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)`.
+The Mac's replay log (`evidence/replay-switch-csv-export-20261104T210939.log`) predates #17, so it says "withheld" where both newer logs say "not disclosed"; the counts are the same.
+On `b946c5a` both agents exited with code 1 at the end of each live run: on Windows a signal from the parent is `TerminateProcess`, which skipped the agents' shutdown.
+PR #21 stops them through a stop file; `evidence/solo-csv-export-20261105T020718.log` shows both exiting 0 and logging `stopped`.
 
 ## Gates
 
@@ -38,7 +46,11 @@ There is no Switch endpoint on this Windows machine; the live replay portion of 
 | M2: offline flow | `make replay-offline` | `evidence/replay-offline-csv-export-20261104T205047.log` |
 | M3: live flow, twice, four refusals, restart | `make solo` | `evidence/solo-csv-export-20261104T210302.log`, `evidence/solo-csv-export-20261104T210641.log` |
 | M4: live replay on this machine | `make replay` | `evidence/replay-switch-csv-export-20261104T210939.log` |
-| M4 partial: second-machine offline gates, Windows, no make; two full test passes, G8, replay-offline, fixtures 9/9 | Exact `uv` argv in the log | `evidence/m4-20261105T002230.log`; live replay remains open |
+| M4 partial: second-machine offline gates, Windows, no make; two full test passes, G8, replay-offline, fixtures 9/9 | Exact `uv` argv in the log | `evidence/m4-20261105T002230.log` |
+| K1, K2 (9/9) and K4 (6/6) on the second machine, Windows | README "Without make" live block | `evidence/k1k2-20261105T015630.log`, `evidence/k4-20261105T015655.log` |
+| M4: live replay from a clean clone on the second machine, Windows, its own Switch server; same verdicts and coverage lines | `uv run --frozen python -m flipside.cli replay` | `evidence/replay-switch-csv-export-20261105T015811.log` |
+| M3 on the second machine, Windows: live flow, four refusals, both agents killed and restarted | `uv run --frozen python -m flipside.cli solo` | `evidence/solo-csv-export-20261105T015719.log` (on `b946c5a`, agents exit 1 at the end), `evidence/solo-csv-export-20261105T020718.log` (PR #21, agents exit 0) |
+| M2 on the second machine, Windows | `uv run --frozen python -m flipside.cli replay --offline` | `evidence/replay-offline-csv-export-20261105T015907.log` |
 | M3 with each agent in its own process, both killed with SIGKILL mid-flow and restarted | `make solo` | `evidence/solo-csv-export-20261104T212946.log` |
 | All 8 fixture cases live, twice | `make solo-all` | `evidence/solo-all-20261104T214727.log` (8/8, after both fixes below), `evidence/solo-all-20261104T215327.log` (8/8; `daemon.py` gained the reviewer-head default from GitHub while this run was going, which the fixture configs do not use) |
 | All 9 fixture cases live, twice, after SPEC C14 and C15 | `make solo-all` | `evidence/solo-all-20261104T222327.log` (9/9), `evidence/solo-all-20261104T222923.log` (9/9) |
