@@ -1,15 +1,40 @@
 # Flipside
 
-Question the other team's coding agent session in a Switch room, without the author handing it over.
+Prove what your coding agent did, without handing over the session.
 
-When one team's agent writes a pull request and another team owns the code, the context that explains the change lives only in the author's agent session.
+[![Flipside, the 65 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
+
+When one team's agent writes a pull request and another team owns the code, the reason behind each change lives only in the author's agent session.
 Flipside seals that session into the PR as one Merkle root in a commit trailer.
-The owning team's agent asks questions about gaps it finds from public PR data, and requests specific sealed steps.
+The owning team's agent asks about gaps it finds in public PR data and requests specific sealed steps.
 The author approves each exact chunk on a Switch approval card before it leaves their machine.
-The reviewer's agent checks every quote against the sealed root and posts a brief with per-file coverage.
+The reviewer's agent checks every quote against the sealed root and posts a brief that says what was not shown.
 
 Flip the Switch, Track 01 (Business workflow).
 All fixtures are synthetic.
+
+## Try it
+
+```
+uv sync --frozen
+make g8               # offline: a real proof prints OK, a forged one PROOF_FAIL
+make replay-offline   # the whole review on an in-process Switch stand-in
+make demo             # Switch 0.31.0 and Mattermost in Docker; both people act in Mattermost
+```
+
+`make demo` is checked on macOS only; everything else also runs on Windows (see Quick start).
+To watch the recorded run play back step by step, open `site/index.html` in a browser.
+To check a disclosed quote without installing anything, open `site/verify.html`.
+
+## Why not just ask the author
+
+| | Outcome checks (tests, CI, model reviewers) | Asking the author in chat | Flipside |
+|---|---|---|---|
+| Says why the change was made | No: they check the result | Yes, but the answer may itself be agent-written | Yes, with the session step behind the answer |
+| The session stays with the author | Not needed | Yes | Yes: only chunks the author approves leave the machine |
+| A quote can be checked | Not applicable | No | Yes, offline, against a root sealed before review began |
+| Who decides what is shared | Not applicable | The author, unchecked | The author, chunk by chunk, on a card only they can answer |
+| A model decides the outcome | Model reviewers: yes; tests and CI: no | Not applicable | Never: rules, proofs and coverage are deterministic Python |
 
 ## What the reviewer sees
 
@@ -71,8 +96,6 @@ sequenceDiagram
 | Coverage line | Per changed file: sealed steps, disclosed, not disclosed |
 | Page rule | When reviewer-agent posts the brief and mentions the reviewer: every question answered and every requested leaf settled, or a timeout |
 | Gateway | Switch's HTTP API for people (`/gateway/...`); agents use the agent API |
-| K1 to K4 | Kill tests against a real Switch server for the Switch behaviour Flipside relies on: scoped addressing, approval cards only the author can answer, the reviewer-owned room, and the card in Slack |
-| G1 to G8 | Seal gates: proofs, tamper codes, test vectors, determinism on real sessions, and the offline `OK` / `PROOF_FAIL` check |
 
 ## Quick start
 
@@ -133,6 +156,27 @@ cd killtests; uv run --frozen python k1_k2.py; uv run --frozen python k4.py; cd 
 uv run --frozen python -m flipside.cli solo
 uv run --frozen python -m flipside.cli replay
 ```
+
+## The review in Mattermost (`make demo`)
+
+`make demo` needs Docker with Compose v2 and no other accounts or keys.
+It fetches Switch's published Compose file for release 0.31.0, checks it against a pinned digest, and starts switch-core, PostgreSQL and Mattermost bound to 127.0.0.1.
+It creates the Author and the Reviewer as Switch users and as Mattermost users, and each person claims their own Mattermost account in Switch, so Switch can tell the author's messages and button presses from anyone else's.
+Server secrets and the two logins are written to `.flipside-demo/` (mode 0600, git-ignored).
+
+Then it plays the CSV-export case: both people type in the bridged Mattermost channels as themselves, the author approves author-agent's card in Mattermost, the four refusals happen, and both agents are killed and restarted.
+It writes `evidence/demo-mattermost-<case>-<time>.log` with every Switch message id.
+
+```
+make demo                    # up, then run
+flip demo logins             # the two local Mattermost logins, to watch at http://127.0.0.1:8065
+flip demo run --press        # leave the card for you: log in as the Author and press 1. Approve
+make k5                      # who Switch admits in Mattermost (8 checks)
+make demo-down               # remove the containers, their data and .flipside-demo/
+```
+
+Checked on macOS only: Docker Desktop would not install on our Windows test machine (a Windows Insider build).
+Windows runs everything offline and the live flow on Switch Console's local server.
 
 ## Run it on a real PR
 
@@ -207,9 +251,13 @@ Facts verified against switch-core 0.31.0 are in `docs/BUILD.md` section 9.
 ## Status
 
 Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
+K1 to K5 are kill tests of the Switch behaviour Flipside relies on; G1 to G8 are the seal's gates (proofs, tamper codes, test vectors, the offline `OK` / `PROOF_FAIL` check).
 
 | Check | Command |
 |---|---|
+| The whole review in Mattermost on a real Switch 0.31.0 server: both people act as their own Mattermost accounts, the author approves the card in Mattermost, four refusals, both agents killed and restarted (macOS) | `make demo`, `evidence/demo-mattermost-csv-export-20261105T131047.log` |
+| K5 (8/8): in Mattermost, Switch addresses the author's claimed account, refuses the reviewer's and an unclaimed account's tag, takes a card press only from the author, and refuses each person changing the other's room | `make k5`, `evidence/k5-20261105T153338.log` |
+| The author presses Approve by hand in the Mattermost web app | `flip demo run --press`, `evidence/demo-mattermost-card-20261105T1318-after.png` |
 | Kill tests K1, K2 (9/9) and K4 (6/6) on switch-core 0.31.0 | `make killtests` |
 | The live flow in Slack channels (`flip solo --slack --press`): the author approves the card in Slack; 4 refusals, 0 duplicate posts | `evidence/solo-csv-export-20261105T011603.log`, `evidence/solo-csv-export-20261105T011603-slack-card.png` |
 | K3: author-agent's approval card renders in Slack with Approve and Decline buttons; the reviewer gets 403; the author's button press in Slack reaches author-agent (4/4) | `evidence/k3-20261105T005334.log`, `evidence/k3-slack-card-20261105T005334-before.png` |
@@ -233,8 +281,10 @@ Only checks that pass are listed; details and evidence in `VERIFICATION.md`.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
 - Not yet checked: author and reviewer on two machines.
-- `flip setup` creates Switch chats; only `flip solo --slack` opens the rooms as Slack channels.
-  There, author-agent accepts the author's card press from their linked Slack account, but questions are still answered through the gateway: Switch reports a message typed in Slack as `kind: human` with no user id, so the agents would ignore it.
+- `make demo` is checked on macOS only.
+- Typed answers are checked in Mattermost only.
+  In Slack (`flip solo --slack`), author-agent accepts the author's card press from their linked Slack account, but Switch reports a message typed in Slack as `kind: human` with no user id, so answers there go through the gateway.
+- `flip setup` creates Switch chats; `make demo` and `flip solo --slack` open the rooms in a chat app.
 - A leaf's text is the session verbatim, so tool inputs carry the author's absolute paths; the author sees and approves those exact bytes on each card.
-- The local server has no chat window for people without Docker (its bundled Mattermost needs Docker); `make solo` acts for both people through the gateway API.
+- Without Docker there is no chat window for people: `make solo` acts for both people through the gateway API on Switch Console's local server.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.
