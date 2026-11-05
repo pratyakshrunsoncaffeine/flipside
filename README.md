@@ -12,6 +12,7 @@ Each requested chunk goes first to an approval card only the author can answer, 
 The reviewer's agent checks every quote against the sealed root and posts a brief that says what was not shown.
 
 Flip the Switch, Track 01 (Business workflow).
+Judges: [JUDGES.md](JUDGES.md) maps the repo to the four judging criteria.
 All fixtures are synthetic.
 
 ## Try it
