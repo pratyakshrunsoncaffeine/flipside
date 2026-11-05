@@ -19,6 +19,18 @@ from flipside.seal.seal import SealError, latest_session, load_key, seal
 from flipside.seal.verify import EXIT_OK, EXIT_REFUSED, EXIT_USAGE, verify
 
 
+def utf8_stdio() -> None:
+    """Write stdout and stderr as UTF-8 on every OS.
+
+    A redirected stream on Windows uses the locale code page (cp1252), which cannot hold
+    every character in a session quote, room message or path.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8")
+
+
 def _err(msg: str) -> None:
     print(f"flip: {msg}", file=sys.stderr)
 
@@ -170,6 +182,8 @@ def parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    if argv is None:  # a real process, not a test calling main() in-process
+        utf8_stdio()
     args = list(sys.argv[1:] if argv is None else argv)
     if args and args[0] in ROOM_COMMANDS:
         return run_room(args[0], args[1:])

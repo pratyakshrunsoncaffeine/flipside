@@ -41,6 +41,44 @@ def test_every_read_text_is_utf8() -> None:
     assert not bad, bad
 
 
+def test_every_text_mode_open_is_utf8_and_lf() -> None:
+    """``open()`` and ``Path.open()`` in text mode use the locale encoding on Windows (cp1252),
+    so a Switch reply holding a non-cp1252 character crashed the kill-test log, and the rest
+    were written as cp1252 bytes in a UTF-8 evidence file."""
+    bad = []
+    for d in DIRS:
+        for f in sorted((ROOT / d).rglob("*.py")):
+            if f in SKIP:
+                continue
+            for node in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):
+                if not isinstance(node, ast.Call):
+                    continue
+                fn = node.func
+                builtin = isinstance(fn, ast.Name) and fn.id == "open"
+                receiver = ast.unparse(fn.value) if isinstance(fn, ast.Attribute) else ""
+                method = (
+                    isinstance(fn, ast.Attribute)
+                    and fn.attr == "open"
+                    and receiver not in {"os", "webbrowser"}
+                    and not receiver.endswith("opener")  # urllib: opens a request, not a file
+                )
+                if not (builtin or method):
+                    continue
+                args = node.args[1:] if builtin else node.args
+                modes = [a.value for a in args[:1] if isinstance(a, ast.Constant)]
+                modes += [
+                    k.value.value
+                    for k in node.keywords
+                    if k.arg == "mode" and isinstance(k.value, ast.Constant)
+                ]
+                if any("b" in str(m) for m in modes):
+                    continue
+                kw = {k.arg or "" for k in node.keywords}
+                if not {"encoding", "newline"} <= kw:
+                    bad.append(f"{f.relative_to(ROOT)}:{node.lineno}")
+    assert not bad, bad
+
+
 def test_every_os_open_is_binary() -> None:
     """Without ``O_BINARY`` the Windows C runtime writes each LF byte as CR LF, so a random
     32-byte key containing 0x0A was stored longer and then refused (Codex, Windows)."""

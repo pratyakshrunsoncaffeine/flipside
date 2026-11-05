@@ -29,7 +29,7 @@ import urllib.request
 import uuid
 
 from k1_k2 import open_stream, register, users
-from switch_api import BASE, Client, HTTPError, console_env, rid
+from switch_api import BASE, Client, HTTPError, console_env, rid, utf8_stdio
 
 HERE = pathlib.Path(__file__).parent
 EVIDENCE = HERE.parent / "evidence"
@@ -236,4 +236,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio()
     sys.exit(main())

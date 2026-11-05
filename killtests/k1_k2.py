@@ -20,7 +20,7 @@ import threading
 import time
 import uuid
 
-from switch_api import BASE, Client, EventTap, HTTPError, console_env, rid
+from switch_api import BASE, Client, EventTap, HTTPError, console_env, rid, utf8_stdio
 
 HERE = pathlib.Path(__file__).parent
 CREDS = HERE / ".local-users.json"
@@ -33,7 +33,7 @@ results: list[tuple[str, bool, str]] = []
 def log(msg: str) -> None:
     line = f"{dt.datetime.now().isoformat(timespec='seconds')} {msg}"
     print(line)
-    with LOG.open("a") as f:
+    with LOG.open("a", encoding="utf-8", newline="") as f:
         f.write(line + "\n")
 
 
@@ -360,4 +360,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio()
     sys.exit(main())

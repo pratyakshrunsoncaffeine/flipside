@@ -18,7 +18,7 @@ import time
 
 import k1_k2
 from k1_k2 import messages, open_stream, register, text_of, users
-from switch_api import BASE, Client, HTTPError, console_env, rid
+from switch_api import BASE, Client, HTTPError, console_env, rid, utf8_stdio
 
 LOG = k1_k2.EVIDENCE / f"k4-{dt.datetime.now().strftime('%Y%m%dT%H%M%S')}.log"
 k1_k2.LOG = LOG  # helpers imported from k1_k2 log here
@@ -184,4 +184,5 @@ def finish() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio()
     sys.exit(main())
