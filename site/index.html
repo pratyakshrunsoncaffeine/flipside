@@ -11,12 +11,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"><!-- taste-skill-ignore: mono is only for code, ids and hashes -->
 <style>
-/* One motif: Flip's puck, a rounded square whose corner is 30% of its side. It is the hero's giant amber field,
+/* One motif: Flip's puck, a rounded square whose corner is 30% of its side. It is the hero's stage,
    the play button, the film's frame, the four how-it-works fields and the closing mark.
    The film's palette: warm paper, ink, amber for the seal side, dark panels for the product itself. */
 :root {
   color-scheme: light;
-  --paper: #f2f0ec; --ivory: #f8f6f1; --stone: #e6e2da; --ink: #121316; --muted: #4f535a;
+  --paper: #f3f2ef; --ivory: #fafaf8; --stone: #e7e4de; --ink: #121316; --muted: #4f535a;
   --amber: #f2b544; --amber-ink: #8a5a06; --night: #16181b;
   --p-1: #1d2024; --p-2: #262a30; --p-ink: #ebe9e4; --p-ink-2: #9a9ea6;
   --p-green: #3fb950; --p-green-w: rgba(63,185,80,.14); --p-red: #ff7b72; --p-red-w: rgba(255,123,114,.13); --p-amber-w: rgba(242,181,68,.13);
@@ -34,7 +34,7 @@ body { margin: 0; background: var(--paper); color: var(--ink); font: var(--t-bod
 .in { max-width: 1320px; margin: 0 auto; }
 a { color: inherit; }
 h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -.04em; }
-h2 { font-size: var(--t-h2); font-weight: 800; line-height: 1; }
+h2 { font-size: var(--t-h2); font-weight: 650; line-height: 1.02; letter-spacing: -.038em; }
 p { margin: 0; text-wrap: pretty; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 8px; }
@@ -46,8 +46,10 @@ button { font: inherit; color: inherit; }
 .btn svg { width: 16px; height: 16px; }
 .textlink { font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; text-decoration-color: var(--amber); transition: text-underline-offset .2s var(--ease); }
 .textlink:hover { text-underline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
 .js .rise { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .8s var(--ease); }
 .js .rise.on { opacity: 1; transform: none; }
+}
 
 /* Nav: wordmark and four plain links. */
 nav.top { position: relative; z-index: 3; }
@@ -59,19 +61,55 @@ nav.top .links a { text-decoration: none; }
 nav.top .links a:hover { color: var(--amber-ink); }
 
 /* Hero: the puck's amber back, 120vh across, cropped by the right edge. Flip stands on it. */
-.hero { position: relative; min-height: min(100svh, 980px); margin-top: -84px; overflow: hidden; display: grid; align-items: center; }
-.hero .field { position: absolute; width: 120vh; height: 120vh; border-radius: 30%; background: var(--amber); left: 54vw; top: 50%; transform: translateY(-46%); }
-.hero .in { position: relative; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; padding-block: 120px 80px; }
-.hero h1 { font-size: var(--t-display); font-weight: 800; line-height: .92; letter-spacing: -.055em; }
+.hero { position: relative; min-height: min(100svh, 900px); margin-top: -84px; display: grid; align-items: center; }
+.hero .in { position: relative; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(40px, 6vw, 104px); align-items: center; padding-block: 120px 48px; }
+.hero h1 { font-size: clamp(48px, 5.6vw, 84px); font-weight: 650; line-height: 1; letter-spacing: -.042em; }
+.hero h1 .ln { display: block; overflow: hidden; padding-bottom: .1em; margin-bottom: -.1em; }
+.hero h1 .ln > span { display: inline-block; }
 .hero h1 .amb { color: var(--amber-ink); }
-.hero p { margin-top: 36px; font-size: var(--t-body); max-width: 30em; }
-.hero .act { display: flex; flex-wrap: wrap; align-items: center; gap: 22px 28px; margin-top: 40px; }
-.hero .bot { position: relative; aspect-ratio: 1; width: min(100%, 620px); justify-self: end; margin-right: -2vw; }
-.hero .bot button { position: absolute; inset: 0; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
-.hero .bot canvas { display: block; width: 100%; height: 100%; }
+.hero p { margin-top: 28px; max-width: 30em; }
+.hero .act { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; margin-top: 36px; }
+@media (prefers-reduced-motion: no-preference) {
+.js .hero h1 .ln > span { transform: translateY(105%); animation: lineup 1s var(--ease) forwards; }
+.js .hero h1 .ln:nth-child(2) > span { animation-delay: .09s; }
+.js .hero .enter { opacity: 0; transform: translateY(14px); animation: enter .9s var(--ease) forwards; }
+.js .hero .enter.e2 { animation-delay: .32s; } .js .hero .enter.e3 { animation-delay: .42s; }
+.js .hero .stage.enter { transform: scale(.96); animation-delay: .18s; animation-duration: 1.1s; }
+}
+@keyframes lineup { to { transform: none; } }
+@keyframes enter { to { opacity: 1; transform: none; } }
+
+/* The stage is Flip's own shape. One beat of the real run at a time: seal, ask, refuse, approve, verify. */
+.stage { position: relative; aspect-ratio: 1; width: 100%; max-width: 640px; justify-self: end; border-radius: 30%; background: var(--stone); }
+.stage .stagebot { position: absolute; left: 50%; top: 5%; width: 46%; aspect-ratio: 1; translate: -50% 0; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
+.stage .stagebot canvas { display: block; width: 100%; height: 100%; }
+.beats { position: absolute; left: 13%; right: 13%; top: 53%; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.beats li { display: grid; gap: 8px; font-size: 13px; font-weight: 600; color: #8b8780; transition: color .4s ease; }
+.beats li.on, .beats li.done { color: var(--ink); }
+.beats i { display: block; height: 4px; border-radius: 4px; background: #d5d1c9; overflow: hidden; }
+.beats i::after { content: ""; display: block; height: 100%; width: var(--fill, 0%); background: var(--ink); border-radius: inherit; transition: width var(--dur, 0s) linear; }
+.beatcard { position: absolute; left: 13%; right: 13%; top: 62%; min-height: 25%; background: var(--night); color: var(--p-ink); border-radius: 24px; padding: 16px 18px; display: grid; align-content: start; gap: 10px;
+  transition: opacity .28s ease, transform .5s var(--ease); }
+.beatcard.out { opacity: 0; transform: translateY(-8px); transition-duration: .22s; }
+.beatcard.pre { opacity: 0; transform: translateY(14px); transition: none; }
+.beatcard .room { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--p-ink-2); font-weight: 600; background: none; border-radius: 0; overflow: visible; }
+.beatcard .room svg { width: 12px; height: 12px; }
+.beatcard .row { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; }
+.beatcard .av { width: 28px; height: 28px; border-radius: 9px; background: var(--ivory); display: grid; place-items: center; }
+.beatcard .av svg { width: 20px; height: 20px; }
+.beatcard .who { font-size: 14px; font-weight: 650; display: flex; align-items: center; gap: 7px; }
+.beatcard .tag { font-size: 10px; font-weight: 700; letter-spacing: .06em; padding: 2px 5px; border-radius: 5px; background: var(--p-2); color: var(--p-ink-2); }
+.beatcard .say2 { margin-top: 3px; font-size: 14px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.beatcard .say2.bad { color: var(--p-red); } .beatcard .say2.good { color: var(--p-green); }
+.beatcard .btns { display: flex; gap: 8px; margin-left: 38px; }
+.beatcard .btns span { font-size: 13px; font-weight: 650; padding: 7px 12px; border-radius: 9px; background: var(--p-2); color: var(--p-ink-2); transition: background-color .25s ease, color .25s ease, transform .15s ease; }
+.beatcard .btns span.yes { background: var(--p-green); color: #06210d; }
+.beatcard .btns span.yes.press { transform: scale(.94); background: #2ea043; }
+.hcursor { position: absolute; left: 0; top: 0; width: 22px; height: 22px; pointer-events: none; opacity: 0; transition: transform .9s var(--ease), opacity .3s ease; }
+.hcursor.on { opacity: 1; }
 
 /* The connection: where each agent runs, wired through the switch into one room. After the Switch hackathon's own diagram. */
-section.link { padding-block: 160px 0; }
+section.link { padding-block: 112px 0; }
 .link .lead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 48px; align-items: end; margin-bottom: 48px; }
 .link .lead p { max-width: 34em; }
 .diagram { position: relative; display: grid; grid-template-columns: minmax(0, 290px) minmax(110px, 1fr) minmax(0, 2.4fr); align-items: center; }
@@ -229,7 +267,7 @@ section.how { margin-top: 160px; display: grid; grid-template-columns: repeat(4,
 .how .f:nth-child(2) { background: var(--stone); }
 .how .f:nth-child(3) { background: var(--night); color: var(--p-ink); }
 .how .f:nth-child(4) { background: var(--amber); }
-.how h2 { font-size: var(--t-say); font-weight: 800; letter-spacing: -.03em; }
+.how h2 { font-size: var(--t-say); font-weight: 650; letter-spacing: -.025em; }
 .how .f p { font-size: var(--t-say); font-weight: 650; letter-spacing: -.025em; line-height: 1.15; }
 .how .slot { display: grid; place-items: center; }
 .leafcard { width: min(100%, 272px); background: var(--night); color: var(--p-ink); border-radius: 22px; padding: 18px; display: grid; gap: 12px; transition: transform .15s ease; }
@@ -323,11 +361,13 @@ footer { padding-block: 120px 40px; }
   section.link { padding-block: 120px 0; }
   nav.top .links a:not(:first-child) { display: none; }
   .hero { min-height: 0; }
-  .hero .field { width: 130vw; height: 130vw; left: -15vw; top: auto; bottom: -50vw; transform: none; }
-  .hero .in { grid-template-columns: minmax(0, 1fr); padding-block: 130px 0; }
-  .hero h1 { font-size: 15vw; }
-  .hero p { margin-top: 24px; font-size: 17px; }
-  .hero .bot { justify-self: center; width: 86vw; margin: 8px 0 0; }
+  .hero .in { grid-template-columns: minmax(0, 1fr); padding-block: 120px 24px; gap: 48px; }
+  .hero h1 { font-size: clamp(40px, 11.6vw, 72px); }
+  .hero p { margin-top: 22px; font-size: 17px; }
+  .stage { justify-self: center; max-width: 560px; }
+  .beats li { font-size: 0; gap: 0; }
+  .beatcard { left: 9%; right: 9%; top: 60%; padding: 13px 14px; border-radius: 20px; }
+  .beatcard .say2 { font-size: 13px; }
   section.replay { padding-block: 120px 0; }
   .dock { padding: 14px 14px 12px; border-radius: 28px 28px 0 0; }
   .dock .row { grid-template-columns: auto minmax(0, 1fr); }
@@ -372,18 +412,20 @@ footer { padding-block: 120px 40px; }
 </nav>
 
 <header class="hero g" id="top">
-  <div class="field" aria-hidden="true"></div>
   <div class="in">
     <div>
-      <h1 class="rise">Ask the agent <span class="amb">why.</span></h1>
-      <p class="rise">Flipside lets your agent question another team's coding-agent session in a Switch room. The author approves every step that leaves their laptop, and each one is checked against a seal in the commit.</p>
-      <div class="act rise">
+      <h1><span class="ln"><span>Ask the agent</span></span><span class="ln"><span class="amb">why.</span></span></h1>
+      <p class="enter e2">Flipside lets your agent question another team's coding-agent session in a Switch room. The author approves every step that leaves their laptop, and each one is checked against a seal in the commit.</p>
+      <div class="act enter e3">
         <a class="btn" href="#player"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.8v10.4L13 8z" fill="currentColor"/></svg>Watch a real review</a>
         <a class="textlink" href="#film">Play the 65 second film</a>
       </div>
     </div>
-    <div class="bot">
-      <button type="button" id="herobtn" aria-label="Flip the bot to its seal side"><canvas id="hero"></canvas></button>
+    <div class="stage enter" id="stage" data-ui aria-label="One review, beat by beat, from the real run">
+      <button type="button" class="stagebot" id="herobtn" aria-label="Flip the bot to its seal side"><canvas id="hero"></canvas></button>
+      <ol class="beats" id="beats"></ol>
+      <div class="beatcard" id="beatcard" aria-live="polite"></div>
+      <svg class="hcursor" id="hcursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8-6.2 1.6L10 19z" fill="#121316" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
     </div>
   </div>
 </header>
@@ -656,21 +698,86 @@ footer { padding-block: 120px 40px; }
   }), { threshold: 0.12 });
   document.querySelectorAll(".rise").forEach((el) => io.observe(el));
 
-  // Hero: Flip's eyes follow the pointer; a click shows its seal side, then it turns back pleased.
-  const hero = mount("hero", { fit: 0.46 });
-  if (hero) {
-    let back = null;
-    const flipOnce = () => {
-      clearTimeout(back);
-      hero.set({ side: 1, mood: "neutral" });
-      back = setTimeout(() => { hero.set({ side: 0, mood: "happy", hop: true }); setTimeout(() => hero.set({ mood: "neutral" }), 1300); }, 1700);
+  // Hero: one beat of the real run at a time, with Flip reacting. Clicking Flip flips it.
+  const hero = mount("hero", { fit: 0.62 });
+  {
+  const LOCK = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+  const HFACE = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3.5" width="18" height="15" rx="5.5" fill="#0d0e11"/><rect x="6.6" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/><rect x="13" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/></svg>';
+  const runSteps = window.RUN.chapters.flatMap((c) => c.steps);
+  const find = (k) => runSteps.find((x) => x.kind === k);
+  const BEATS = [
+    { label: "Seal", s: find("seal"), flip: { side: 1, mood: "neutral" } },
+    { label: "Ask", s: find("request"), flip: { side: 0, mood: "neutral", look: [0, -0.6] } },
+    { label: "Refuse", s: find("switch-refusal"), tone: "bad", flip: { side: 0, mood: "wary", shake: true } },
+    { label: "Approve", s: find("card"), card: true, flip: { side: 0, mood: "squint", look: [0.4, -0.7] } },
+    { label: "Verify", s: find("verdict-ok"), tone: "good", flip: { side: 1, mood: "happy", hop: true } },
+  ].filter((b) => b.s);
+  const beatsEl = $("beats"), card = $("beatcard"), cur = $("hcursor"), stage = $("stage");
+  beatsEl.innerHTML = BEATS.map((b) => `<li><i></i>${b.label}</li>`).join("");
+  const lis = [...beatsEl.children];
+  const BEAT_MS = 3200;
+  const cardHTML = (b) => {
+    const s = b.s, priv = s.room === "private";
+    const who = s.who.replace("flipside-", "");
+    const room = `<div class="room">${priv ? LOCK : "#"} ${priv ? `pr-${window.RUN.pr}-author` : `pr-${window.RUN.pr}`}</div>`;
+    const btns = b.card ? '<div class="btns"><span class="yes">1. Approve</span><span>2. Decline</span></div>' : "";
+    return `${room}<div class="row"><div class="av">${HFACE}</div><div><div class="who">${esc(who)}<span class="tag">AGENT</span></div><div class="say2 ${b.tone || ""}">${esc(s.text)}</div></div></div>${btns}`;
+  };
+  let bi = -1, timer = null, live = false, inView = false;
+  const timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  function hShow(i, animate) {
+    const b = BEATS[i];
+    lis.forEach((li, k) => {
+      li.classList.toggle("on", k === i); li.classList.toggle("done", k < i);
+      const bar = li.firstElementChild;
+      bar.style.setProperty("--dur", "0s"); bar.style.setProperty("--fill", k < i ? "100%" : "0%");
+    });
+    if (animate) {
+      requestAnimationFrame(() => requestAnimationFrame(() => { const bar = lis[i].firstElementChild; bar.style.setProperty("--dur", BEAT_MS + "ms"); bar.style.setProperty("--fill", "100%"); }));
+    } else lis[i].firstElementChild.style.setProperty("--fill", "100%");
+    const swap = () => {
+      card.innerHTML = cardHTML(b);
+      if (!animate) return;
+      card.classList.remove("out"); card.classList.add("pre");
+      requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove("pre")));
     };
-    $("herobtn").addEventListener("click", flipOnce);
+    if (animate && card.innerHTML) { card.classList.add("out"); later(swap, 220); } else swap();
+    if (hero) hero.set({ look: [0, 0], ...b.flip });
+    cur.classList.remove("on");
+    if (b.card && animate) {
+      const sr = stage.getBoundingClientRect();
+      cur.style.transition = "none"; cur.style.transform = `translate(${sr.width * 0.86}px, ${sr.height * 0.98}px)`;
+      later(() => {
+        const yes = card.querySelector(".yes"); if (!yes) return;
+        const r = yes.getBoundingClientRect();
+        cur.style.transition = ""; cur.classList.add("on");
+        cur.style.transform = `translate(${r.left - sr.left + r.width * 0.55}px, ${r.top - sr.top + r.height * 0.45}px)`;
+      }, 700);
+      later(() => { const yes = card.querySelector(".yes"); if (yes) yes.classList.add("press"); if (hero) hero.set({ mood: "happy", hop: true }); }, 1750);
+      later(() => { const yes = card.querySelector(".yes"); if (yes) yes.classList.remove("press"); cur.classList.remove("on"); }, 2500);
+    }
+  }
+  function hTick() { bi = (bi + 1) % BEATS.length; hShow(bi, true); timer = setTimeout(hTick, BEAT_MS); }
+  function hPlay() { if (live || reduce || !BEATS.length) return; live = true; hTick(); }
+  function hStop() { live = false; clearTimeout(timer); timers.splice(0).forEach(clearTimeout); }
+  if (BEATS.length) {
+    if (reduce) hShow(BEATS.length - 1, false);
+    else {
+      hShow(0, false); bi = 0;
+      new IntersectionObserver(([e]) => { inView = e.isIntersecting; if (inView && !document.hidden) { if (!live) { live = true; timer = setTimeout(hTick, BEAT_MS); } } else hStop(); }, { threshold: 0.35 }).observe(stage);
+      document.addEventListener("visibilitychange", () => { if (document.hidden) hStop(); else if (inView) hPlay(); });
+    }
+  }
+  if (hero) {
+    $("herobtn").addEventListener("click", () => { hero.set({ side: 1, mood: "happy", hop: true }); setTimeout(() => hero.set({ side: 0, mood: "neutral" }), 1400); });
     addEventListener("pointermove", (e) => {
+      if (!live) return;
       const r = $("hero").getBoundingClientRect();
+      if (Math.abs(e.clientY - r.top) > innerHeight) return;
       hero.set({ look: [clamp((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2), -1, 1), clamp(-(e.clientY - (r.top + r.height / 2)) / (innerHeight / 2), -1, 1)] });
     }, { passive: true });
-    if (!reduce) setTimeout(flipOnce, 1200);
+  }
   }
   const endbot = mount("endbot", { fit: 0.74 });
   if (endbot) new IntersectionObserver(([e]) => { if (e.isIntersecting) { endbot.set({ mood: "happy", hop: true }); setTimeout(() => endbot.set({ mood: "neutral" }), 1500); } }, { threshold: 0.8 }).observe($("endbot"));
