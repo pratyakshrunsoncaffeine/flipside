@@ -5,7 +5,7 @@ UV_RUN ?= uv run --frozen
 help: ## List targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "%-12s %s\n", $$1, $$2}'
 
-judge: ## Check every README claim offline in about 10 s: 11 checks, PASS/FAIL table, writes evidence/judge-*
+judge: ## Check every README claim offline in under a minute: 11 checks, PASS/FAIL table, writes evidence/judge-*
 	$(PY) -m flipside.judge
 
 judge-live: ## judge, plus the review, K5 and all 9 cases on real Switch 0.31.0 + Mattermost in Docker (~3 min)
