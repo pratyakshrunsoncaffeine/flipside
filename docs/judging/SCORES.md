@@ -53,3 +53,20 @@ Note: Claude ran with cwd in the flipside repo and guessed X was ours; it says i
 
 Blind ranking of all four, anonymised: Claude W(LedgerRoom) Y(Preflight) X(Flipside) Z(Canary); Codex W Y Z X.
 Flipside per criterion in the ranking: Switch 9/9, Technical 3/2, Creativity 9/9 (highest of the four for both), Presentation 6/6.
+
+## Final README, blind (5 Nov 2026, 10:45 to 11:00 IST)
+
+Same neutral prompt as the blind round (`blind/head.txt`, the README as the only material, `blind/single-tail.txt`).
+Judges were fresh Claude Opus 5.5 subagents that read only the prompt file.
+Prompts: `blind/final-prompt-a.txt` (README at `5ec12a4`, after #22), `blind/final-prompt-b.txt` (this PR: walkthrough, diagram, terms).
+Outputs: `blind/claude-final-a1.out`, `a2`, `b1`, `b2`.
+
+| README | Run | Switch | Technical | Creativity | Presentation | Total | Shortlist |
+|---|---|---|---|---|---|---|---|
+| a (after #22) | 1 | 8 | 8 | 7 | 6 | 7.4 | yes |
+| a (after #22) | 2 | 8 | 9 | 7 | 6 | 7.6 | yes |
+| b (walkthrough, diagram, terms) | 1 | 8 | 9 | 7 | 7 | 7.8 | yes |
+| b (walkthrough, diagram, terms) | 2 | 8 | 8 | 7 | 7 | 7.6 | yes |
+
+Shared deductions on b: the offline stand-in makes Switch look replaceable; people cannot answer in Slack (no user id on Slack-typed messages); no evidence that teams want it; author and reviewer on two machines not run; jargon still dense.
+After b, the README gained the public demand evidence and a paragraph on why the offline stand-in does not replace Switch; not judged yet.

@@ -1,0 +1,16 @@
+Use of Switch: 8/10. Switch enforces two of the four refusals (the scoped addressing policy and the 403 on approval cards), and it also carries the rooms, the event stream and the uploads. However, an offline Switch stand-in reproduces the flow, which suggests Switch acts partly as a replaceable transport.
+
+Technical execution: 8/10. The evidence is strong: kill tests, SIGKILL restarts, CI on Ubuntu and Windows, a clean clone reproduced on a second machine, and exact commands with log ids. Setup for a real PR is heavy, and the two-machine case is not yet checked.
+
+Creativity and impact: 7/10. Sealing an agent session with a Merkle root and disclosing it one approved chunk at a time is a fresh idea. The cross-team PR review problem is real but narrow, and the material shows no user beyond synthetic fixtures.
+
+Presentation and documentation: 6/10. The README is precise and honest about its limits. It is also dense with undefined jargon (leaves, page rule, G1 to G8, K1 to K4), has no diagram and gives no plain one-paragraph walkthrough. I could not see the video.
+
+Shortlist: yes. It is one of the few entries where Switch's permission model does real security work, and it backs every claim with evidence.
+
+Top three weaknesses:
+1. A newcomer cannot follow it. Terms and test names go unexplained, so a judge has to decode the README before seeing the value.
+2. People are not first-class in chat. Switch reports Slack-typed answers with no user id, so people answer through the gateway or `flip chat`. Rooms open as Slack channels only in `solo --slack` mode, and the bundled Mattermost needs Docker. The "team-chat" story is weaker than the pitch.
+3. It is unproven as a real two-party workflow. Author and reviewer have not been run on separate machines. Onboarding needs creds files with passwords and a manual exchange of join lines. All evidence comes from synthetic or self-run sessions.
+
+TOTAL: 7.4
