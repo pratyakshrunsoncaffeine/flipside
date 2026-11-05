@@ -134,13 +134,16 @@ Facts verified against switch-core 0.31.0 are in `docs/BUILD.md` section 9.
 
 ## Status
 
-Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/REFERENCE.md#status) and the evidence in `VERIFICATION.md`.
+Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/REFERENCE.md#status) and every log in [VERIFICATION.md](VERIFICATION.md).
 
-- The whole review on real Switch 0.31.0 in Mattermost, four refusals, both agents killed and restarted (`make demo`, macOS).
-- K5 8/8: Switch admits only the author's claimed Mattermost account, in the rooms each owner controls (`make k5`).
-- Seal gates G1 to G8, ruff and mypy clean, the suite green on Ubuntu and Windows CI.
-- 9 fixture cases match their expected outcomes, offline and live; a real Claude Code session and a real GitHub PR, sealed and reviewed.
-- The approval card in Slack, answerable only by the author (K3).
+| Check | Command | Evidence |
+|---|---|---|
+| Seal gates G1 to G8: proofs, tamper codes, vectors, offline `OK` and `PROOF_FAIL` | `make lint test`, `make g8` | [`evidence/m1-20261104T201854.log`](evidence/m1-20261104T201854.log) |
+| Kill tests K1 to K5 on a real Switch 0.31.0 server: scoped addressing, author-only cards, room ownership, the card in Slack, who Switch admits in Mattermost | `make killtests`, `make k3`, `make k5` | [`k1k2`](evidence/k1k2-20261104T195815.log), [`k3`](evidence/k3-20261105T005334.log), [`k4`](evidence/k4-20261104T202125.log), [`k5`](evidence/k5-20261105T153338.log) |
+| The whole review in Mattermost on real Switch: both people as their own accounts, the author approves the card there, four refusals, both agents killed and restarted (macOS) | `make demo` | [`evidence/demo-mattermost-csv-export-20261105T131047.log`](evidence/demo-mattermost-csv-export-20261105T131047.log) |
+| Offline end to end with the four refusals, and all 9 fixture cases offline and live | `make replay-offline`, `make fixtures`, `make solo-all` | [`replay-offline`](evidence/replay-offline-csv-export-20261104T205047.log), [`fixtures.md`](docs/results/fixtures.md), [`solo-all`](evidence/solo-all-20261104T230152.log) |
+| A clean clone on a second machine (Windows, its own Switch server) reproduces the gates, kill tests, live flow and verdicts | the PowerShell block in [docs/RUNNING.md](docs/RUNNING.md#without-make-windows-powershell) | [`m4`](evidence/m4-20261105T002230.log), [`replay-switch`](evidence/replay-switch-csv-export-20261105T015811.log) |
+| `site/verify.html` gives `flip verify`'s verdict on every pinned vector, in the browser with no install | `FLIP_REQUIRE_NODE=1 uv run pytest tests/blind/test_browser_verify.py` | [VERIFICATION.md](VERIFICATION.md) |
 
 ## Limits
 
