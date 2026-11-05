@@ -13,4 +13,7 @@ M2 reviewer side: host pratyakshpc, Windows, tailnet 100.123.209.87; Switch http
 17:30:21   coverage report.py: 4 sealed steps, 1 disclosed, 3 not disclosed (steps 1, 2, 4); 4 by Bash mention
 17:30:21   coverage tests/test_report.py: 4 sealed steps, 1 disclosed, 3 not disclosed (steps 1, 2, 4); 4 by Bash mention
 17:32:13 flipside-reviewer-agent step failed, retrying: <urlopen error [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond>
-17:53:57 flipside-reviewer-agent stopped by operator (pid 14208): run complete, refusal 2 covered by K2/K5 per board #6657870433
+17:53:57 [operator, not agent output] stopped flipside-reviewer-agent (pid 14208): run complete, refusal 2 covered by K2/K5 per board #6657870433
+--- post-run provenance, added 2026-11-05T18:20:07+05:30 on pratyakshpc from this host's clone of kadoo69/flipside-sandbox (the agent output above is unchanged; the 17:53:57 line is the operator's)
+git -C flipside-sandbox rev-parse pr2: 29eb6c360da17b353ab3406d406a1c3aa64fb5e6
+git -C flipside-sandbox log -1 --format=%(trailers) pr2: Flipside-Seal: v1 root=7b9cbb88dc741338e6b27993dbddb2d82a19e44c1cfe4184cea5db24e9385a2b n=34 manifest=89719d3af13d198067bb3f71a84dc19f0c643f31c8e9324aac8534ca0408ed05
