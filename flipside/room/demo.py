@@ -24,6 +24,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import secrets
 import subprocess
 import sys
@@ -180,6 +181,29 @@ def wait_ready(conf: dict[str, str], timeout: float = 600.0) -> str:
     raise DemoError(f"Switch or Mattermost not ready after {timeout:.0f} s: {last}")
 
 
+_REVIEW_ROOM = re.compile(r"^pr-\d+(-author)?$")
+
+
+def clear_rooms(conf: dict[str, str]) -> int:
+    """Delete the review rooms earlier runs left on the demo server, archiving their
+    Mattermost channels, so each run starts with a clean sidebar. Returns how many."""
+    adm = admin(conf)
+    gone = 0
+    for r in adm.get("/gateway/rooms") or []:
+        if r.get("bridge_type") == "mattermost" and _REVIEW_ROOM.match(str(r.get("name"))):
+            adm.request("DELETE", f"/gateway/rooms/{r['id']}?retire_channel=true")
+            gone += 1
+    return gone
+
+
+def quiet_greetings(conf: dict[str, str], bridge: str) -> None:
+    """Turn off Switch's generic "mention me anytime" post when an agent joins a channel;
+    each Flipside room says what it is for in its own description."""
+    admin(conf).request(
+        "PATCH", f"/gateway/collaborations/{bridge}", {"agent_greetings_enabled": False}
+    )
+
+
 def mm_admin(conf: dict[str, str]) -> MM:
     return MM(MM_BASE).login(conf["MATTERMOST_ADMIN_USER"], conf["MATTERMOST_ADMIN_PASSWORD"])
 
@@ -248,6 +272,7 @@ def up() -> int:
     compose("up", "-d", "--quiet-pull")
     conf = _read_conf(DIR / "stack.conf")
     bridge = wait_ready(conf)
+    quiet_greetings(conf, bridge)
     env()
     make_people(conf, bridge)
     print(f"ready: Switch {BASE}, Mattermost {MM_BASE} (team {TEAM}); next: flip demo run")
@@ -285,10 +310,11 @@ def run(case: Path, restarts: bool, press: bool, pace: float) -> int:
         raise DemoError("no demo stack; run `flip demo up` first")
     env()
     conf = _read_conf(DIR / "stack.conf")
-    wait_ready(conf, timeout=60)
+    quiet_greetings(conf, wait_ready(conf, timeout=60))
+    print(f"cleared {clear_rooms(conf)} review rooms from earlier runs")
     from flipside.room import solo
 
-    people = None if press else people_for(conf)
+    people = people_for(conf)
     ok, _ = solo.run_case(
         case, restarts, "mattermost", press, pace, people=people, prefix="demo-mattermost"
     )

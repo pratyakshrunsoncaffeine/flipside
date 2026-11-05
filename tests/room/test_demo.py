@@ -100,3 +100,46 @@ def test_each_rooms_channel_is_read_by_the_person_who_created_it() -> None:
         author_h=_Owner({"r-private": "ch-private"}),
     )
     assert demo.channels(live) == {"r-shared": "ch-shared", "r-private": "ch-private"}
+
+
+class _Admin:
+    """The demo server's admin: lists rooms, records deletes and connection changes."""
+
+    def __init__(self, rooms: list[dict[str, Any]]) -> None:
+        self.rooms = rooms
+        self.calls: list[tuple[str, str, Any]] = []
+
+    def get(self, path: str) -> Any:
+        return self.rooms if path == "/gateway/rooms" else []
+
+    def request(self, method: str, path: str, body: Any = None) -> Any:
+        self.calls.append((method, path, body))
+        return None
+
+
+def test_a_run_clears_the_previous_runs_review_rooms_and_their_channels(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rooms: list[dict[str, Any]] = [
+        {"id": "r1", "name": "pr-142", "bridge_type": "mattermost"},
+        {"id": "r2", "name": "pr-142-author", "bridge_type": "mattermost"},
+        {"id": "r3", "name": "town-square", "bridge_type": "mattermost"},
+        {"id": "r4", "name": "pr-142", "bridge_type": None},  # a Switch chat, not the demo's
+        {"id": "r5", "name": "pr-142-notes", "bridge_type": "mattermost"},
+    ]
+    adm = _Admin(rooms)
+    monkeypatch.setattr(demo, "admin", lambda _conf: adm)
+    assert demo.clear_rooms({}) == 2
+    assert adm.calls == [
+        ("DELETE", "/gateway/rooms/r1?retire_channel=true", None),
+        ("DELETE", "/gateway/rooms/r2?retire_channel=true", None),
+    ]
+
+
+def test_switchs_generic_agent_greetings_are_turned_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    adm = _Admin([])
+    monkeypatch.setattr(demo, "admin", lambda _conf: adm)
+    demo.quiet_greetings({}, "b-1")
+    assert adm.calls == [
+        ("PATCH", "/gateway/collaborations/b-1", {"agent_greetings_enabled": False})
+    ]
