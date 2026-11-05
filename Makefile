@@ -9,8 +9,8 @@ test: ## Run the test suite
 	$(UV_RUN) pytest
 
 lint: ## ruff and mypy
-	$(UV_RUN) ruff check flipside tests docs/seal/example.py examples fixtures
-	$(UV_RUN) ruff format --check flipside tests docs/seal/example.py examples fixtures
+	$(UV_RUN) ruff check flipside tests docs/seal/example.py examples fixtures killtests demo
+	$(UV_RUN) ruff format --check flipside tests docs/seal/example.py examples fixtures killtests demo
 	$(UV_RUN) mypy
 	$(UV_RUN) mypy --platform win32
 
