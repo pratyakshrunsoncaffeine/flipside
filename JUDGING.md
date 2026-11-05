@@ -10,7 +10,7 @@ After `git clone` and `uv sync --frozen`, nothing here needs keys, accounts or n
 |---|---|---|---|
 | 1 minute | A browser | Watch the film linked at the top of the README; open `site/verify.html`, press "Check the sample step", then "Check an edited copy" | One step checks out; the edited quote fails |
 | 3 minutes | Git, Python 3.12, [uv](https://docs.astral.sh/uv/) | `uv sync --frozen` then `make judge` | 11 checks, `RESULT PASS 11/11` in under a minute |
-| 10 minutes | The above plus Docker with Compose v2 | `make judge-live`, then `make demo-down` | 14 checks in about 3 minutes: the review, K5 and all 9 labelled cases run now on pinned Switch 0.31.0 and Mattermost |
+| 10 minutes | The above plus Docker with Compose v2 | `make judge-live`, then `make demo-down` | 14 checks in about 5 minutes on a cold run: the review, K5 and all 9 labelled cases run now on pinned Switch 0.31.0 and Mattermost |
 | 20 minutes | The above | `make demo`, then log in to Mattermost at the printed address as the author and press Approve; log in as the reviewer and try | The card answers only the author; Switch refuses the reviewer |
 
 Windows without `make`: `uv run python -m flipside.judge` (add `--live` for the Docker path).
