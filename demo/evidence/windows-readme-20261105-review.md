@@ -39,6 +39,6 @@ File existence does not by itself prove every semantic claim.
 Historical make/macOS/live commands in VERIFICATION were reviewed as scoped historical records, not re-executed as Windows offline commands.
 
 A fresh-context Codex judge read only `head.txt`, this source's README and `single-tail.txt` before seeing any implementation.
-The result is [codex-final-20261105T1035.out](../../docs/judging/blind/codex-final-20261105T1035.out): Switch 9, Technical 8, Creativity 9, Presentation 8; weighted TOTAL 8.6; shortlist yes.
+The result is [codex-final-20261105T1035.out](https://github.com/pratyakshrunsoncaffeine/gateplus/blob/team-notes/docs/judging/blind/codex-final-20261105T1035.out): Switch 9, Technical 8, Creativity 9, Presentation 8; weighted TOTAL 8.6; shortlist yes.
 Top deductions: no author/reviewer split across machines, awkward human participation through the gateway, and narrow session/rule coverage with the acknowledged proof limits.
 This is one written-material assessment, not a code or video review.

@@ -20,7 +20,7 @@ Deliverables: public repo, README, demo video.
 
 ## 2. Why this shape wins (from judging so far)
 
-- Blind judging on the official rubric (Claude and Codex, `docs/judging/SCORES.md`): Flipside scores 9/10 on Use of Switch and 9/10 on Creativity, the highest of four entries, and 2 to 3 on Technical because it is not built.
+- Blind judging on the official rubric (Claude and Codex; `docs/judging/SCORES.md` on the `team-notes` branch): Flipside scores 9/10 on Use of Switch and 9/10 on Creativity, the highest of four entries, and 2 to 3 on Technical because it is not built.
   Built to the level of the top competitor, the weighted total is about 8.5 to 9.
 - Every remaining point is in Technical execution and Presentation.
   So the build optimises for things a judge can run and check, not for features.
@@ -124,7 +124,7 @@ flipside/                       repo root
   tests/                        unit + offline end to end
   killtests/                    K1, K2, K4 (pass), K3
   evidence/                     dated logs from real runs
-  docs/                         PITCH.md, BUILD.md, seal/SPEC.md, judging/
+  docs/                         PITCH.md, BUILD.md, seal/SPEC.md
 ```
 
 The seal lane never imports from `room/`.
@@ -342,7 +342,7 @@ Gates:
 - Demo video of at most 2.5 minutes, published as a GitHub release asset with its SHA-256 in `VERIFICATION.md`.
 - README: what it is, the four refusals, the one-command offline check, `make replay`, how Switch is used (with file references), limits, status table with only what passes.
 - `docs/PITCH.md` updated to this design (section 13).
-- Judge prompt run once more on the final README (`docs/judging/blind/`), scores logged.
+- Judge prompt run once more on the final README (`docs/judging/blind/` on the `team-notes` branch), scores logged.
 - Submitted before the deadline, 7 Nov 23:59 IST.
 
 ### Kill rules

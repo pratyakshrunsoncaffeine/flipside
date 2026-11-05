@@ -1,6 +1,0 @@
-
-Then:
-1. Score each criterion 1-10 with a one-line reason.
-2. Shortlist: yes or no, one sentence.
-3. The three weaknesses that cost the most points.
-Plain text, under 300 words. End with exactly one line: TOTAL: <weighted total out of 10, one decimal>
