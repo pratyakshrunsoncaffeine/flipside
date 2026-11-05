@@ -179,3 +179,20 @@ def test_down_removes_the_config_once_docker_has_removed_the_stack(
     )
     assert demo.down() == 0
     assert not any(f.exists() for f in files)
+
+
+def test_down_removes_the_stack_by_project_name_when_the_config_is_gone(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Found 5 Nov 20:55 IST: with .flipside-demo/ missing, down printed "removed" and ran
+    nothing, leaving Switch, Mattermost and Postgres running."""
+    calls: list[list[str]] = []
+
+    def run(cmd: list[str], **kw: object) -> subprocess.CompletedProcess[str]:
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr(demo, "DIR", tmp_path / "missing")
+    monkeypatch.setattr(subprocess, "run", run)
+    assert demo.down() == 0
+    assert calls == [["docker", "compose", "-p", demo.PROJECT, "down", "-v", "--remove-orphans"]]
