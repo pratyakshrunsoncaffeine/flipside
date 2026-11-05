@@ -133,6 +133,8 @@ def main() -> int:
             "agent_ids": [a_agent],
             "bridge_id": bid,
             "channel_type": "channel_private",
+            "read_visibility": "private",  # Switch's default for /gateway/rooms is public
+            "write_visibility": "private",
         },
     )
     room_id = room.get("id") or room.get("room_id")

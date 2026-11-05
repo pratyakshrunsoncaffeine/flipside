@@ -2,9 +2,11 @@
 
 import hashlib
 import json
+import os
 import stat
 import urllib.request
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -15,7 +17,8 @@ from flipside.room import demo
 def test_server_config_is_private_complete_and_written_once(tmp_path: Path) -> None:
     path = tmp_path / "stack.conf"
     demo.write_conf(path)
-    assert stat.S_IMODE(path.stat().st_mode) == 0o600
+    if os.name == "posix":  # Windows has no owner-only mode bits
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600
     conf = demo._read_conf(path)
     for key in ("SWITCH_VERSION", "SECRET_KEYS", "GATEWAY_ADMIN_PASSWORD", "MATTERMOST_TEAM_NAME"):
         assert conf[key]
@@ -74,3 +77,26 @@ def test_a_matching_compose_file_is_accepted(
     _fake_registry(monkeypatch, manifest, blob)
     demo.fetch_compose(tmp_path / "compose.yml")
     assert (tmp_path / "compose.yml").read_bytes() == blob
+
+
+class _Owner:
+    """A person's gateway handle that may read only the rooms they created."""
+
+    def __init__(self, rooms: dict[str, str]) -> None:
+        self.rooms = rooms
+
+    def get(self, path: str) -> Any:
+        room = path.rsplit("/", 1)[1]
+        if room not in self.rooms:
+            raise PermissionError("Not authorized to read this resource")
+        return {"external_channel_id": self.rooms[room]}
+
+
+def test_each_rooms_channel_is_read_by_the_person_who_created_it() -> None:
+    cast = SimpleNamespace(shared="r-shared", private="r-private")
+    live = SimpleNamespace(
+        cast=cast,
+        reviewer_h=_Owner({"r-shared": "ch-shared"}),
+        author_h=_Owner({"r-private": "ch-private"}),
+    )
+    assert demo.channels(live) == {"r-shared": "ch-shared", "r-private": "ch-private"}

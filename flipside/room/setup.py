@@ -99,7 +99,9 @@ def open_room(
 ) -> str:
     """A new room with one agent: a Switch chat, or with ``bridge`` a private channel in that
     messaging app (Slack), whose topic is ``greeting``. The creator joins the bridged room as
-    a member, since the gateway refuses reads of it otherwise (403 NOT_A_MEMBER)."""
+    a member, since the gateway refuses reads of it otherwise (403 NOT_A_MEMBER). The room is
+    private to its creator: Switch makes a /gateway/rooms room public to the workspace by
+    default, which would let anyone rename it or rewrite its instructions (spike S5)."""
     if bridge is None:
         return open_chat(user, name, agent_id, greeting)
     body = {
@@ -108,6 +110,8 @@ def open_room(
         "agent_ids": [agent_id],
         "bridge_id": bridge,
         "channel_type": "channel_private",
+        "read_visibility": "private",
+        "write_visibility": "private",
     }
     room = room_id(user.post("/gateway/rooms", body))
     user.post(f"/gateway/chats/{room}/members", {"userId": user.get("/gateway/auth/me")["id"]})

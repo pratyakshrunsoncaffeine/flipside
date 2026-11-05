@@ -254,6 +254,14 @@ def up() -> int:
     return 0
 
 
+def channels(live: Any) -> dict[str, str]:
+    """Each room's Mattermost channel id, read by the person who created the room: a bridged
+    room is private to its creator, so the other person may not read it (spike S5)."""
+    c = live.cast
+    owner = {c.shared: live.reviewer_h, c.private: live.author_h}
+    return {r: str(h.get(f"/gateway/rooms/{r}")["external_channel_id"]) for r, h in owner.items()}
+
+
 def people_for(conf: dict[str, str]) -> Any:
     """The ``people`` factory for ``run_switch``: both people act in Mattermost."""
     from flipside.room.solo import Live
@@ -263,14 +271,11 @@ def people_for(conf: dict[str, str]) -> Any:
     def build(live: Live, log: Log) -> Humans:
         c = live.cast
         mm = {r: MM(MM_BASE).login(creds[r]["mm_user"], creds[r]["mm_password"]) for r in ROLES}
-        channels = {
-            room: str(live.author_h.get(f"/gateway/rooms/{room}")["external_channel_id"])
-            for room in (c.shared, c.private)
-        }
+        chans = channels(live)
         ids = {"author": c.a_agent.split(":", 1)[1], "reviewer": c.r_agent.split(":", 1)[1]}
         gateway = {"author": live.author_h, "reviewer": live.reviewer_h}
-        log(f"Mattermost channels: shared {channels[c.shared]}, private {channels[c.private]}")
-        return MattermostHumans(mm, channels, gateway, ids, c.private, log)
+        log(f"Mattermost channels: shared {chans[c.shared]}, private {chans[c.private]}")
+        return MattermostHumans(mm, chans, gateway, ids, c.private, log)
 
     return build
 

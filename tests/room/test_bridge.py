@@ -60,6 +60,8 @@ def test_a_bridged_room_is_a_private_channel_and_its_creator_joins_it() -> None:
             "agent_ids": ["agent-r"],
             "bridge_id": "b-1",
             "channel_type": "channel_private",
+            "read_visibility": "private",
+            "write_visibility": "private",
         },
     )
     # Without this the creator's gateway reads of the room return 403 NOT_A_MEMBER.
@@ -103,3 +105,13 @@ def test_bridged_ids_are_the_ids_switch_reports_for_a_slack_press() -> None:
     # Seen live in K3: answeredBy "@switch-slack-<connection>-<username>:localhost".
     h = Recorder(identities=[{"bridge_id": "b-1", "external_username": "priya"}])
     assert setup.bridged_ids(h, "b-1") == ["@switch-slack-b-1-priya"]
+
+
+def test_a_bridged_room_is_private_to_its_creator() -> None:
+    """Switch 0.31.0 makes a room created through /gateway/rooms public to the workspace
+    unless asked otherwise, so the reviewer could rename the author's private room or rewrite
+    its instructions without being in it (spike S5). A chat is private by default."""
+    h = Recorder()
+    setup.open_room(h, "pr-7-author", "agent-a", "hello", bridge="b-1")
+    [body] = [b for m, p, b in h.calls if (m, p) == ("POST", "/gateway/rooms")]
+    assert body["read_visibility"] == "private" and body["write_visibility"] == "private"
