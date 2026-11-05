@@ -116,6 +116,25 @@ The six steps in detail are in [docs/REFERENCE.md](docs/REFERENCE.md#how-it-work
 No LLM runs anywhere in `flipside/`.
 Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python on the standard library.
 
+## Connected agents and channel setup
+
+| Agent | Owner | Runs | Takes instructions from |
+|---|---|---|---|
+| `flipside-author-agent` | the PR author | `flip agent author`, on the author's machine next to the sealed session | its owner anywhere; `flipside-reviewer-agent` in `#pr-<n>` only |
+| `flipside-reviewer-agent` | the owning team's reviewer | `flip agent reviewer`, on the reviewer's machine | its owner; `flipside-author-agent` and the room's people in `#pr-<n>` only |
+
+Both are custom agents on Switch's agent protocol (events in, messages and cards out), written in deterministic Python with no model.
+The AI agent in the story is the author's coding agent (Claude Code): it wrote the PR, and its session is what Flipside seals.
+
+| Channel | Members | What happens there |
+|---|---|---|
+| `#pr-<n>` (private) | Author, Reviewer, both agents | Seal, questions, the author's answers, disclosed quotes with proofs, the brief |
+| `#pr-<n>-author` (private) | Author, `flipside-author-agent` | Approval cards; only the author can answer them |
+
+`make demo` creates both channels in Mattermost through Switch's bridge, with each person on their own Mattermost account; the author's account is claimed in Switch, so Switch addresses author-agent for the author alone.
+`flip setup` creates the same two rooms as Switch chats for a real PR between two machines ([docs/RUNNING.md](docs/RUNNING.md)).
+Policies are set with `PUT /gateway/agents/{id}/addressing-policy` (`flipside/room/setup.py`, `author_policy` and `reviewer_policy`).
+
 ## How Switch is used
 
 | Switch feature | Where |
@@ -143,6 +162,7 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 | The whole review in Mattermost on real Switch: both people as their own accounts, the author approves the card there, four refusals, both agents killed and restarted (macOS) | `make demo` | [`evidence/demo-mattermost-csv-export-20261105T131047.log`](evidence/demo-mattermost-csv-export-20261105T131047.log) |
 | Offline end to end with the four refusals, and all 9 fixture cases offline and live | `make replay-offline`, `make fixtures`, `make solo-all` | [`replay-offline`](evidence/replay-offline-csv-export-20261104T205047.log), [`fixtures.md`](docs/results/fixtures.md), [`solo-all`](evidence/solo-all-20261104T230152.log) |
 | A clean clone on a second machine (Windows, its own Switch server) reproduces the gates, kill tests, live flow and verdicts | the PowerShell block in [docs/RUNNING.md](docs/RUNNING.md#without-make-windows-powershell) | [`m4`](evidence/m4-20261105T002230.log), [`replay-switch`](evidence/replay-switch-csv-export-20261105T015811.log) |
+| Two machines, two owners, one Switch: author on macOS, reviewer on Windows over a private tailnet; 5 approved leaves verified on Windows, and Switch refused the Windows Reviewer's request for the session | `flip setup`, `flip agent`, `flip chat` ([docs/RUNNING.md](docs/RUNNING.md)) | [`author`](evidence/m2-author-20261105T172923.log), [`reviewer`](evidence/m2-reviewer-20261105T172644.log) |
 | `site/verify.html` gives `flip verify`'s verdict on every pinned vector, in the browser with no install | `FLIP_REQUIRE_NODE=1 uv run pytest tests/blind/test_browser_verify.py` | [VERIFICATION.md](VERIFICATION.md) |
 
 ## Limits
