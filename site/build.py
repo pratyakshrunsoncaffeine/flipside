@@ -21,14 +21,14 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "site" / "run.js"
 
 CHAPTERS = [
-    ("seal", "Your agent's session stays on your laptop. Its seal and a public manifest go out."),
+    ("seal", "The author's agent seals its session. The session itself stays on the laptop."),
     ("question", "The reviewer's agent asks about one step."),
-    ("answer", "You answer in your own words, from Mattermost."),
-    ("refuse", "Anyone else who asks is refused by Switch."),
-    ("approve", "It goes to your own card first, and to the reviewer only if you approve."),
-    ("proof", "The reviewer checks the disclosed quote against the seal."),
-    ("forgery", "An edited copy fails the proof."),
-    ("brief", "The reviewer gets a brief, not your session."),
+    ("answer", "The author replies in their own words, straight from Mattermost."),
+    ("refuse", "Anyone else who asks the author's agent is turned away by Switch."),
+    ("approve", "The step goes to the author first. It reaches the reviewer only after they approve."),
+    ("proof", "The reviewer's agent checks the step against the seal. It matches."),
+    ("forgery", "Change one word and the check fails."),
+    ("brief", "The reviewer gets a short brief, not the session."),
 ]
 
 _LINE = re.compile(r"^\d\d:\d\d:\d\d (sw_[0-9a-f]+) ([^:]+): (.*)$")
