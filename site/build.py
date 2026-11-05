@@ -21,12 +21,12 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "site" / "run.js"
 
 CHAPTERS = [
-    ("seal", "Your agent's session stays on your laptop. Only its seal goes out."),
+    ("seal", "Your agent's session stays on your laptop. Its seal and a public manifest go out."),
     ("question", "The reviewer's agent asks about one step."),
     ("answer", "You answer in your own words, from Mattermost."),
     ("refuse", "Anyone else who asks is refused by Switch."),
-    ("approve", "That step leaves your laptop only when you approve it."),
-    ("proof", "The reviewer checks it against the seal."),
+    ("approve", "It goes to your own card first, and to the reviewer only if you approve."),
+    ("proof", "The reviewer checks the disclosed quote against the seal."),
     ("forgery", "An edited copy fails the proof."),
     ("brief", "The reviewer gets a brief, not your session."),
 ]
@@ -127,6 +127,7 @@ def build(log: str, source: str) -> dict[str, Any]:
                 "who": "flipside-author-agent",
                 "text": card,
                 "leaf": leaf,
+                "reconstructed": True,
             }
         )
     for m in re.finditer(r"reviewer answering card (\w+) refused: (.*)", log):
@@ -137,6 +138,7 @@ def build(log: str, source: str) -> dict[str, Any]:
                 "who": "reviewer",
                 "card": m.group(1),
                 "text": m.group(2),
+                "reconstructed": True,
             }
         )
     for m in re.finditer(r"author pressed (\w+) on card (\w+) in Mattermost", log):
@@ -147,6 +149,7 @@ def build(log: str, source: str) -> dict[str, Any]:
                 "who": "author-person",
                 "card": m.group(2),
                 "text": m.group(1),
+                "reconstructed": True,
             }
         )
     steps["approve"] = approval

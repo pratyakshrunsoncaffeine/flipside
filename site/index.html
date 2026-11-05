@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Flipside</title>
-<meta name="description" content="Question another team's coding-agent session in Switch, without the author handing it over. Every answer is checked against a seal in the commit.">
+<meta name="description" content="Question another team's coding-agent session in Switch, without the author handing it over. Every disclosed quote is checked against a seal in the commit.">
 <meta name="theme-color" content="#f2f0ec">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 26 26%22%3E%3Crect x=%221%22 y=%221%22 width=%2224%22 height=%2224%22 rx=%228%22 fill=%22%23f6f3ec%22/%3E%3Crect x=%224.5%22 y=%225.5%22 width=%2217%22 height=%2214%22 rx=%225%22 fill=%22%230d0e11%22/%3E%3Crect x=%229%22 y=%229.6%22 width=%222.4%22 height=%224.6%22 rx=%221.2%22 fill=%22%23fff4e2%22/%3E%3Crect x=%2214.6%22 y=%229.6%22 width=%222.4%22 height=%224.6%22 rx=%221.2%22 fill=%22%23fff4e2%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -415,7 +415,7 @@ footer { padding-block: 120px 40px; }
   <div class="in">
     <div>
       <h1><span class="ln"><span>Ask the agent</span></span><span class="ln"><span class="amb">why.</span></span></h1>
-      <p class="enter e2">Flipside lets your agent question another team's coding-agent session in a Switch room. The author approves every step that leaves their laptop, and each one is checked against a seal in the commit.</p>
+      <p class="enter e2">Flipside lets your agent question another team's coding-agent session in a Switch room. The session stays on the author's laptop. A requested step goes to the author's own card, reaches the reviewer only if they approve, and is checked against a seal in the commit.</p>
       <div class="act enter e3">
         <a class="btn" href="#player"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.8v10.4L13 8z" fill="currentColor"/></svg>Watch a real review</a>
         <a class="textlink" href="#film">Play the 65 second film</a>
@@ -433,8 +433,8 @@ footer { padding-block: 120px 40px; }
 <section class="link g" id="link" aria-labelledby="linkh">
   <div class="in">
     <div class="lead">
-      <h2 id="linkh" class="rise">Two laptops, one Switch room.</h2>
-      <p class="rise">Each agent runs on its owner's machine and joins the team's chat through Switch. The session stays with the author; only approved steps reach the room.</p>
+      <h2 id="linkh" class="rise">Two owners, one Switch room.</h2>
+      <p class="rise">The intended setup: each agent runs on its owner's laptop and joins the team's chat through Switch. A requested step goes to the author's private card; only approved steps reach the shared room. The replay below ran both owners on one machine.</p>
     </div>
     <div class="diagram" id="diagram" data-ui>
       <svg class="wires" id="wires" aria-hidden="true"></svg>
@@ -461,7 +461,7 @@ footer { padding-block: 120px 40px; }
         <div class="panel" id="dpanel"><h3>Room</h3></div>
       </div>
     </div>
-    <p class="works">Run through Switch in Mattermost (make demo, make k5) and Slack (make k3).</p>
+    <p class="works">The whole review runs through Switch in Mattermost (make demo, make k5). In Slack, the approval card is checked (make k3).</p>
   </div>
 </section>
 
@@ -469,14 +469,14 @@ footer { padding-block: 120px 40px; }
   <div class="in">
     <div class="lead">
       <h2 id="replayh" class="rise">A real review, played back.</h2>
-      <p class="rise">Two people, two agents and a live Switch server with Mattermost. Every message below is from <code id="source">the evidence log</code>, with Switch's own message ids.</p>
+      <p class="rise">Two people, two agents and a live Switch server with Mattermost. Every shared-room message below is from <code id="source">the evidence log</code>, with Switch's own message ids. The private room's card, refusal and press are reconstructed from that log's event lines.</p>
     </div>
 
     <div class="player" id="player" data-ui>
       <div class="dock">
         <div class="row">
           <button class="flipbtn" id="flipbtn" type="button" aria-label="Play the replay"><canvas id="narrator"></canvas></button>
-          <p class="say" id="caption" aria-live="polite">Two rooms. One seal. Nothing leaves without a yes.</p>
+          <p class="say" id="caption" aria-live="polite">Two rooms. One seal. No step reaches the reviewer without a yes.</p>
           <div class="transport">
             <button id="prev" type="button" aria-label="Previous step"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3 5.5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <button class="play" id="play" type="button" aria-label="Play"><svg viewBox="0 0 16 16" aria-hidden="true" id="playicon"><path d="M4 2.5v11L13.5 8z" fill="currentColor"/></svg></button>
@@ -491,7 +491,7 @@ footer { padding-block: 120px 40px; }
             <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
             <b id="privname">pr-author</b><span class="who">author and author-agent</span>
           </header>
-          <div class="feed" id="private"><p class="empty" id="privempty">The author's private room. Nothing in it leaves the laptop until the author approves a card.</p></div>
+          <div class="feed" id="private"><p class="empty" id="privempty">The author's private room. A requested step shows here on the author's card and reaches the review room only if the author approves.</p></div>
         </article>
         <article class="room shared" aria-label="The shared review room">
           <header>
@@ -517,7 +517,7 @@ footer { padding-block: 120px 40px; }
     <div class="grid">
       <figure class="rise">
         <div class="frame light"><img src="media/mattermost-review-room.jpg" width="1130" height="580" alt="Mattermost, shared room pr-142: the reviewer's request is refused, the author's answer, the disclosed step and the OK verdict" loading="lazy"></div>
-        <figcaption><b>Mattermost, #pr-142.</b> The shared room on the run above, with each agent's message and its JSON.</figcaption>
+        <figcaption><b>Mattermost, #pr-142.</b> The shared room in an earlier run of the same case (13:17 IST), with each agent's message and its JSON.</figcaption>
       </figure>
       <div class="stack">
         <figure class="rise">
@@ -559,7 +559,7 @@ footer { padding-block: 120px 40px; }
       <code>SESSION_TTL = 3600 → 86400</code>
       <div class="press"><span>1. Approve</span><span>2. Decline</span></div>
     </div></div>
-    <p class="rise">The author approves those exact bytes, or does not.</p>
+    <p class="rise">The author sees the exact bytes in private, and decides.</p>
   </div>
   <div class="f">
     <div></div>
@@ -604,9 +604,10 @@ footer { padding-block: 120px 40px; }
 <span class="d">$</span> make demo
 <span class="c"># who may address whom, enforced by Switch: 8 of 8</span>
 <span class="d">$</span> make k5
-<span class="c"># check one disclosed step against the seal</span>
-<span class="d">$</span> flip verify examples/q2-ok.json
-<span class="ok">OK leaf 5 (session 0, step 5, chunk 0) against seal ae44db8</span></pre>
+<span class="c"># offline: a real quote verifies, an edited one fails</span>
+<span class="d">$</span> make g8
+<span class="ok">OK leaf 5 (session 0, step 5, chunk 0) against seal ae44db8</span>
+<span class="ok">PROOF_FAIL leaf 5 does not hash up to root ae44db8</span></pre>
     </div>
   </div>
 </section>
@@ -798,7 +799,7 @@ footer { padding-block: 120px 40px; }
   $("copy").addEventListener("click", (e) => {
     const b = e.currentTarget, done = () => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1400); };
     const fallback = () => { const r = document.createRange(); r.selectNodeContents($("cmds")); getSelection().removeAllRanges(); getSelection().addRange(r); };
-    try { navigator.clipboard.writeText("make demo\nmake k5\nflip verify examples/q2-ok.json").then(done, fallback); } catch (err) { fallback(); }
+    try { navigator.clipboard.writeText("make demo\nmake k5\nmake g8").then(done, fallback); } catch (err) { fallback(); }
   });
 
   // The replay. Every step comes from site/run.js, which site/build.py makes from a real evidence log.
@@ -853,7 +854,7 @@ footer { padding-block: 120px 40px; }
       case "verdict-ok": extra = `<span class="chip green">proof OK against root ${esc(RUN.seal.root)}</span>`; break;
       case "forged": extra = `<span class="chip red">one word edited</span>`; break;
       case "verdict-fail": extra = `<span class="chip red">PROOF_FAIL · rejected</span>`; break;
-      case "brief": extra = `<span class="chip green">to the reviewer · the session never left</span>`; break;
+      case "brief": extra = `<span class="chip green">to the reviewer · the full session stayed with the author</span>`; break;
       case "card":
         text = ""; extra = `<div class="card" id="card"><div class="t">${esc(s.text)}</div><div class="k">Only the author can answer. Switch checks who presses.</div><div class="btns"><span class="approve" id="approve">1. Approve</span><span class="decline">2. Decline</span></div></div>`; break;
       case "card-403":
@@ -861,6 +862,7 @@ footer { padding-block: 120px 40px; }
       case "press":
         text = `Pressed <b>${esc(s.text)}</b> in Mattermost.`; extra = `<span class="chip green">accepted · the author's claimed account</span>`; break;
     }
+    if (s.reconstructed) extra += `<span class="chip">reconstructed from the run log</span>`;
     const server = s.kind === "switch-refusal" || s.kind === "card-403";
     const badge = server ? `<span class="badge">SERVER</span>` : isAgent ? `<span class="badge">AGENT</span>` : "";
     el.className = cls;
@@ -927,7 +929,7 @@ footer { padding-block: 120px 40px; }
   }
 
   let cur = -1, timer = null, playing = false;
-  const INTRO = "Two rooms. One seal. Nothing leaves without a yes.";
+  const INTRO = "Two rooms. One seal. No step reaches the reviewer without a yes.";
   function caption(text, animate) {
     const h = $("caption");
     h.innerHTML = `<span>${text.split(" ").map((w) => `<span class="w${animate ? " hide" : ""}">${esc(w)}</span>`).join(" ")}</span>`;
