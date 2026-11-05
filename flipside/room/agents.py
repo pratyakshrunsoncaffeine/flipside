@@ -528,9 +528,10 @@ class ReviewerAgent:
                 {"q": k, "gap": g.kind, "file": g.file, "text": g.text} for k, g in enumerate(qs, 1)
             ],
         }
+        asked = " · ".join(f"Q{k} {' '.join(g.text.split())}" for k, g in enumerate(qs, 1))
         line = (
             f"{len(qs)} question{'s' if len(qs) != 1 else ''} for PR #{self.cfg.pr.number} "
-            f"({rnd.seal_note}); answer each as Q<k>: in your own words"
+            f"({rnd.seal_note}): {asked}; answer each as Q<k>: in your own words"
         )
         if not qs:
             line = f"No gaps on PR #{self.cfg.pr.number} ({rnd.seal_note})"

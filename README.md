@@ -118,6 +118,25 @@ The six steps in detail are in [docs/REFERENCE.md](docs/REFERENCE.md#how-it-work
 No LLM runs anywhere in `flipside/`.
 Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python on the standard library.
 
+## Connected agents and channel setup
+
+| Agent | Owner | Runs | Takes instructions from |
+|---|---|---|---|
+| `flipside-author-agent` | the PR author | `flip agent author`, on the author's machine next to the sealed session | its owner anywhere; `flipside-reviewer-agent` in `#pr-<n>` only |
+| `flipside-reviewer-agent` | the owning team's reviewer | `flip agent reviewer`, on the reviewer's machine | its owner; `flipside-author-agent` and the room's people in `#pr-<n>` only |
+
+Both are custom agents on Switch's agent protocol (events in, messages and cards out), written in deterministic Python with no model.
+The AI agent in the story is the author's coding agent (Claude Code): it wrote the PR, and its session is what Flipside seals.
+
+| Channel | Members | What happens there |
+|---|---|---|
+| `#pr-<n>` (private) | Author, Reviewer, both agents | Seal, questions, the author's answers, disclosed quotes with proofs, the brief |
+| `#pr-<n>-author` (private) | Author, `flipside-author-agent` | Approval cards; only the author can answer them |
+
+`make demo` creates both channels in Mattermost through Switch's bridge, with each person on their own Mattermost account; the author's account is claimed in Switch, so Switch counts only that account as the author for author-agent's policy and for the approval card (K5).
+`flip setup` creates the same two rooms as Switch chats for a real PR between two machines ([docs/RUNNING.md](docs/RUNNING.md)).
+Policies are set with `PUT /gateway/agents/{id}/addressing-policy` (`flipside/room/setup.py`, `author_policy` and `reviewer_policy`).
+
 ## How Switch is used
 
 | Switch feature | Where |
