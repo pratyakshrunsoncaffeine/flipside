@@ -179,3 +179,63 @@ def test_down_removes_the_config_once_docker_has_removed_the_stack(
     )
     assert demo.down() == 0
     assert not any(f.exists() for f in files)
+
+
+def test_a_run_archives_review_channels_no_room_bridges_any_more() -> None:
+    """Channels left by rooms removed without retiring them stay in the sidebar (issue #63)."""
+
+    class FakeMM:
+        def __init__(self) -> None:
+            self.deleted: list[str] = []
+
+        def call(self, method: str, path: str, body: object = None) -> object:
+            if method == "GET" and path == f"/teams/name/{demo.TEAM}":
+                return {"id": "team1"}
+            if method == "GET" and path.startswith("/teams/team1/channels/private"):
+                return [
+                    {"id": "old", "display_name": "pr-142-author", "delete_at": 0},
+                    {"id": "gone", "display_name": "pr-142-author", "delete_at": 5},
+                    {"id": "other", "display_name": "design-review", "delete_at": 0},
+                ]
+            if method == "GET" and path.startswith("/teams/team1/channels"):
+                return [
+                    {"id": "shared", "display_name": "pr-142", "delete_at": 0},
+                    {"id": "town", "display_name": "Town Square", "delete_at": 0},
+                ]
+            if method == "DELETE":
+                self.deleted.append(path)
+                return {}
+            raise AssertionError(f"unexpected {method} {path}")
+
+    mm = FakeMM()
+    assert demo.archive_stale_channels(mm) == 2  # type: ignore[arg-type]
+    assert mm.deleted == ["/channels/shared", "/channels/old"]
+
+
+def test_a_run_turns_off_mattermosts_email_preview_banner() -> None:
+    """The demo sends no email, so Mattermost's "Preview Mode" banner is only noise (issue #63)."""
+    calls: list[tuple[str, str, object]] = []
+
+    class FakeMM:
+        def call(self, method: str, path: str, body: object = None) -> object:
+            calls.append((method, path, body))
+            return {}
+
+    demo.quiet_banner(FakeMM())  # type: ignore[arg-type]
+    assert calls == [
+        ("PUT", "/config/patch", {"EmailSettings": {"EnablePreviewModeBanner": False}})
+    ]
+
+
+def test_a_run_lets_the_printed_address_open_mattermosts_live_connection() -> None:
+    """Mattermost refused the websocket from 127.0.0.1 with a 403, so a person who opened the
+    printed address saw new posts only after switching channels (issue #63)."""
+    calls: list[tuple[str, str, object]] = []
+
+    class FakeMM:
+        def call(self, method: str, path: str, body: object = None) -> object:
+            calls.append((method, path, body))
+            return {}
+
+    demo.allow_printed_origin(FakeMM())  # type: ignore[arg-type]
+    assert calls == [("PUT", "/config/patch", {"ServiceSettings": {"AllowCorsFrom": demo.MM_BASE}})]
