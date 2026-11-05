@@ -1,9 +1,15 @@
 PY ?= uv run --frozen python
 UV_RUN ?= uv run --frozen
 
-.PHONY: help test lint killtests g8 k5 replay-offline fixtures solo solo-all replay demo demo-down
+.PHONY: help judge judge-live test lint killtests g8 k5 replay-offline fixtures solo solo-all replay demo demo-down
 help: ## List targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "%-12s %s\n", $$1, $$2}'
+
+judge: ## Check every README claim offline in about 10 s: 11 checks, PASS/FAIL table, writes evidence/judge-*
+	$(PY) -m flipside.judge
+
+judge-live: ## judge, plus the review, K5 and all 9 cases on real Switch 0.31.0 + Mattermost in Docker (~3 min)
+	$(PY) -m flipside.judge --live
 
 test: ## Run the test suite
 	$(UV_RUN) pytest

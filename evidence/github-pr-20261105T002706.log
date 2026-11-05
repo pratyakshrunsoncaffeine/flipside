@@ -9,7 +9,7 @@ flip-join v1 role=reviewer pr=1 room=2048008f-c58b-494a-85d2-4fbc3898385a agent=
 00:21:33 flipside-author-agent started (pid 87317)
 00:21:41 author-agent posted seal sw_d1ef094f98064e2dab9e076bcd8bfbd4
 00:26:09 flipside-author-agent stopped
-aved for other rooms in /private/tmp/claude-501/-Users-aaravmahajan/815f42df-44f3-4f63-b8fd-b052315086cd/scratchpad/gh/author/.git/flipside/work-author/author-agent.json
+aved for other rooms in <repo>/.git/flipside/work-author/author-agent.json
 00:26:05 flipside-author-agent started (pid 10519)
 00:26:13 author-agent opened card 7ec0d81b for leaf 23 (first asked in Q1)
 00:26:13 author-agent opened card eebce74f for leaf 22 (first asked in Q1)

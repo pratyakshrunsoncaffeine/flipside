@@ -74,7 +74,7 @@ def buttons(message: dict) -> list[str]:
 def finish() -> int:
     passed = bool(results) and all(ok for _, ok, _ in results)
     n_ok = sum(ok for _, ok, _ in results)
-    log(f"RESULT {'PASS' if passed else 'FAIL'} ({n_ok}/{len(results)}); log {LOG}")
+    log(f"RESULT {'PASS' if passed else 'FAIL'} ({n_ok}/{len(results)}); log evidence/{LOG.name}")
     return 0 if passed else 1
 
 

@@ -358,7 +358,7 @@ def main() -> int:
     passed = all(ok for _, ok, _ in results)
     log(
         f"RESULT {'PASS' if passed else 'FAIL'} "
-        f"({sum(ok for _, ok, _ in results)}/{len(results)}); log {LOG}"
+        f"({sum(ok for _, ok, _ in results)}/{len(results)}); log evidence/{LOG.name}"
     )
     return 0 if passed else 1
 

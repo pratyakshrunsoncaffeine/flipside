@@ -1,6 +1,6 @@
 OpenAI Codex v0.166.0
 --------
-workdir: /Users/aaravmahajan/flipside/docs/judging/blind
+workdir: docs/judging/blind
 model: gpt-6-luna
 provider: openai
 approval: never

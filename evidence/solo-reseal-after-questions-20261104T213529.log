@@ -21,30 +21,30 @@
 21:38:38 [author-agent] Traceback (most recent call last):
 21:38:38 [author-agent]   File "<frozen runpy>", line 198, in _run_module_as_main
 21:38:38 [author-agent]   File "<frozen runpy>", line 88, in _run_code
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/cli.py", line 180, in <module>
+21:38:38 [author-agent]   File "flipside/cli.py", line 180, in <module>
 21:38:38 [author-agent]     sys.exit(main())
 21:38:38 [author-agent]              ^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/cli.py", line 173, in main
+21:38:38 [author-agent]   File "flipside/cli.py", line 173, in main
 21:38:38 [author-agent]     return run_room(args[0], args[1:])
 21:38:38 [author-agent]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/cli.py", line 120, in run_room
+21:38:38 [author-agent]   File "flipside/cli.py", line 120, in run_room
 21:38:38 [author-agent]     code: int = mod.main(args)
 21:38:38 [author-agent]                 ^^^^^^^^^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/daemon.py", line 188, in main
+21:38:38 [author-agent]   File "flipside/room/daemon.py", line 188, in main
 21:38:38 [author-agent]     return run(cfg, stop, a.poll)
 21:38:38 [author-agent]            ^^^^^^^^^^^^^^^^^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/daemon.py", line 164, in run
+21:38:38 [author-agent]   File "flipside/room/daemon.py", line 164, in run
 21:38:38 [author-agent]     agent.step()
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/agents.py", line 150, in step
+21:38:38 [author-agent]   File "flipside/room/agents.py", line 150, in step
 21:38:38 [author-agent]     n = self.rebuilt.sealed.n
 21:38:38 [author-agent]         ^^^^^^^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/room/agents.py", line 131, in rebuilt
+21:38:38 [author-agent]   File "flipside/room/agents.py", line 131, in rebuilt
 21:38:38 [author-agent]     self._rebuilt = rebuild(self.cfg.repo, self.cfg.root)
 21:38:38 [author-agent]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/seal/prove.py", line 62, in rebuild
+21:38:38 [author-agent]   File "flipside/seal/prove.py", line 62, in rebuild
 21:38:38 [author-agent]     sources = [Source(Path(r["path"]), _prefix(r)) for r in state["sessions"]]
 21:38:38 [author-agent]                                        ^^^^^^^^^^
-21:38:38 [author-agent]   File "/Users/aaravmahajan/flipside/flipside/seal/prove.py", line 51, in _prefix
+21:38:38 [author-agent]   File "flipside/seal/prove.py", line 51, in _prefix
 21:38:38 [author-agent]     raise ProveError("SESSION_CHANGED", f"the sealed part of {path.name} changed")
 21:38:38 [author-agent] flipside.seal.prove.ProveError: SESSION_CHANGED: the sealed part of session.jsonl changed
 21:38:38 [reviewer-agent] 21:35:31 flipside-reviewer-agent started (pid 97567)

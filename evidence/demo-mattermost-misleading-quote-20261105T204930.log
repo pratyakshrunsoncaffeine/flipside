@@ -1,0 +1,55 @@
+20:49:30 case misleading-quote: PR #148 'Add CSV export to the reports page'; seal commit b43b8d05daf4c1b78df245d049b66f59ea8e4365
+20:49:31 Switch http://127.0.0.1:8100: author Author user 5a1a7f70-d56a-423e-96f7-cd4a0e8368e7, reviewer Reviewer user 3d31b2a6-a16d-4269-a0a9-7507f6ac956e; author-agent 118e9e48-b9bf-4750-9f87-57f12796eab7, reviewer-agent 4a1aa2db-b528-4d28-8134-460ba365516c
+20:49:32 mattermost connection 0e4c0ad2-88b5-4698-b54e-c684987be85d: added linked accounts ['author-person'] (author)
+20:49:32 reviewer opened #pr-148 45de85c1-110b-4249-9682-cb9d90414e09 and added the author and author-agent; author opened #pr-148-author f4bada59-3653-4e5d-b530-b3b604c6624f; author-agent policy: owner, owner's agents, reviewer-agent in #pr-148 only; reviewer-agent policy: owner, owner's agents, author-agent and the room's people in #pr-148
+20:49:33 Mattermost channels: shared yomw37aeq3ddimjdczjwpjf7mr, private 5o4idb9u87nsub1wfe1wz6isrr
+20:49:33 author-agent process started (pid 52217)
+20:49:33 reviewer-agent process started (pid 52218)
+20:49:34 author posted in Mattermost yhzr3tg9ai8jtc991rfw8upkjo: @flipside-author-agent Q1: Only CSV export was asked for, see the prompt.
+20:49:34 author posted in Mattermost zupjoswshfbefxnd8sqimkym4h: @flipside-author-agent offer Q1 step 0
+20:49:34 script: the author offers step 0 for Q1
+20:49:36 author pressed Decline on card b095c0f4 in Mattermost
+20:49:36 author pressed Approve on card 9e3df2f8 in Mattermost
+20:49:41 author-agent process exited with 0
+20:49:42 reviewer-agent process exited with 0
+20:49:42 [author-agent] 20:49:33 flipside-author-agent started (pid 52217)
+20:49:42 [author-agent] 20:49:33 author-agent posted seal sw_d4bb75b8735049e894793df3d9914e59
+20:49:42 [author-agent] 20:49:35 author-agent relayed the author's answer to Q1 from sw_424e11620e26de7ce2b42f6b9250c9bf as sw_9e3773c8237243cc85d9c287e17f2308
+20:49:42 [author-agent] 20:49:36 author-agent opened card b095c0f4 for leaf 5 (first asked in Q1)
+20:49:42 [author-agent] 20:49:36 author-agent opened card 9e3df2f8 for leaf 0 (first asked in Q1)
+20:49:42 [author-agent] 20:49:37 author-agent card b095c0f4: decline by @switch-mattermost-0e4c0ad2-88b5-4698-b54e-c684987be85d-author-person:localhost
+20:49:42 [author-agent] 20:49:37 author-agent card 9e3df2f8: approve by @switch-mattermost-0e4c0ad2-88b5-4698-b54e-c684987be85d-author-person:localhost
+20:49:42 [author-agent] 20:49:37 author-agent posted withheld sw_df8ade1e4ed7436aad53c2762a81acbf for Q1 leaf 5 (author)
+20:49:42 [author-agent] 20:49:37 author-agent posted disclosure sw_431a73e5e2ff45849048ac0a4ed65114 for Q1 leaf 0
+20:49:42 [author-agent] 20:49:41 flipside-author-agent stopped
+20:49:42 [reviewer-agent] 20:49:33 flipside-reviewer-agent started (pid 52218)
+20:49:42 [reviewer-agent] 20:49:34 reviewer-agent posted questions sw_bb8647095eb64f49be78bd3c2c17b546: Q1 SCOPE auth/session.py
+20:49:42 [reviewer-agent] 20:49:34 reviewer-agent posted request sw_f3df56cba4ac4b2da29af2a1725454b9 for Q1: leaves [5]
+20:49:42 [reviewer-agent] 20:49:38 reviewer-agent posted verdict sw_7de6156f6b2e4904b7ff8e37c09d4157: Q1 leaf 0 OK
+20:49:42 [reviewer-agent] 20:49:38 reviewer-agent posted brief sw_dd7bf945928d463cbd78fee466885b74: @Reviewer Brief for PR #148: 1 question, 1 answered, 1 leaf verified, 1 withheld, 0 refused, 0 contradictions
+20:49:42 [reviewer-agent] 20:49:38   coverage auth/session.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 5, 6)
+20:49:42 [reviewer-agent] 20:49:38   coverage reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)
+20:49:42 [reviewer-agent] 20:49:42 flipside-reviewer-agent stopped
+20:49:42 Switch message ids: sw_ff09efd3afc847bf913fb71cd5211cd2, sw_d4bb75b8735049e894793df3d9914e59, sw_bb8647095eb64f49be78bd3c2c17b546, sw_f3df56cba4ac4b2da29af2a1725454b9, sw_424e11620e26de7ce2b42f6b9250c9bf, sw_9e3773c8237243cc85d9c287e17f2308, sw_df8ade1e4ed7436aad53c2762a81acbf, sw_431a73e5e2ff45849048ac0a4ed65114, sw_7de6156f6b2e4904b7ff8e37c09d4157, sw_dd7bf945928d463cbd78fee466885b74
+20:49:42 elapsed 12 s
+20:49:42 --- transcript
+20:49:42 sw_ff09efd3afc847bf913fb71cd5211cd2 flipside-author-agent: manifest.json
+20:49:42 sw_d4bb75b8735049e894793df3d9914e59 flipside-author-agent: Seal for PR #148 · root ae44db8 · 10 leaves · commit b43b8d0 · manifest attached
+20:49:42 sw_bb8647095eb64f49be78bd3c2c17b546 flipside-reviewer-agent: 1 question for PR #148 (sealed: root ae44db8, 10 leaves, commit b43b8d0); answer each as Q<k>: in your own words
+20:49:42 sw_f3df56cba4ac4b2da29af2a1725454b9 flipside-reviewer-agent: @flipside-author-agent Q1 · requesting leaves 5 · commit b43b8d0
+20:49:42 sw_424e11620e26de7ce2b42f6b9250c9bf author-person: @flipside-author-agent Q1: Only CSV export was asked for, see the prompt.
+20:49:42 sw_9e3773c8237243cc85d9c287e17f2308 flipside-author-agent: Author answered Q1: Only CSV export was asked for, see the prompt.
+20:49:42 sw_df8ade1e4ed7436aad53c2762a81acbf flipside-author-agent: Q1 · leaf 5 withheld (author declined)
+20:49:42 sw_431a73e5e2ff45849048ac0a4ed65114 flipside-author-agent: Q1 · step 0, chunk 0 · approved by @Author · proof against seal ae44db8 (commit b43b8d0)
+20:49:42 sw_7de6156f6b2e4904b7ff8e37c09d4157 flipside-reviewer-agent: Q1 · leaf 0 · OK leaf 0 (session 0, step 0, chunk 0) against seal ae44db8 in commit b43b8d0
+20:49:42 sw_dd7bf945928d463cbd78fee466885b74 flipside-reviewer-agent: @Reviewer Brief for PR #148: 1 question, 1 answered, 1 leaf verified, 1 withheld, 0 refused, 0 contradictions
+20:49:42 --- refusals
+20:49:42 Switch refusal (reviewer tags author-agent): 0
+20:49:42 free-text request dropped: 0
+20:49:42 forged disclosure refused: 0
+20:49:42 reviewer answers the card (403): 0
+20:49:42 --- summary {"card_403": 0, "contradictions": [], "coverage": ["auth/session.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 5, 6)", "reports/export.py: 2 sealed steps, 0 disclosed, 2 not disclosed (steps 1, 2)"], "dropped_requests": 0, "duplicates": [], "questions": [["SCOPE", "auth/session.py"]], "switch_refusals": 0, "verdicts": {"OK": 1}, "withheld": 1}
+20:49:42 duplicate agent posts: 0
+20:49:42 agent processes killed and restarted: 0
+20:49:42 agent step errors: 0
+20:49:42 RESULT PASS misleading-quote (switch, 12 rounds)
