@@ -143,6 +143,7 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 | The whole review in Mattermost on real Switch: both people as their own accounts, the author approves the card there, four refusals, both agents killed and restarted (macOS) | `make demo` | [`evidence/demo-mattermost-csv-export-20261105T131047.log`](evidence/demo-mattermost-csv-export-20261105T131047.log) |
 | Offline end to end with the four refusals, and all 9 fixture cases offline and live | `make replay-offline`, `make fixtures`, `make solo-all` | [`replay-offline`](evidence/replay-offline-csv-export-20261104T205047.log), [`fixtures.md`](docs/results/fixtures.md), [`solo-all`](evidence/solo-all-20261104T230152.log) |
 | A clean clone on a second machine (Windows, its own Switch server) reproduces the gates, kill tests, live flow and verdicts | the PowerShell block in [docs/RUNNING.md](docs/RUNNING.md#without-make-windows-powershell) | [`m4`](evidence/m4-20261105T002230.log), [`replay-switch`](evidence/replay-switch-csv-export-20261105T015811.log) |
+| Author and reviewer on two machines over a private tailnet: the author and Switch on a Mac, reviewer-agent on Windows; 2 questions, 5 leaves OK, the reviewer's request for the whole session refused | manual run, both hosts in each log's header | [`author`](evidence/m2-author-20261105T172923.log), [`reviewer`](evidence/m2-reviewer-20261105T172644.log) |
 | `site/verify.html` gives `flip verify`'s verdict on every pinned vector, in the browser with no install | `FLIP_REQUIRE_NODE=1 uv run pytest tests/blind/test_browser_verify.py` | [VERIFICATION.md](VERIFICATION.md) |
 
 ## Limits
@@ -155,7 +156,7 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 - A verified quote proves it is in the session, not that it fully answers the question; the coverage line shows what was not disclosed.
 - Nobody can prove a person typed an answer; answers are checked against evidence only where a rule exists.
 - Sessions are Claude Code JSONL only.
-- Not yet checked: author and reviewer on two machines.
+- On two machines, the reviewer pressing the author's card was not run, because no card was left open; K2 and K5 check that 403 on one machine.
 - `make demo` is checked on macOS only.
 - Typed answers are checked in Mattermost only.
   In Slack (`flip solo --slack`), author-agent accepts the author's card press from their linked Slack account, but Switch reports a message typed in Slack as `kind: human` with no user id, so answers there go through the gateway.

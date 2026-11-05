@@ -25,18 +25,18 @@ Flipside lets the owning team question the author team's private coding-agent se
 ## State
 
 Team repo `pratyakshrunsoncaffeine/gateplus` (private); team clone `~/gateplus-kadoo69`.
-`main` at 93acb64 or later.
+`main` at 1bc0e42 or later.
 The repo stays private: Pratyaksh decided (5 Nov), so no GitHub Pages and no visibility change unless Pratyaksh says otherwise.
 
-Merged 5 Nov: #28, #30, #31 (Codex), #33 (`make demo`, K5), #35 (killtests and demo in `make lint`), #37 (kill tests count only a 403 as a refusal), #38 (site).
+Merged 5 Nov: #28, #30, #31 (Codex), #33 (`make demo`, K5), #35 (killtests and demo in `make lint`), #37 (kill tests count only a 403 as a refusal), #38 (site), #40 (Node 22 in CI), #41, #42 (`flip demo down` keeps its config on failure), #43 (`site/verify.html`), #45, #47, #48 (approval boundary wording), #50 (site claims audit), #52, #54 (README cut; detail in `docs/RUNNING.md` and `docs/REFERENCE.md`).
 
 Open work:
-- #40 (lead): Node 22 in CI for the verify-page test.
-- Codex: M4 `site/verify.html`, browser-checkable checks only; git checks say "run flip verify".
-- Aarav: `flip demo down` must keep `.flipside-demo/` files when `docker compose down` fails (Codex finding on #33); M3 README draft.
-- M2 two machines: Mac author, Windows reviewer, private network only.
+- Aarav: M6 video SHA-256 in `VERIFICATION.md`; after M2 merges, turn off the tailnet forward of Switch and rotate both reviewer passwords (they were pasted in chat).
+- Codex: final blind judge run on `main` after M2.
+- Pratyaksh: how judges get access to the private repo, before 7 Nov 23:59 IST.
 
 Done:
+- M2 two machines: Mac author with Switch, Windows reviewer-agent over a private tailnet (`evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log`).
 - Everything listed in `VERIFICATION.md`: K1/K2 9/9, K3 4/4 (Slack card), K4 6/6, K5 8/8 (Mattermost), G1 to G8, M4 on Windows, a real Claude Code session, a real sealed GitHub PR.
 - The launch film v6 (`~/Desktop/flipside-launch-v6.mp4`, 64.8 s; sources in `~/flipside-video/film2/`); copied into `site/media/flipside-film.mp4`.
 - The site (`site/index.html`), sections in order: hero with Flip (the bot, live Three.js); "Two laptops, one Switch room" diagram after the Switch hackathon page (agents wired to a switch that turns on, then a chat room with members, messages and a room panel); the replay player (the dock with Flip, play and chapter bars sits at the top of the player, over both rooms and the seal tree); real Slack and Mattermost screens; How it works in four colour fields; the film; Run it; footer.
