@@ -105,3 +105,59 @@ def test_vendored_three_is_pinned_r160_with_its_licence() -> None:
 
 def test_the_film_stays_under_15_mb() -> None:
     assert (SITE / "media" / "flipside-film.mp4").stat().st_size < 15 * 1024 * 1024
+
+
+def test_rows_without_a_switch_id_are_marked_as_reconstructed_from_the_log() -> None:
+    run = build.build(LOG, "e")
+    steps = [s for c in run["chapters"] for s in c["steps"]]
+    derived = [s for s in steps if not s.get("sw")]
+    assert [s["kind"] for s in derived] == ["card", "card-403", "press"]
+    assert all(s["reconstructed"] for s in derived)
+    assert not any(s.get("reconstructed") for s in steps if s.get("sw"))
+    page = (SITE / "index.html").read_text(encoding="utf-8")
+    assert "s.reconstructed" in page  # the replay labels them
+
+
+def _commands(page: str) -> tuple[list[str], list[str], str]:
+    import re
+
+    pre = re.search(r'<pre id="cmds">(.*?)</pre>', page, re.S)
+    assert pre
+    shown = re.findall(r'<span class="d">\$</span> ([^\n<]+)', pre.group(1))
+    ok = re.search(r'<span class="ok">([^<]+)</span>', pre.group(1))
+    copied = re.search(r'writeText\("([^"]+)"\)', page)
+    assert ok and copied
+    return shown, copied.group(1).split("\\n"), ok.group(1)
+
+
+def test_the_run_commands_are_make_targets_copied_as_shown_with_their_real_output() -> None:
+    import re
+    import subprocess
+    import sys
+
+    shown, copied, ok = _commands((SITE / "index.html").read_text(encoding="utf-8"))
+    assert shown == copied
+    targets = set(re.findall(r"^([\w-]+):", (ROOT / "Makefile").read_text(encoding="utf-8"), re.M))
+    assert all(c.split()[0] == "make" and c.split()[1] in targets for c in shown), shown
+    assert "make g8" in shown
+    commit = (ROOT / "examples" / "commit.txt").read_text(encoding="utf-8").strip()
+    out = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "flipside.cli",
+            "verify",
+            "--bundle",
+            "examples/seal.bundle",
+            "--commit",
+            commit,
+            "--manifest",
+            "examples/manifest.json",
+            "examples/q2-ok.json",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert out.stdout.startswith(ok), (ok, out.stdout)
