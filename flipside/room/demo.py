@@ -196,6 +196,21 @@ def clear_rooms(conf: dict[str, str]) -> int:
     return gone
 
 
+def archive_stale_channels(mma: MM) -> int:
+    """Archive the review channels no Switch room bridges any more, so the sidebar shows only
+    this run's rooms. Runs after ``clear_rooms``: every unarchived ``pr-<n>`` or
+    ``pr-<n>-author`` channel left in the demo team then belongs to an earlier run whose room
+    was removed without retiring its channel. Archiving is reversible. Returns how many."""
+    team = mma.call("GET", f"/teams/name/{TEAM}")
+    gone = 0
+    for kind in ("", "/private"):
+        for ch in mma.call("GET", f"/teams/{team['id']}/channels{kind}?per_page=200") or []:
+            if not ch.get("delete_at") and _REVIEW_ROOM.match(str(ch.get("display_name"))):
+                mma.call("DELETE", f"/channels/{ch['id']}")
+                gone += 1
+    return gone
+
+
 def quiet_greetings(conf: dict[str, str], bridge: str) -> None:
     """Turn off Switch's generic "mention me anytime" post when an agent joins a channel;
     each Flipside room says what it is for in its own description."""
@@ -312,6 +327,7 @@ def run(case: Path, restarts: bool, press: bool, pace: float) -> int:
     conf = _read_conf(DIR / "stack.conf")
     quiet_greetings(conf, wait_ready(conf, timeout=60))
     print(f"cleared {clear_rooms(conf)} review rooms from earlier runs")
+    print(f"archived {archive_stale_channels(mm_admin(conf))} stale review channels")
     from flipside.room import solo
 
     people = people_for(conf)
