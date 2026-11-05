@@ -183,6 +183,8 @@ def main() -> int:
     conf = demo._read_conf(demo.DIR / "stack.conf")
     bridge = demo.wait_ready(conf, timeout=60)
     log(f"cleared {demo.clear_rooms(conf)} review rooms from earlier runs")
+    # As in `flip demo run`: archive earlier runs' channels before bootstrap makes this run's.
+    log(f"archived {demo.archive_stale_channels(demo.mm_admin(conf))} stale review channels")
     with tempfile.TemporaryDirectory(prefix="flip-k5-") as tmp:
         world = materialize(load_case(DEFAULT_CASE), Path(tmp) / "world")
         live = solo.bootstrap(world, log, "mattermost")
