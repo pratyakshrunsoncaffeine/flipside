@@ -123,6 +123,12 @@ Four refusals live, 0 duplicate agent posts, verdict `OK` on the real disclosure
 
 Not recorded yet; its SHA-256 goes here.
 
+## Launch film on the site
+
+`site/media/flipside-film.mp4`: 64.8 s, 11,487,301 bytes, SHA-256 `bcaf841e33e1c5d73fbd52a7981b50bd50c22576f7a4a1778bf8def0f3d72b48`.
+It is a 65-second film with music, not the demo video above; the interfaces in it are rebuilt with the real text from the evidence logs.
+`tests/test_site.py` keeps it under 15 MB and pins the vendored three.js r160 by SHA-256.
+
 ## Outside the checked scope
 
 - Questions answered by typing in Slack: not supported. Switch reports a Slack message as `kind: human` with no user id; the agents accept a person's messages only as `user:<switch id>`.
