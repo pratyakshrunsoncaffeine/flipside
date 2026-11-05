@@ -1,0 +1,16 @@
+Use of Switch: 8/10. Switch enforces two of the four refusals (scoped addressing and author-only cards with HTTP 403), the kill tests check those behaviours, and the Slack card works; but questions are answered through the gateway rather than Slack, and the offline stand-in shows the core logic can run without Switch.
+
+Technical execution: 8/10. Make targets and PowerShell commands, CI on two operating systems, a reproduction on a second machine with logged Switch message ids, and SIGKILL restart tests give unusually strong evidence; author and reviewer on two machines is still untested.
+
+Creativity and impact: 7/10. Sealing an agent session into a PR so reviewers can check selected quotes is a fresh idea that fits cross-team review; but adoption needs the author to run `flip seal`, it supports Claude Code JSONL only, and the README shows no evidence that real teams want it.
+
+Presentation and documentation: 7/10. The room transcript, sequence diagram, Switch feature table and limits section are clear and honest; but jargon (leaf, K1 to K4, G1 to G8, page rule) is dense, and the material does not show the video.
+
+Shortlist: yes. It is a careful, reproducible build where Switch's permission model does real work for the security story.
+
+Weaknesses that cost the most points:
+1. The Switch integration is not fully native to chat. People answer questions through the gateway or `flip chat`, because a message typed in Slack has no user id. A reviewer-room rule also has to admit every person in the room.
+2. Adoption friction is high and the problem is narrow. The author must seal before review, and the design depends on cross-team PRs written by agents, with no user or team validation shown.
+3. The README reads like a protocol spec. A judge must decode Merkle roots, leaves, gates and kill-test codes before seeing the payoff, and the cross-machine two-party flow is not yet verified.
+
+TOTAL: 7.6
