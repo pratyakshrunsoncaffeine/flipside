@@ -18,7 +18,7 @@ Fresh remote clone of main at `b946c5a`, `uv sync --frozen`, then the README's "
 |---|---|---|
 | macOS 26.1 | `make lint test`, twice | ruff, ruff format, mypy strict (also `--platform win32`) clean; 332 passed, twice |
 | Ubuntu | `.github/workflows/ci.yml` on every PR | Green (required job) |
-| Windows | `.github/workflows/ci.yml` on every PR | Green since PR #7; reported without blocking |
+| Windows | `.github/workflows/ci.yml` on every PR | Green since PR #7; a failure fails the run (PR #25) |
 | macOS | `.github/workflows/ci.yml` on pushes to `main` | Runs on `main` only: GitHub cancelled PR macOS jobs for lack of runners |
 | Windows, Python 3.12.6, offline, no make | Exact `uv` equivalents in `evidence/m4-20261105T002230.log` | Ruff check/format and strict mypy (default and win32) pass; 328 passed and 2 skipped, twice |
 
