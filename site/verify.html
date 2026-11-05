@@ -104,7 +104,8 @@
 globalThis.FlipsideVerify = (() => {
   const meta = ["v", "session", "step", "chunk", "role", "tools", "files", "mentions", "cmd", "ok"];
   const leafKeys = [...meta, "text"];
-  const hex64 = /^[0-9a-f]{64}$/;
+  // Python re.match's '$' accepts one final LF. Preserve the existing CLI contract.
+  const hex64 = /^[0-9a-f]{64}\n?$/;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder("utf-8", {fatal: true, ignoreBOM: true});
   const object = x => x !== null && typeof x === "object" && !Array.isArray(x);
@@ -185,7 +186,7 @@ globalThis.FlipsideVerify = (() => {
 
   function shape(d) {
     if (!object(d) || !["v", "commit", "i", "n", "salt", "leaf", "proof"].every(k => Object.hasOwn(d, k))) return false;
-    if (d.v !== 1n || typeof d.commit !== "string" || !/^[0-9a-f]{40}$/.test(d.commit) ||
+    if (d.v !== 1n || typeof d.commit !== "string" || !/^[0-9a-f]{40}\n?$/.test(d.commit) ||
       !integer(d.i) || !integer(d.n) || typeof d.salt !== "string" || !hex64.test(d.salt) ||
       !Array.isArray(d.proof) || !d.proof.every(p => typeof p === "string" && hex64.test(p)) ||
       !keysAre(d.leaf, leafKeys) || typeof d.leaf.text !== "string" || !validMeta(d.leaf)) return false;
@@ -265,6 +266,9 @@ globalThis.FlipsideVerify = (() => {
   const encoder = new TextEncoder();
   let manifestFileBytes = null;
   let revision = 0;
+  let checking = false;
+  const pendingFiles = new Map();
+  function updateButton() { get("check").disabled = checking || pendingFiles.size > 0; }
   function show(code, detail, quote) {
     get("result").dataset.code = code === "OK" ? "OK" : code ? "fail" : "";
     get("status").textContent = code === "OK" ? "Proof checks OK · Git checks not run" : code || "Ready for local inputs";
@@ -274,34 +278,45 @@ globalThis.FlipsideVerify = (() => {
   }
   function changed() {
     revision++;
-    show("", "Inputs changed. Check the proof again.");
+    updateButton();
+    show("", pendingFiles.size ? "Reading local file..." : "Inputs changed. Check the proof again.");
   }
   for (const id of ["disclosure", "manifest", "trailer"]) get(id).addEventListener("input", () => {
     if (id === "manifest") manifestFileBytes = null;
+    if (id !== "trailer") {
+      pendingFiles.delete(id);
+      get(id + "-file").value = "";
+    }
     changed();
   });
   for (const id of ["disclosure", "manifest"]) get(id + "-file").addEventListener("change", async event => {
-    const ticket = ++revision;
     const file = event.target.files[0];
     if (!file) return;
-    show("", "Reading local file...");
+    const ticket = Symbol(id);
+    pendingFiles.set(id, ticket);
+    changed();
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      if (ticket !== revision) return;
+      if (pendingFiles.get(id) !== ticket) return;
       get(id).value = new TextDecoder("utf-8", {fatal: true, ignoreBOM: true}).decode(bytes);
       if (id === "manifest") manifestFileBytes = bytes;
-      show("", "File loaded locally. Check the proof.");
+      pendingFiles.delete(id);
+      changed();
     } catch {
-      if (ticket === revision) {
+      if (pendingFiles.get(id) === ticket) {
+        pendingFiles.delete(id);
         get(id).value = "";
         if (id === "manifest") manifestFileBytes = null;
+        changed();
         show("INPUT_ERROR", "Cannot read this file as UTF-8. No proof was checked.");
       }
     }
   });
   get("check").addEventListener("click", async () => {
+    if (pendingFiles.size || checking) return;
     const ticket = ++revision;
-    get("check").disabled = true;
+    checking = true;
+    updateButton();
     show("", "Checking locally with SHA-256...");
     try {
       const result = await FlipsideVerify.verify(get("disclosure").value,
@@ -309,7 +324,7 @@ globalThis.FlipsideVerify = (() => {
       if (ticket === revision) show(result.code, result.detail, result.text);
     } catch {
       if (ticket === revision) show("INPUT_ERROR", "This input could not be checked. Run flip verify for the CLI verdict.");
-    } finally { get("check").disabled = false; }
+    } finally { checking = false; updateButton(); }
   });
   function sample(forged) {
     const data = JSON.parse(get("sample-data").textContent);
@@ -320,6 +335,7 @@ globalThis.FlipsideVerify = (() => {
     get("disclosure-file").value = "";
     get("manifest-file").value = "";
     manifestFileBytes = null;
+    pendingFiles.clear();
     changed();
   }
   get("sample").addEventListener("click", () => sample(false));
@@ -327,6 +343,7 @@ globalThis.FlipsideVerify = (() => {
   get("clear").addEventListener("click", () => {
     for (const id of ["disclosure", "manifest", "trailer", "disclosure-file", "manifest-file"]) get(id).value = "";
     manifestFileBytes = null;
+    pendingFiles.clear();
     changed();
   });
 })();

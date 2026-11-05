@@ -44,13 +44,19 @@ vm.runInThisContext(input.script, {filename: 'site/verify.html#verify-core'});
 """
 
 
-def page_codes(cases: list[dict[str, str]]) -> list[str]:
-    """Run the shipped script; missing Node is fatal in CI and optional locally."""
+def node_executable() -> str:
+    """Missing Node is fatal in CI and optional for local Python-only installs."""
     node = shutil.which("node")
     if node is None:
         if os.environ.get("FLIP_REQUIRE_NODE") == "1":
             pytest.fail("Browser parity is mandatory in CI: Node 22+ must be on PATH.")
         pytest.skip("Browser parity needs Node 22+; set FLIP_REQUIRE_NODE=1 to require it.")
+    return node
+
+
+def page_codes(cases: list[dict[str, str]]) -> list[str]:
+    """Run the shipped verifier script with the platform's real WebCrypto."""
+    node = node_executable()
     html = PAGE.read_text(encoding="utf-8")
     core = re.search(r'<script id="verify-core">(.*?)</script>', html, re.S)
     assert core, "Page must ship the core exercised by this parity gate"
@@ -179,6 +185,9 @@ def test_ordered_failures_match_cli(tmp_path: Path) -> None:
         expected.append(code)
 
     add(good, "OK")
+    add({**good, "salt": good["salt"] + "\n"}, "OK")
+    add({**good, "proof": [p + "\n" for p in good["proof"]]}, "OK")
+    add({**good, "salt": good["salt"] + "\r\n"}, "BAD_DISCLOSURE")
     value: Any
     for key in good:
         d = copy.deepcopy(good)
@@ -305,6 +314,84 @@ def test_page_is_local_and_names_git_checks_without_claiming_them() -> None:
         assert code in html
     assert "run flip verify" in html
     assert "Git checks not run" in html
+
+
+def test_file_read_races_cannot_leave_a_stale_ok() -> None:
+    """Exercise the shipped UI handlers with controllable local-file read promises.
+
+    This is a DOM stub, not a browser rendering/file-picker claim.
+    """
+    html = PAGE.read_text(encoding="utf-8")
+    scripts = dict(re.findall(r'<script id="(verify-core|verify-ui)">(.*?)</script>', html, re.S))
+    sample = re.search(
+        r'<script id="sample-data" type="application/json">(.*?)</script>', html, re.S
+    )
+    assert sample
+    runner = r"""
+const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict');
+globalThis.crypto = require('node:crypto').webcrypto;
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const elements = Object.create(null);
+for (const id of input.ids) elements[id] = {
+  value: '', textContent: '', disabled: false, hidden: false, dataset: {}, files: [], events: {},
+  addEventListener(name, fn) { this.events[name] = fn; }
+};
+elements['sample-data'].textContent = input.sample;
+globalThis.document = {getElementById: id => elements[id]};
+vm.runInThisContext(input.scripts['verify-core']);
+vm.runInThisContext(input.scripts['verify-ui']);
+const fire = (id, name) => elements[id].events[name]({target: elements[id]});
+const file = (id, bytes) => {
+  let resolve;
+  const promise = new Promise(r => { resolve = r; });
+  elements[id + '-file'].files = [{arrayBuffer: () => promise}];
+  const done = fire(id + '-file', 'change');
+  return {done, resolve: () => resolve(new TextEncoder().encode(bytes).buffer)};
+};
+(async () => {
+  fire('sample', 'click');
+  await fire('check', 'click');
+  assert.match(elements.status.textContent, /Proof checks OK/);
+  const proof = elements.disclosure.value;
+  const manifest = file('manifest', 'MALFORMED NEW MANIFEST');
+  assert.equal(elements.check.disabled, true, 'Check must be disabled during a file read');
+  assert.doesNotMatch(elements.status.textContent, /Proof checks OK/);
+  const disclosure = file('disclosure', proof);
+  manifest.resolve(); await manifest.done;
+  assert.equal(elements.manifest.value, 'MALFORMED NEW MANIFEST', 'Other file must not cancel this read');
+  assert.equal(elements.check.disabled, true, 'Second file is still pending');
+  disclosure.resolve(); await disclosure.done;
+  assert.equal(elements.check.disabled, false);
+  await fire('check', 'click');
+  assert.equal(elements.status.textContent, 'MANIFEST_HASH');
+  fire('sample', 'click');
+  await fire('check', 'click');
+  elements.trailer.value = '';
+  fire('trailer', 'input');
+  assert.doesNotMatch(elements.status.textContent, /Proof checks OK/);
+  const late = file('manifest', 'LATE STALE BYTES');
+  fire('clear', 'click');
+  late.resolve(); await late.done;
+  assert.equal(elements.manifest.value, '', 'Clear must cancel in-flight file data');
+  assert.equal(elements.check.disabled, false);
+})().catch(e => { console.error(e); process.exitCode = 1; });
+"""
+    result = subprocess.run(
+        [node_executable(), "-e", runner],
+        input=json.dumps(
+            {
+                "ids": re.findall(r'\bid="([^"]+)"', html),
+                "scripts": scripts,
+                "sample": sample.group(1),
+            }
+        ),
+        encoding="utf-8",
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 @pytest.mark.parametrize("required", [False, True])
