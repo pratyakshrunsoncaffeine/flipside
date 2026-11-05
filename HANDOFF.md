@@ -32,6 +32,7 @@ Open PRs:
 - #15 `lead/k3-evidence-wording` (lead): VERIFICATION K3.d cites the log line, not the after screenshot.
 
 Done (evidence in `evidence/`, details in `VERIFICATION.md`):
+- Live M4 on a second machine: a clean clone on Windows with its own Switch Console 0.40.1 server reproduces the Mac's verdicts and coverage lines (`evidence/replay-switch-csv-export-20261105T015811.log`). Windows needs `SWITCH_BASE` from `SERVER_PORT` in `switch-core.env`.
 - K1/K2 9/9, K4 6/6 (`make killtests`); G1 to G8 (`make lint test g8`); 338 tests, twice.
 - K3 4/4 (`make k3`, `evidence/k3-20261105T005334.log`, screenshots): author-agent's card renders in Slack with Approve and Decline; the reviewer gets 403; the author's Slack press reaches author-agent.
 - Offline flow with the four refusals (`make replay-offline`); 9 fixtures 9/9 offline (`make fixtures`); live on local Switch: `make solo`, `make solo-all` 9/9.
@@ -39,8 +40,7 @@ Done (evidence in `evidence/`, details in `VERIFICATION.md`):
 - CI: Ubuntu required, Windows green, macOS on pushes to `main` only.
 
 Not done:
-- Demo video (at most 2.5 minutes, BUILD section 11) and its SHA-256 in VERIFICATION. Codex records it once Aarav posts the live script on the board.
-- Live M4 (clean clone `make replay` on a second machine): open.
+- Demo video (at most 2.5 minutes, BUILD section 11) and its SHA-256 in VERIFICATION. Aarav records it on the Mac from `docs/DEMO.md`.
 - Final blind judge run on the final README (`docs/judging/blind/`); submission; the lead makes the repo public before 7 Nov 23:59 IST.
 - The full review inside Slack channels (only the card is checked there); see Dead ends.
 - Switch auto-posts an author-agent greeting and a "no session connected" reply in new rooms; no setting stops it.
