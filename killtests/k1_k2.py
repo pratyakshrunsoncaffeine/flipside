@@ -10,6 +10,7 @@ Writes an evidence log to ../evidence/. Exit code 0 only if every check passes.
 
 from __future__ import annotations
 
+import contextlib
 import datetime as dt
 import json
 import os
@@ -98,10 +99,8 @@ def register(user: Client, name: str) -> tuple[str, str]:
 def beat_forever(agent_id: str, api_key: str, conn: str, stop: threading.Event) -> None:
     c = Client(bearer=api_key)
     while not stop.is_set():
-        try:
+        with contextlib.suppress(HTTPError):
             c.call("POST", f"/agents/{agent_id}/connection/beat", {"connection_id": conn})
-        except HTTPError:
-            pass
         stop.wait(2)
 
 
@@ -127,7 +126,7 @@ def open_stream(agent_id: str, api_key: str, room_id: str, stop: threading.Event
                         tap.events.append(s[5:].strip())
                     if stop.is_set():
                         return
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             tap.events.append(f"<stream closed: {e!r}>")
 
     threading.Thread(target=run, daemon=True).start()
@@ -160,7 +159,8 @@ def main() -> int:
     a_agent, a_key = register(author, "flipside-author-agent")
     r_agent, r_key = register(reviewer, "flipside-reviewer-agent")
     log(
-        f"registered author-agent {a_agent} (owner author), reviewer-agent {r_agent} (owner reviewer)"
+        f"registered author-agent {a_agent} (owner author), "
+        f"reviewer-agent {r_agent} (owner reviewer)"
     )
 
     # --- K1: one room, two owners, two agents
@@ -269,7 +269,10 @@ def main() -> int:
         f"/agents/{r_agent}/message",
         {
             "room_id": room,
-            "content": '@flipside-author-agent {"q": 1, "file": "auth/session.py", "lines": "40-52", "kind": "why"}',
+            "content": (
+                '@flipside-author-agent {"q": 1, "file": "auth/session.py", '
+                '"lines": "40-52", "kind": "why"}'
+            ),
         },
     )
     time.sleep(5)
@@ -354,7 +357,8 @@ def main() -> int:
     stop.set()
     passed = all(ok for _, ok, _ in results)
     log(
-        f"RESULT {'PASS' if passed else 'FAIL'} ({sum(ok for _, ok, _ in results)}/{len(results)}); log {LOG}"
+        f"RESULT {'PASS' if passed else 'FAIL'} "
+        f"({sum(ok for _, ok, _ in results)}/{len(results)}); log {LOG}"
     )
     return 0 if passed else 1
 

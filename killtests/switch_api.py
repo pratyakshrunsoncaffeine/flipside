@@ -99,5 +99,5 @@ class EventTap:
                     s = line.decode(errors="replace").strip()
                     if s.startswith("data:"):
                         self.events.append(s[5:].strip())
-        except Exception as e:  # noqa: BLE001 - recorded for the evidence log
+        except Exception as e:  # recorded for the evidence log
             self.events.append(f"<stream closed: {e!r}>")
