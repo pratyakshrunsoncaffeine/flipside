@@ -90,7 +90,7 @@ Flipside never decides who a person is; Switch's claim and addressing policy dec
 - `docs/verify/index.html`: one static page; paste or drop a proof JSON, the bundle and the commit; WebCrypto SHA-256; same salted leaves and RFC 6962 prefixes as `docs/seal/SPEC.md`.
 - Reads only local input; no network.
 - Gate: a parity test runs the page headless over every `examples/` and `fixtures/` proof and matches `flip verify` verdicts exactly, including `PROOF_FAIL` on `q2-forged.json`.
-- Hosting on GitHub Pages waits for the repo to go public (lead).
+- No hosting: the repo stays private (Pratyaksh, 5 Nov); the page works from `file://` or a local server.
 
 ### M5. Disclosure log as a room document (Aarav's Claude, after M1)
 
@@ -107,8 +107,8 @@ Flipside never decides who a person is; Switch's claim and addressing policy dec
 
 - Final blind run (M3 gate) on the final README and video.
 - VERIFICATION refreshed: test counts per OS, `make demo` evidence, two-machine logs, video SHA-256.
-- Lead makes the repo public, then submits.
-- Gate: fresh public clone passes `make lint test g8 replay-offline`; the submission form is filed before 7 Nov 23:59 IST.
+- The repo stays private (Pratyaksh, 5 Nov); how judges get access is Pratyaksh's call. The lead submits.
+- Gate: a fresh clone passes `make lint test g8 replay-offline`; the submission form is filed before 7 Nov 23:59 IST.
 
 ## Order and owners
 

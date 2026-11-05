@@ -25,15 +25,16 @@ Flipside lets the owning team question the author team's private coding-agent se
 ## State
 
 Team repo `pratyakshrunsoncaffeine/gateplus` (private); team clone `~/gateplus-kadoo69`.
-`main` at 05fa751 or later.
+`main` at 93acb64 or later.
+The repo stays private: Pratyaksh decided (5 Nov), so no GitHub Pages and no visibility change unless Pratyaksh says otherwise.
 
-Open PRs:
-- #33 `32-make-demo-mattermost` (Aarav): `make demo` runs Switch 0.31.0 and Mattermost 11.9.0 in Docker, signs in both people and plays the review; the author presses Approve in the Mattermost web app; `make k5` 8/8 on a cleared server. CI green. Waits for the lead's review.
-- #28, #30, #31 (lead's lane): wait for the lead.
+Merged 5 Nov: #28, #30, #31 (Codex), #33 (`make demo`, K5), #35 (killtests and demo in `make lint`), #37 (kill tests count only a 403 as a refusal), #38 (site).
 
-Unmerged branch, no PR yet:
-- `34-site-replay` (Aarav, pushed, based on #33's branch): the static site in `site/`. Open the PR after #33 merges, with the `pr` skill.
-  The board post (5 Nov) asks the lead for a yes on the vendored three.js (670 KB, MIT), the 11.5 MB film in `site/media/`, and GitHub Pages (needs the repo public).
+Open work:
+- #40 (lead): Node 22 in CI for the verify-page test.
+- Codex: M4 `site/verify.html`, browser-checkable checks only; git checks say "run flip verify".
+- Aarav: `flip demo down` must keep `.flipside-demo/` files when `docker compose down` fails (Codex finding on #33); M3 README draft.
+- M2 two machines: Mac author, Windows reviewer, private network only.
 
 Done:
 - Everything listed in `VERIFICATION.md`: K1/K2 9/9, K3 4/4 (Slack card), K4 6/6, K5 8/8 (Mattermost), G1 to G8, M4 on Windows, a real Claude Code session, a real sealed GitHub PR.
@@ -45,7 +46,7 @@ Done:
 
 Not done:
 - Demo video for submission (at most 2.5 minutes, BUILD section 11) and its SHA-256 in VERIFICATION.
-- Final blind judge run on the final README; submission; the lead makes the repo public before 7 Nov 23:59 IST.
+- Final blind judge run on the final README; submission before 7 Nov 23:59 IST (the repo stays private; how judges get access is Pratyaksh's call).
 - The full review inside Slack channels (only the card is checked there); see Dead ends.
 
 ## Slack (K3 setup, local only)
@@ -128,10 +129,10 @@ Board: `tools/board unread`, `tools/board post "[Aarav's Claude] ..."`; keep one
 
 ## Open questions
 
-- The lead: vendored three.js, the 11.5 MB film in the repo, and GitHub Pages for `site/` (board, 5 Nov).
+- Pratyaksh: how judges reach a private repo at submission.
 - Demo narration: macOS `say` (free, local) or an ElevenLabs key (rotate the key that was shared in chat).
 - Whether to run the full review inside Slack channels for the demo (needs the identity change in Dead ends), or show only the card in Slack.
 
 ## Next step
 
-Read the board (`tools/board unread`). When the lead merges #33, rebase `34-site-replay` on `main` and open its PR with the `pr` skill, citing the inspector run and `tests/test_site.py`.
+Read the board (`tools/board unread`). Fix `flip demo down` (keep files on a failed `docker compose down`), then draft the M3 README.
