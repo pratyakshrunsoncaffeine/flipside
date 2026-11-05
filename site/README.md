@@ -1,6 +1,6 @@
 # Flipside site
 
-A static page that replays a real `make demo` run, with Flip (the bot from the film), the Switch connection diagram, the real Slack and Mattermost screens, and the 65 second film.
+A static page that replays a real `make demo` run, with Flip (the bot from the film), the Switch connection diagram, the real Slack and Mattermost screens, and the 78 second film.
 The repo is private, so the site is not hosted.
 
 ## View it
