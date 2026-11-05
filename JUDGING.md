@@ -10,7 +10,7 @@ Nothing here needs keys, accounts or network access, except the optional Docker 
 |---|---|---|---|
 | 1 minute | A browser | Watch the film linked at the top of the README; open `site/verify.html`, press "Try synthetic example", then "Edit sample quote" | One step checks out; the edited quote fails |
 | 3 minutes | Git, Python 3.12, [uv](https://docs.astral.sh/uv/) | `uv sync --frozen` then `make judge` | 11 checks, `RESULT PASS 11/11` in about 10 s |
-| 10 minutes | The above plus Docker with Compose v2 | `make judge-live`, then `make demo-down` | 13 checks: the review and K5 run now on pinned Switch 0.31.0 and Mattermost |
+| 10 minutes | The above plus Docker with Compose v2 | `make judge-live`, then `make demo-down` | 14 checks in about 3 minutes: the review, K5 and all 9 labelled cases run now on pinned Switch 0.31.0 and Mattermost |
 | 20 minutes | The above | `make demo`, then log in to Mattermost at the printed address as the author and press Approve; log in as the reviewer and try | The card answers only the author; Switch refuses the reviewer |
 
 Windows without `make`: `uv run python -m flipside.judge` (add `--live` for the Docker path).
@@ -34,7 +34,7 @@ Tamper checks build their inputs fresh from `examples/q2-ok.json` into `.flip-ju
 | J10 | The same review ran on real Switch and Mattermost | Newest committed `evidence/demo-mattermost-*.log` says `RESULT PASS` and `four refusals live: yes` | `flipside/room/demo.py` |
 | J11 | No model decides anything | No model SDK import in `flipside/`; `dependencies = []` | `pyproject.toml` |
 
-`make judge-live` adds J0 (Docker stack starts and the case plays), runs J10 on the log written by that run, and adds J12: K5, where Switch admits the author's claimed Mattermost account and refuses the reviewer and an unclaimed stranger.
+`make judge-live` adds J0 (Docker stack starts and the case plays), runs J10 on the log written by that run, adds J12: K5, where Switch admits the author's claimed Mattermost account and refuses the reviewer and an unclaimed stranger, and adds J13: all 9 labelled cases, honest and adversarial, played on real Switch.
 
 Results go to `evidence/judge-<time>.log` and `.json`.
 The exit code is 0 only when every check passes.

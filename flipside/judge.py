@@ -212,7 +212,7 @@ def _logs(pattern: str, since: float | None) -> list[Path]:
 
 def live_evidence_check(since: float | None = None) -> Check:
     """J10 reads the newest committed real-Switch log, or with ``since`` the one written now."""
-    logs = _logs("demo-mattermost-*.log", since)
+    logs = _logs("demo-mattermost-csv-export-*.log", since)
     if not logs:
         return Check(
             "J10", "real Switch run", "", "a demo log", "no new demo-mattermost log", False
@@ -267,6 +267,30 @@ def admission_check(since: float) -> Check:
         f"exit {p.returncode}; {m.group(0) if m else 'no K5 result'}; {', '.join(passes)}",
         p.returncode == 0 and m is not None and m.group(1) == m.group(2),
         ["killtests/k5.py", "flipside/room/setup.py", "flipside/room/mattermost.py"],
+    )
+
+
+def live_cases_check() -> Check:
+    """J13, live only: every labelled fixture case plays on real Switch and gives its expected
+    result (the case's expect.json), not just the scripted CSV-export case."""
+    cases = sorted(p for p in (ROOT / "fixtures" / "cases").iterdir() if p.is_dir())
+    passed: list[str] = []
+    failed: list[str] = []
+    for case in cases:
+        args = [*PY, "demo", "run", "--case", str(case), "--no-restart", "--pace", "0.3"]
+        rc, out = _run(args, timeout=600)
+        ok = rc == 0 and f"RESULT PASS {case.name} (switch" in out
+        (passed if ok else failed).append(case.name)
+    return Check(
+        "J13",
+        f"All {len(cases)} labelled cases, honest and adversarial, play on real Switch and "
+        "Mattermost and give their expected questions and verdicts",
+        "uv run flip demo run --case fixtures/cases/<case> --no-restart  # for each case",
+        f"{len(cases)}/{len(cases)} RESULT PASS",
+        f"{len(passed)}/{len(cases)} RESULT PASS"
+        + (f"; failed: {', '.join(failed)}" if failed else ""),
+        not failed and len(passed) == len(cases),
+        ["flipside/room/demo.py", "fixtures/cases/"],
     )
 
 
@@ -357,6 +381,7 @@ def run_all(live: bool = False) -> list[Check]:
         started,
         live_evidence_check(since),
         admission_check(since),
+        live_cases_check(),
         deterministic_check(),
     ]
 
