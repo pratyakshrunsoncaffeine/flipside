@@ -2,6 +2,14 @@
 
 Prove what your coding agent did, without handing over the session.
 
+[![CI](https://github.com/pratyakshrunsoncaffeine/gateplus/actions/workflows/ci.yml/badge.svg)](https://github.com/pratyakshrunsoncaffeine/gateplus/actions/workflows/ci.yml)
+![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776ab)
+![Runtime: standard library only](https://img.shields.io/badge/runtime-stdlib%20only-555)
+![Switch 0.31.0](https://img.shields.io/badge/Switch-0.31.0-8a5a06)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+**[Live site](https://pratyakshrunsoncaffeine.github.io/gateplus/)** · **[Film](site/media/flipside-film.mp4)** · **[Check a quote in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html)** · **[Judging guide](JUDGING.md)**
+
 [![Flipside, the 78 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
 
 When one team's agent writes a pull request and another team owns the code, the reason behind each change lives only in the author's agent session.
@@ -60,6 +68,10 @@ reviewer-agent   @Reviewer Brief for PR #142: 1 question, 1 answered, 1 leaf ver
                    coverage auth/session.py: 2 sealed steps, 1 disclosed, 1 not disclosed (step 6)
 ```
 
+The same review in Mattermost, with the author and the reviewer on their own accounts:
+
+![The #pr-142 room in Mattermost: the reviewer asks for the whole session, the injected request is dropped, the author approves step 5, reviewer-agent verifies it OK and posts the brief](site/media/mattermost-review-room.jpg)
+
 Q1 was "`auth/session.py` changed and the PR description does not mention it. Why?", raised by a deterministic rule.
 The reviewer gets the author's answer and the exact session step behind it, checked against a root sealed before review began.
 The coverage line says what was not shown.
@@ -117,6 +129,20 @@ The six steps in detail are in [docs/REFERENCE.md](docs/REFERENCE.md#how-it-work
 
 No LLM runs anywhere in `flipside/`.
 Seal, verify, gaps, selection, contradictions, coverage and the page rule are deterministic Python on the standard library.
+
+## Repository map
+
+```
+flipside/seal/     seal, prove, verify: Merkle tree, manifest, disclosure, secret scan (no network)
+flipside/room/     the two agents, room protocol, deterministic rules, Switch client, demo, replay
+flipside/judge.py  make judge: every README claim as a PASS/FAIL check
+killtests/         K1 to K5: the Switch behaviour Flipside relies on, run on a real server
+fixtures/          9 synthetic PR cases, 2 adversarial, with expected questions and verdicts
+examples/          a real disclosure, a forged copy and their manifest
+site/              the replay page and the in-browser verifier (live on GitHub Pages)
+evidence/          a dated log of every real run, passing or not
+docs/              DESIGN.md (flow, messages, rules, Switch facts), seal/SPEC.md, RUNNING.md, REFERENCE.md
+```
 
 ## Connected agents and channel setup
 
@@ -185,3 +211,11 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 - A leaf's text is the session verbatim, so tool inputs carry the author's absolute paths; the author sees and approves those exact bytes on each card.
 - Without Docker there is no chat window for people: `make solo` acts for both people through the gateway API on Switch Console's local server.
 - reviewer-agent's room rule admits every person in its own `#pr-<n>` room, because Switch matches people by an id the gateway does not expose; reviewer-agent acts only on the PR author's answers.
+
+## Team
+
+Built for Flip the Switch (4 to 7 Nov 2026 IST) by Pratyaksh ([@pratyakshrunsoncaffeine](https://github.com/pratyakshrunsoncaffeine)) and Aarav Mahajan ([@kadoo69](https://github.com/kadoo69)).
+
+## License
+
+[MIT](LICENSE).
