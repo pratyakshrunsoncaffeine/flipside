@@ -104,8 +104,13 @@
   const BLINKS = [1.9, 5.3, 5.62, 9.1, 12.8, 15.4, 19.7]; // seconds within a 21 s cycle; the double blink reads as alive
   const ease = (cur, target, rate, dt) => cur + (target - cur) * (1 - Math.exp(-rate * dt));
 
+  // Flip's farthest reach is about 1.65 units from its centre: the top corner during a hop and tilt,
+  // and the floor shadow. Its body is 2.12 units, so a fit above this clips at the canvas edge.
+  // A page that wants Flip bigger gives the canvas room around its box instead.
+  const MAX_FIT = 0.64;
+
   function mount(canvas, opts = {}) {
-    const fit = opts.fit || 0.62;
+    const fit = Math.min(MAX_FIT, opts.fit || 0.62);
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let renderer;
     try {

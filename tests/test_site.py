@@ -244,3 +244,16 @@ if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
         [node, "-e", runner], input=json.dumps(payload), text=True, capture_output=True, timeout=30
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_every_flip_fits_inside_its_canvas() -> None:
+    """At fit 0.86 a hop pushed Flip's top past the canvas edge and its shadow off the bottom."""
+    import re
+
+    flip = (SITE / "flip.js").read_text(encoding="utf-8")
+    page = (SITE / "index.html").read_text(encoding="utf-8")
+    cap = re.search(r"const MAX_FIT = ([\d.]+);", flip)
+    assert cap, "flip.js must state the largest fit that never clips"
+    fits = [float(f) for f in re.findall(r'mount\("\w+", \{ fit: ([\d.]+) \}\)', page)]
+    assert len(fits) == 3
+    assert all(f <= float(cap.group(1)) for f in fits), fits

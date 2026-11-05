@@ -79,8 +79,8 @@ nav.top .links a:hover { color: var(--amber-ink); }
 .scene h1 .ln > span { display: inline-block; }
 .scene h1 .amb { color: var(--amber-ink); }
 .botwrap { width: min(46vh, 74vw, 460px); aspect-ratio: 1; will-change: transform; }
-.scene .stagebot { position: static; translate: none; width: 100%; height: 100%; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
-.scene .stagebot canvas { display: block; width: 100%; height: 100%; }
+.scene .stagebot { position: relative; translate: none; width: 100%; height: 100%; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
+.scene .stagebot canvas, .flipbtn canvas, .mark .endbot canvas { position: absolute; left: -20%; top: -20%; width: 140%; height: 140%; display: block; pointer-events: none; } /* room for the hop and the shadow */
 .hbot { display: grid; justify-items: center; gap: 28px; text-align: center; will-change: transform, opacity; }
 .hbot p { max-width: 30em; font-size: 19px; color: var(--muted); }
 .hbot .act { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px 28px; }
@@ -161,8 +161,7 @@ section.replay { padding-block: 160px 0; }
   height: var(--h); display: grid; grid-template-rows: auto minmax(0, 1fr); scroll-margin-top: 16px; }
 .dock { position: sticky; top: 0; z-index: 6; background: var(--night); border-radius: 36px 36px 0 0; padding: 18px 22px 16px; display: grid; gap: 14px; }
 .dock .row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; }
-.flipbtn { width: 76px; height: 76px; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
-.flipbtn canvas { width: 100%; height: 100%; display: block; }
+.flipbtn { position: relative; width: 76px; height: 76px; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 30%; }
 .say { font-size: var(--t-say); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; color: #fff; }
 .say .w { display: inline-block; transition: opacity .45s ease, transform .5s var(--ease), filter .45s ease; }
 .say .w.hide { opacity: 0; transform: translateY(.3em); filter: blur(6px); }
@@ -342,8 +341,7 @@ section.run { background: var(--night); color: var(--p-ink); padding-block: 180p
 /* The close: the mark, built large. */
 footer { padding-block: 120px 40px; }
 .mark { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 2vw; }
-.mark .endbot { width: clamp(110px, 16vw, 250px); aspect-ratio: 1; }
-.mark .endbot canvas { width: 100%; height: 100%; display: block; }
+.mark .endbot { position: relative; width: clamp(110px, 16vw, 250px); aspect-ratio: 1; }
 .mark .word { font-size: clamp(76px, 17vw, 270px); font-weight: 800; letter-spacing: -.065em; line-height: .8; }
 .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px 40px; margin-top: 64px; font-size: var(--t-small); color: var(--muted); }
 .foot nav { display: flex; flex-wrap: wrap; gap: 10px 28px; }
@@ -712,7 +710,7 @@ footer { padding-block: 120px 40px; }
 
 
   // Hero: one beat of the real run at a time, with Flip reacting. Clicking Flip flips it.
-  const hero = mount("hero", { fit: 0.86 });
+  const hero = mount("hero", { fit: 0.61 });
   {
   const LOCK = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
   const HFACE = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3.5" width="18" height="15" rx="5.5" fill="#0d0e11"/><rect x="6.6" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/><rect x="13" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/></svg>';
@@ -790,7 +788,7 @@ footer { padding-block: 120px 40px; }
   document.documentElement.addEventListener("pointerleave", () => lookers.forEach(([a]) => a.set({ look: [0, 0] })));
   if (hero) $("herobtn").addEventListener("click", () => { hero.set({ side: hero.side ? 0 : 1, mood: "happy", hop: true }); setTimeout(() => hero.set({ mood: "neutral" }), 1200); });
   }
-  const endbot = mount("endbot", { fit: 0.74 });
+  const endbot = mount("endbot", { fit: 0.53 });
   if (window.FlipFollow) window.FlipFollow(endbot, "endbot");
   if (endbot) new IntersectionObserver(([e]) => { if (e.isIntersecting) { endbot.set({ mood: "happy", hop: true }); setTimeout(() => endbot.set({ mood: "neutral" }), 1500); } }, { threshold: 0.8 }).observe($("endbot"));
 
@@ -809,7 +807,7 @@ footer { padding-block: 120px 40px; }
   // The replay. Every step comes from site/run.js, which site/build.py makes from a real evidence log.
   const RUN = window.RUN;
   if (!RUN) return;
-  const narrator = mount("narrator", { fit: 0.86 });
+  const narrator = mount("narrator", { fit: 0.61 });
   const FACE = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3.5" width="18" height="15" rx="5.5" fill="#0d0e11"/><rect x="6.6" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/><rect x="13" y="8" width="2.4" height="5" rx="1.2" fill="#fff4e2"/></svg>';
   const PLAY = '<path d="M4 2.5v11L13.5 8z" fill="currentColor"/>', PAUSE = '<rect x="3.5" y="2.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="9.3" y="2.5" width="3.2" height="11" rx="1" fill="currentColor"/>';
   const people = { "author-person": "Author", "reviewer-person": "Reviewer", "flipside-author-agent": "author-agent", "flipside-reviewer-agent": "reviewer-agent" };
