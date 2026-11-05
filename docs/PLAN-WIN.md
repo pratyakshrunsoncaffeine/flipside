@@ -44,13 +44,32 @@ Weighted target: about 9.4.
 
 ### M1. `make demo`: real Switch and Mattermost in one command (Aarav's Claude)
 
-- S1 spike first: on a Console-set-up server with the bundled Mattermost, does a person's Mattermost message reach agents with a Switch user id?
-  If yes, people answer questions in chat and the Slack dead end (HANDOFF) closes for Mattermost.
-  If no, people answer through the card and `flip` commands, and the README says so.
-- `make demo` runs `replay/mattermost_demo.py` (room lane; standard library, Docker required); the Makefile target goes through the lead: fetch `ghcr.io/sandbox-quantum/standalone-compose` pinned by digest, start switch-core and Mattermost, create Author and Reviewer, register both agents, open both rooms as Mattermost channels, run the CSV-export case, print the Mattermost logins.
+- S1 spike: done, yes (5 Nov 12:00 IST, standalone compose 0.31.0 with Mattermost 11.9.0).
+  The author claims their Mattermost account (`POST /gateway/collaborations/{bridge}/identities`); the agent has an owner-only addressing policy.
+  The author's Mattermost message arrives `addressed: true`; the unclaimed reviewer's arrives `addressed: false` and Switch itself replies that the agent takes instructions only from its owner.
+  The transcript still shows `userId: null` for bridged people, so Flipside takes the author's identity from Switch's addressing decision, not from the sender field.
+- `make demo` runs `flipside/room/demo.py` (room lane; standard library, Docker required); the Makefile target goes through the lead: fetch `ghcr.io/sandbox-quantum/standalone-compose` pinned by digest, start switch-core and Mattermost, create Author and Reviewer, register both agents, open both rooms as Mattermost channels, run the CSV-export case, print the Mattermost logins.
 - The judge logs in as the author and presses Approve; logs in as the reviewer and sees the 403.
 - `make demo-down` removes everything it created.
 - Gate: from a fresh clone on the Mac, `make demo` exits 0 and writes `evidence/demo-mattermost-*.log` with the four refusals, the author's button press reaching author-agent, and `OK` from `flip verify`; screenshot of the card in Mattermost.
+
+### M1b. Switch as the natural choice (Aarav's Claude, with M1)
+
+Each Switch feature below does a job Flipside needs anyway; none is added for show.
+Endpoints are from the running 0.31.0 server's `/gateway/openapi.json`.
+
+| Flipside needs | Switch feature | Endpoint | Status |
+|---|---|---|---|
+| Know which person is the author, in their own chat app | Claimed bridge identity plus owner-only addressing | `POST /collaborations/{bridge}/identities`, `PUT /agents/{id}/addressing-policy` | S1 passed |
+| Only the author releases bytes | Approval card answered in Mattermost by the claimed author | `/agent-sessions/.../approvals` | K3 passed in Slack; rerun in Mattermost |
+| One visible path out of the private room | Linked room from the author's room to `#pr-<n>`, labelled "disclosures" | `POST /rooms/{room}/linked-rooms` | spike S2: what a link permits |
+| Every agent in the room follows the rules | Room instructions on both rooms | room `instructions` field | spike S3: write path |
+| A record neither side can rewrite | Room documents: public seal manifest and "Disclosure log", creator-only edit | `/documents`, `/rooms/{room}/documents/{doc}` | M5 |
+| A team installs Flipside in one step | A Switch room template for the two rooms, policies and instructions | `/templates`, `/rooms/from-template-document` | spike S4 |
+| Two teams on different chat apps | Author's team in Slack, reviewer's team in Mattermost, one Switch room each | bridges | stretch after M2 |
+
+Gate: a kill test K5 on the demo stack covers rows 1 and 2 (claimed author addressed, unclaimed person refused, author's Mattermost card press accepted, reviewer's refused) and each other row that ships.
+Flipside never decides who a person is; Switch's claim and addressing policy decide, and the README says so.
 
 ### M2. Two parties, two machines (lead plus Aarav)
 
