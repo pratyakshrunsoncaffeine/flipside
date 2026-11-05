@@ -155,7 +155,7 @@ False flags: 0.
 | Approval card in Slack with buttons; the reviewer gets 403; the author's press reaches author-agent (K3, 4 checks) | pass | `evidence/k3-20261105T005334.log` |
 | The live flow in Slack channels; the author approves in Slack | pass | `evidence/solo-csv-export-20261105T011603.log` |
 | Clean clone on a second machine (Windows, its own Switch server) reproduces the verdicts and coverage lines | pass | `evidence/replay-switch-csv-export-20261105T015811.log` |
-| The whole review in Mattermost on switch-core 0.31.0: both people act as their own Mattermost accounts, the author approves in Mattermost (macOS) | pass | `make demo`, `evidence/demo-mattermost-csv-export-20261105T131047.log` |
+| The whole review in Mattermost on switch-core 0.31.0: both people act as their own Mattermost accounts, the author approves in Mattermost (macOS; CI on Ubuntu) | pass | `make demo`, `evidence/demo-mattermost-csv-export-20261105T131047.log` |
 | K5: Switch admits only the author's claimed Mattermost account, takes a card press only from the author, refuses each person changing the other's room (8 checks) | pass | `make k5`, `evidence/k5-20261105T153338.log` |
 | Browser proof check (`site/verify.html`) gives the same verdicts as `flip verify` for the checks a browser can run | pass | `tests/blind/test_browser_verify.py` |
 | Author and reviewer on two machines (Mac author, Windows reviewer, private tailnet) | pass | `evidence/m2-author-20261105T172923.log`, `evidence/m2-reviewer-20261105T172644.log` |

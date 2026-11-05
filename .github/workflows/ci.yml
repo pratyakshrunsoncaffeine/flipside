@@ -46,3 +46,33 @@ jobs:
         run: |
           make replay-offline
           make fixtures
+
+  # The whole review on a real Switch 0.31.0 server with Mattermost, in Docker (README Status row
+  # for `make demo`). Ubuntu runners ship Docker with Compose v2; demo.py pulls Switch's pinned
+  # Compose file from ghcr.io anonymously, so the job needs no secrets.
+  demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: uv sync --frozen
+      - name: make demo
+        run: make demo
+      # Only the evidence log is uploaded; .flipside-demo/ holds this run's generated secrets.
+      - name: Upload the demo log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-mattermost-log
+          path: evidence/demo-mattermost-*.log
+          if-no-files-found: warn
+      - name: Container state on failure
+        if: failure()
+        run: docker ps -a --format '{{.Names}} {{.Status}}'
+      - name: make demo-down
+        if: always()
+        run: make demo-down
