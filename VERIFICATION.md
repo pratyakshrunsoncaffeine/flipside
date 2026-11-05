@@ -145,6 +145,10 @@ Not recorded yet; its SHA-256 goes here.
 It is a 78-second film with music, in the site's colours, not the demo video above; the interfaces in it are rebuilt with the real text from the evidence logs.
 `tests/test_site.py` keeps it under 15 MB and pins the vendored three.js r160 by SHA-256.
 
+## Evidence folder
+
+`evidence/` keeps every logged run, passing or not; this page links the runs each claim rests on.
+
 ## Outside the checked scope
 
 - Questions answered by typing in Slack: not supported. Switch reports a Slack message as `kind: human` with no user id; the agents accept a person's messages only as `user:<switch id>`.

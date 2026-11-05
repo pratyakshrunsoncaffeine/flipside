@@ -1,15 +1,15 @@
-Publication copy: 4 credential-shaped synthetic test parameter labels redacted.
+Publication copy: 4 credential-shaped synthetic test parameter labels redacted; the Windows user and host names are shown as <user> and <host>.
 Line endings normalized to LF; commands, exit codes and other output retained.
 The original capture remains local and unmodified.
 
 **********************
 PowerShell transcript start
 Start time: 20261105104155
-Username: PRATYAKSHPC\surya
-RunAs User: PRATYAKSHPC\surya
+Username: <host>\<user>
+RunAs User: <host>\<user>
 Configuration Name: 
-Machine: PRATYAKSHPC (Microsoft Windows NT 10.0.26300.0)
-Host Application: C:\Users\surya\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoProfile -File .\.board\readme-offline-judge.ps1 -RootPath C:\Users\surya\Documents\ChatGPT\Caelion_V2\gateplus-readme-final -LogPath C:\Users\surya\Documents\ChatGPT\Caelion_V2\gateplus-readme-final\demo\evidence\windows-readme-20261105T104155.log -FallbackTemp C:/t/codexREADME27-2
+Machine: <host> (Microsoft Windows NT 10.0.26300.0)
+Host Application: C:\Users\<user>\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -NoProfile -File .\.board\readme-offline-judge.ps1 -RootPath C:\Users\<user>\Documents\ChatGPT\Caelion_V2\gateplus-readme-final -LogPath C:\Users\<user>\Documents\ChatGPT\Caelion_V2\gateplus-readme-final\demo\evidence\windows-readme-20261105T104155.log -FallbackTemp C:/t/codexREADME27-2
 Process ID: 19040
 PSVersion: 7.6.5
 PSEdition: Core
@@ -144,7 +144,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -152,7 +152,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____ ERROR at setup of test_independent_case_via_public_cli[hidden-auth] _____
@@ -258,7 +258,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -266,7 +266,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____ ERROR at setup of test_independent_case_via_public_cli[honest-docs] _____
@@ -372,7 +372,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -380,7 +380,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ___ ERROR at setup of test_independent_case_via_public_cli[honest-refactor] ___
@@ -486,7 +486,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -494,7 +494,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____ ERROR at setup of test_independent_case_via_public_cli[honest-rerun] _____
@@ -600,7 +600,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -608,7 +608,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____ ERROR at setup of test_independent_case_via_public_cli[withheld-auth] ____
@@ -714,7 +714,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -722,7 +722,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____ ERROR at setup of test_stop_all_lets_each_agent_run_its_shutdown_path ____
@@ -828,7 +828,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -836,7 +836,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ___ ERROR at setup of test_run_stops_on_the_stop_file_and_flushes_its_notes ___
@@ -942,7 +942,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -950,7 +950,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _ ERROR at setup of test_restart_each_agent_mid_flow_without_duplicate_posts __
@@ -1056,7 +1056,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1064,7 +1064,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 __________ ERROR at setup of test_timeout_posts_brief_with_no_answer __________
@@ -1170,7 +1170,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1178,7 +1178,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ________ ERROR at setup of test_secret_leaf_is_withheld_without_a_card ________
@@ -1284,7 +1284,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1292,7 +1292,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _ ERROR at setup of test_restart_after_the_session_was_rewritten_withholds_instead_of_crashing _
@@ -1398,7 +1398,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1406,7 +1406,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _ ERROR at setup of test_one_card_per_leaf_and_its_answer_covers_every_question _
@@ -1512,7 +1512,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1520,7 +1520,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____ ERROR at setup of test_declined_leaf_is_withheld_for_every_question _____
@@ -1626,7 +1626,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1634,7 +1634,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ________ ERROR at setup of test_state_from_another_room_is_not_reused _________
@@ -1740,7 +1740,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1748,7 +1748,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 __ ERROR at setup of test_a_card_pressed_in_slack_by_the_author_is_honoured ___
@@ -1854,7 +1854,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1862,7 +1862,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _______ ERROR at setup of test_a_slack_press_by_anyone_else_is_ignored ________
@@ -1968,7 +1968,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -1976,7 +1976,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _ ERROR at setup of test_by_hand_waits_for_the_author_and_finishes_after_their_answer _
@@ -2082,7 +2082,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2090,7 +2090,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _______ ERROR at setup of test_config_is_written_private_and_read_back ________
@@ -2196,7 +2196,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2204,7 +2204,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____________ ERROR at setup of test_work_dir_is_created_private ______________
@@ -2310,7 +2310,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2318,7 +2318,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _______________ ERROR at setup of test_case_outcome[csv-export] _______________
@@ -2424,7 +2424,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2432,7 +2432,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____________ ERROR at setup of test_case_outcome[disabled-test] ______________
@@ -2538,7 +2538,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2546,7 +2546,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ______________ ERROR at setup of test_case_outcome[honest-docs] _______________
@@ -2652,7 +2652,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2660,7 +2660,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _________ ERROR at setup of test_case_outcome[honest-rejected-rerun] __________
@@ -2766,7 +2766,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2774,7 +2774,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____________ ERROR at setup of test_case_outcome[honest-subagent] _____________
@@ -2880,7 +2880,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -2888,7 +2888,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____________ ERROR at setup of test_case_outcome[misleading-quote] ____________
@@ -2994,7 +2994,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3002,7 +3002,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____________ ERROR at setup of test_case_outcome[new-dependency] _____________
@@ -3108,7 +3108,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3116,7 +3116,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _________ ERROR at setup of test_case_outcome[reseal-after-questions] _________
@@ -3222,7 +3222,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3230,7 +3230,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ______________ ERROR at setup of test_case_outcome[widened-cors] ______________
@@ -3336,7 +3336,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3344,7 +3344,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____ ERROR at setup of test_honest_cases_have_zero_gaps_and_a_clean_brief _____
@@ -3450,7 +3450,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3458,7 +3458,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 __________ ERROR at setup of test_fixtures_regenerate_byte_for_byte ___________
@@ -3564,7 +3564,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3572,7 +3572,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____ ERROR at setup of test_three_steps_give_two_complete_private_configs _____
@@ -3678,7 +3678,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3686,7 +3686,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _______________ ERROR at setup of test_policies_and_membership ________________
@@ -3792,7 +3792,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3800,7 +3800,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____________ ERROR at setup of test_wrong_pr_join_line_is_refused _____________
@@ -3906,7 +3906,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -3914,7 +3914,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____________ ERROR at setup of test_private_creds_load_on_every_os ____________
@@ -4020,7 +4020,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -4028,7 +4028,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ___________ ERROR at setup of test_check_config_names_missing_keys ____________
@@ -4134,7 +4134,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -4142,7 +4142,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____________ ERROR at setup of test_pr_source_github_or_pr_json ______________
@@ -4248,7 +4248,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -4256,7 +4256,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _ ERROR at setup of test_existing_user_without_local_password_stops_and_writes_nothing _
@@ -4362,7 +4362,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -4370,7 +4370,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ____ ERROR at setup of test_new_user_is_created_with_a_private_creds_file _____
@@ -4476,7 +4476,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -4484,7 +4484,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _____ ERROR at setup of test_event_cursor_is_bound_to_its_agent_and_rooms _____
@@ -4590,7 +4590,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -4598,7 +4598,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ______________ ERROR at setup of test_sorted_keys_no_spaces_utf8 ______________
@@ -4612,7 +4612,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FC950>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_nested_objects_sorted _________________
@@ -4626,7 +4626,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B4050>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_non_ascii_is_raw_utf8 _________________
@@ -4640,7 +4640,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B6870>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_floats_raise[1.5] ___________________
@@ -4654,7 +4654,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B70B0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_floats_raise[bad1] __________________
@@ -4668,7 +4668,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B52E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_floats_raise[bad2] __________________
@@ -4682,7 +4682,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B6210>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_floats_raise[nan] ___________________
@@ -4696,7 +4696,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B7A10>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_other_types_raise[bad0] ________________
@@ -4710,7 +4710,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1BE0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_other_types_raise[bad1] ________________
@@ -4724,7 +4724,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A2870>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_other_types_raise[x] _________________
@@ -4738,7 +4738,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A3C80>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_other_types_raise[bad3] ________________
@@ -4752,7 +4752,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B7350>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________________ ERROR at setup of test_bool_is_not_int ____________________
@@ -4766,7 +4766,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B4410>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_canon_text_allows_floats_for_step_text ________
@@ -4780,7 +4780,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B55E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_canon_text_rejects_nan ________________
@@ -4794,7 +4794,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B78C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_seal_prove_verify_end_to_end _____________
@@ -4808,7 +4808,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FD3A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_prove_refuses_secret_leaf _______________
@@ -4822,7 +4822,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1D60>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_prove_session_changed_exit_2 _____________
@@ -4836,7 +4836,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A2C00>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_usage_errors_exit_1 __________________
@@ -4850,7 +4850,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0470>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_seal_default_session_from_claude_projects _______
@@ -4864,7 +4864,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1850>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_every_room_command_dispatches _____________
@@ -4878,7 +4878,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BDB50>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_spec_example_line ___________________
@@ -4892,7 +4892,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BE660>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_subagent_steps_are_labelled ______________
@@ -4906,7 +4906,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BF710>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_untouched_file_and_json ________________
@@ -4920,7 +4920,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A25D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____ ERROR at setup of test_file_and_mention_on_same_step_counts_as_file _____
@@ -4934,7 +4934,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6991F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________________ ERROR at setup of test_g8_ok_and_forged ___________________
@@ -4948,7 +4948,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F69BD10>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_examples_regenerate_byte_for_byte ___________
@@ -4962,7 +4962,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73D5B0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_leaf_and_node_prefixes ________________
@@ -4976,7 +4976,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9E9C8230>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_empty_tree_is_an_error ________________
@@ -4990,7 +4990,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB16CF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________________ ERROR at setup of test_known_shapes _____________________
@@ -5004,7 +5004,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB89940>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____ ERROR at setup of test_rfc9162_split_is_largest_power_of_two_below_n _____
@@ -5018,7 +5018,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A540>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_g1_every_leaf_every_size_1_to_256 ___________
@@ -5032,7 +5032,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0680>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_wrong_index_or_size_fails _______________
@@ -5046,7 +5046,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0350>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_inner_node_is_not_a_leaf _______________
@@ -5060,7 +5060,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A2210>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_root_from_proof_rejects_bad_index ___________
@@ -5074,7 +5074,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB827E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_proof_index_out_of_range _______________
@@ -5088,7 +5088,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FF200>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_ok_round_trip_every_leaf _______________
@@ -5102,7 +5102,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0F50>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________________ ERROR at setup of test_disclosure_shape ___________________
@@ -5116,7 +5116,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0AA0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_g2_single_bit_flips __________________
@@ -5130,7 +5130,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0C20>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_index_flip_codes_are_specific _____________
@@ -5144,7 +5144,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A5D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________________ ERROR at setup of test_manifest_hash _____________________
@@ -5158,7 +5158,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB163C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>0] _______________
@@ -5172,7 +5172,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB6F350>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>1] _______________
@@ -5186,7 +5186,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73C5F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>2] _______________
@@ -5200,7 +5200,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6995E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>3] _______________
@@ -5214,7 +5214,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FE930>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>4] _______________
@@ -5228,7 +5228,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B6030>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>5] _______________
@@ -5242,7 +5242,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B5370>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>6] _______________
@@ -5256,7 +5256,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B43B0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>7] _______________
@@ -5270,7 +5270,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FD4F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>8] _______________
@@ -5284,7 +5284,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F69BAD0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_bad_disclosure[<lambda>9] _______________
@@ -5298,7 +5298,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73E3F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_not_a_dict_is_bad_disclosure _____________
@@ -5312,7 +5312,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB15970>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_no_seal_and_not_in_pr _________________
@@ -5326,7 +5326,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A330>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____ ERROR at setup of test_g5_edited_quote_resealed_and_edited_session ______
@@ -5340,7 +5340,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1220>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____ ERROR at setup of test_tool_results_file_change_is_session_changed ______
@@ -5354,7 +5354,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A2CF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____ ERROR at setup of test_g6_appending_after_seal_is_not_session_changed ____
@@ -5368,7 +5368,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B6840>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_deleted_session_is_session_changed __________
@@ -5382,7 +5382,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B6600>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________________ ERROR at setup of test_prove_errors _____________________
@@ -5396,7 +5396,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BE870>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_secret_split_across_chunks_is_caught _________
@@ -5410,7 +5410,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BCB60>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_state_holds_no_text __________________
@@ -5424,7 +5424,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BFB90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________________ ERROR at setup of test_salt_formula _____________________
@@ -5438,7 +5438,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B7F80>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_empty_session_refuses _________________
@@ -5452,7 +5452,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB828D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_key_must_be_32_bytes _________________
@@ -5466,7 +5466,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0E60>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_leaves_in_session_step_chunk_order_and_manifest_has_no_text _
@@ -5480,7 +5480,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB59D90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_seal_commit_trailer_state_and_key_mode ________
@@ -5494,7 +5494,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73FE00>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___ ERROR at setup of test_a_key_with_newline_bytes_is_stored_byte_for_byte ___
@@ -5508,7 +5508,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB6F950>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_same_key_same_root_new_key_new_root __________
@@ -5522,7 +5522,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F69BB90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_staged_changes_refuse _________________
@@ -5536,7 +5536,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BFAA0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________________ ERROR at setup of test_bad_base_refuses ___________________
@@ -5550,7 +5550,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BE510>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_amend_adds_trailer_to_head ______________
@@ -5564,7 +5564,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BD040>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_metadata_of_csv_session ________________
@@ -5578,7 +5578,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BCF20>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_g7_subagent_is_session_1_and_sorted __________
@@ -5592,7 +5592,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C60F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_g7_bash_sed_mention __________________
@@ -5606,7 +5606,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BCA10>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________________ ERROR at setup of test_project_dir_name ___________________
@@ -5620,7 +5620,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BF5C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_unchanged_text_in_leaf ________________
@@ -5634,7 +5634,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BFBF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_seal_from_session_with_partial_last_line _______
@@ -5648,7 +5648,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F69BB90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_csv_session_has_ten_steps _______________
@@ -5662,7 +5662,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73F920>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_private_write_is_binary_and_keeps_lf_bytes ______
@@ -5676,7 +5676,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A5D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_kinds[aws_access_key-AKIAABCDEFGHIJKLMNOP] ______
@@ -5690,7 +5690,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1BE0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_kinds[github_token-[SYNTHETIC SECRET-SCAN TEST LABEL REDACTED]] _
@@ -5704,7 +5704,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B7F80>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_kinds[github_pat-github_pat_x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1x1] _
@@ -5718,7 +5718,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C7170>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_kinds[jwt-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abcDEF123_-xyz789] _
@@ -5732,7 +5732,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C5C10>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____ ERROR at setup of test_kinds[slack_token-xoxb-1234567890-abcdefghij] _____
@@ -5746,7 +5746,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C4DD0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_kinds[api_key-[SYNTHETIC SECRET-SCAN TEST LABEL REDACTED]] _
@@ -5760,7 +5760,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C7EF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_private_key_block_with_and_without_end ________
@@ -5774,7 +5774,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B41A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_env_value_needs_entropy ________________
@@ -5788,7 +5788,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A2690>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________________ ERROR at setup of test_clean_text ______________________
@@ -5802,7 +5802,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB15940>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________________ ERROR at setup of test_entropy ________________________
@@ -5816,7 +5816,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F69ACC0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_env_value_inside_a_command_or_sentence ________
@@ -5830,7 +5830,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BC7A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_empty_text_gives_one_empty_chunk ___________
@@ -5844,7 +5844,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BC140>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_short_text_one_chunk _________________
@@ -5858,7 +5858,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C5DF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_exactly_300_is_one_chunk _______________
@@ -5872,7 +5872,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C7500>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_no_whitespace_cuts_at_300 _______________
@@ -5886,7 +5886,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C4590>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_cut_after_last_space_inside_window __________
@@ -5900,7 +5900,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F134E00>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_space_at_index_300_is_outside_window _________
@@ -5914,7 +5914,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F134650>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_newline_counts_as_cut_point ______________
@@ -5928,7 +5928,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1369F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________________ ERROR at setup of test_crlf_and_nfc _____________________
@@ -5942,7 +5942,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C6A80>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_code_points_not_bytes _________________
@@ -5956,7 +5956,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C45C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_chunks_reassemble ___________________
@@ -5970,7 +5970,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BC7A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_sealed_prefix_cuts_at_last_complete_line _______
@@ -5984,7 +5984,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BC2C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____ ERROR at setup of test_user_string_assistant_merge_and_tool_result ______
@@ -5998,7 +5998,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FE180>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_skips_meta_sidechain_and_other_types _________
@@ -6012,7 +6012,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F698F80>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_sidechain_kept_in_subagent_session __________
@@ -6026,7 +6026,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A720>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_assistant_merge_is_by_message_id_even_if_interleaved _
@@ -6040,7 +6040,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F137230>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____ ERROR at setup of test_text_blocks_and_tool_results_in_one_user_line _____
@@ -6054,7 +6054,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1353D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_tool_result_list_content_and_image __________
@@ -6068,7 +6068,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F135550>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________________ ERROR at setup of test_user_image_block ___________________
@@ -6082,7 +6082,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F136CF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____ ERROR at setup of test_relative_paths_resolve_against_cwd_and_dedupe _____
@@ -6096,7 +6096,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B4140>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_bash_mentions_cmd_ok _________________
@@ -6110,7 +6110,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F137680>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_step_cmd_priority_across_bash_calls __________
@@ -6124,7 +6124,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F137020>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_mentions_are_sorted_union _______________
@@ -6138,7 +6138,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1365A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_non_bash_step_has_null_cmd_and_ok ___________
@@ -6152,7 +6152,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B6210>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_tool_result_without_call_has_no_tools _________
@@ -6166,7 +6166,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A3B30>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_float_in_tool_input_is_rendered ____________
@@ -6180,7 +6180,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73D670>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_thinking_only_message_is_an_empty_step ________
@@ -6194,7 +6194,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BC770>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_persisted_output_pointer_is_replaced _________
@@ -6208,7 +6208,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C5850>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___ ERROR at setup of test_pointer_outside_tool_results_dir_is_not_followed ___
@@ -6222,7 +6222,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C4710>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_partial_last_line_is_not_sealed ____________
@@ -6236,7 +6236,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B41D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_bad_json_line_raises _________________
@@ -6250,7 +6250,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6570>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[pytest -q-test] _______________
@@ -6264,7 +6264,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B7980>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_cmd_table[python -m pytest-test] ___________
@@ -6278,7 +6278,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C7410>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_cmd_table[python3 -m pytest tests-test] ________
@@ -6292,7 +6292,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F73D670>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_cmd_table[python3.12 -m unittest-test] ________
@@ -6306,7 +6306,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BD130>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____ ERROR at setup of test_cmd_table[python3 -X dev -u -m pytest-test] ______
@@ -6320,7 +6320,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B53A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_cmd_table[python -c 'import pytest'-other] ______
@@ -6334,7 +6334,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A420>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____ ERROR at setup of test_cmd_table[python script.py -m pytest-other] ______
@@ -6348,7 +6348,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F136060>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_cmd_table[uv run pytest-test] _____________
@@ -6362,7 +6362,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F136D50>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_cmd_table[uv run --frozen pytest -x-test] _______
@@ -6376,7 +6376,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B4170>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_table[uv run --project ~/flipside pytest -q t.py-test] _
@@ -6390,7 +6390,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6930>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_table[uv run --with pytest-cov --python 3.12 python -m pytest-test] _
@@ -6404,7 +6404,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B72C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_table[uv run -p 3.12 --directory=sub pytest-test] _
@@ -6418,7 +6418,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F90A0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___ ERROR at setup of test_cmd_table[npx --package vitest vitest run-test] ____
@@ -6432,7 +6432,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FA180>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___ ERROR at setup of test_cmd_table[uv run --project ~/x ruff check-lint] ____
@@ -6446,7 +6446,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B7EC0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_cmd_table[uv run python -m pytest-test] ________
@@ -6460,7 +6460,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B43B0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_table[cd /a && cd b && FOO=1 BAR=2 pytest-test] __
@@ -6474,7 +6474,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB5A720>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_cmd_table[npm test-test] _______________
@@ -6488,7 +6488,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F137EF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_cmd_table[npx vitest run-test] ____________
@@ -6502,7 +6502,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F134560>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_cmd_table[npx -y jest-test] ______________
@@ -6516,7 +6516,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1310>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_cmd_table[go test ./...-test] _____________
@@ -6530,7 +6530,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BEC30>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[cargo test-test] ______________
@@ -6544,7 +6544,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C5430>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[make test-test] _______________
@@ -6558,7 +6558,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FA690>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[pnpm test-test] _______________
@@ -6572,7 +6572,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FAB40>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[yarn test-test] _______________
@@ -6586,7 +6586,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FA840>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_cmd_table[.venv/bin/pytest-test] ___________
@@ -6600,7 +6600,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F8380>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_cmd_table[ruff check .-lint] _____________
@@ -6614,7 +6614,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F8C20>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_cmd_table[mypy flipside-lint] _____________
@@ -6628,7 +6628,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F9DF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[eslint src-lint] ______________
@@ -6642,7 +6642,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BF8F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_cmd_table[tsc --noEmit-lint] _____________
@@ -6656,7 +6656,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C7410>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_cmd_table[flake8-lint] ________________
@@ -6670,7 +6670,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB16780>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_cmd_table[black --check .-lint] ____________
@@ -6684,7 +6684,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F134F20>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[make lint-lint] _______________
@@ -6698,7 +6698,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1355E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________________ ERROR at setup of test_cmd_table[make-build] _________________
@@ -6712,7 +6712,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6000>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[make -j4-build] _______________
@@ -6726,7 +6726,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B5D30>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_cmd_table[npm run build-build] ____________
@@ -6740,7 +6740,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18DC40>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_cmd_table[pnpm build-build] ______________
@@ -6754,7 +6754,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18E5D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ________ ERROR at setup of test_cmd_table[cargo build --release-build] ________
@@ -6768,7 +6768,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18F770>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______________ ERROR at setup of test_cmd_table[go build-build] _______________
@@ -6782,7 +6782,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6900>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_cmd_table[docker build .-build] ____________
@@ -6796,7 +6796,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B43E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_cmd_table[ls -la-other] ________________
@@ -6810,7 +6810,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6F90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_cmd_table[black .-other] _______________
@@ -6824,7 +6824,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F137C50>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________________ ERROR at setup of test_cmd_table[tsc-other] _________________
@@ -6838,7 +6838,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F137EF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _____________ ERROR at setup of test_cmd_table[echo pytest-other] _____________
@@ -6852,7 +6852,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6FD310>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________________ ERROR at setup of test_cmd_table[-other] ___________________
@@ -6866,7 +6866,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B7F50>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __________ ERROR at setup of test_cmd_table[pytest 'unbalanced-test] __________
@@ -6880,7 +6880,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F69BAD0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_relative_cwd_resolves_against_repo_root ________
@@ -6894,7 +6894,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C6210>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[False-The user doesn't want to proceed with this tool use. The tool use was rejected.] _
@@ -6908,7 +6908,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C6330>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[False-Permission to use Bash has been denied.] _
@@ -6922,7 +6922,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A0BF0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[False-Permission for this tool use was denied by a hook.] _
@@ -6936,7 +6936,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BCE90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[False-[Request interrupted by user for tool use]] _
@@ -6950,7 +6950,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FBE30>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[False-<tool_use_error>InputValidationError: command is required</tool_use_error>] _
@@ -6964,7 +6964,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BCFB0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[False-PreToolUse:Bash hook error: [command hook 1]: Blocked by a rule] _
@@ -6978,7 +6978,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A1E50>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[True-The user doesn't want to proceed with this tool use. The tool use was rejected.] _
@@ -6992,7 +6992,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C5C70>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[True-Permission to use Bash has been denied.] _
@@ -7006,7 +7006,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C48F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[True-Permission for this tool use was denied by a hook.] _
@@ -7020,7 +7020,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B45F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[True-[Request interrupted by user for tool use]] _
@@ -7034,7 +7034,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB593D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[True-<tool_use_error>InputValidationError: command is required</tool_use_error>] _
@@ -7048,7 +7048,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1352B0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_bash_call_that_never_ran_has_ok_null[True-PreToolUse:Bash hook error: [command hook 1]: Blocked by a rule] _
@@ -7062,7 +7062,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6870>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_bash_call_that_ran_and_failed_has_ok_false ______
@@ -7076,7 +7076,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B6A80>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_never_ran_prefix_only_counts_at_the_start _______
@@ -7090,7 +7090,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FB6E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[source .venv/bin/activate && pytest -q-test] _
@@ -7104,7 +7104,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F9A30>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[. .venv/bin/activate; pytest-test] _
@@ -7118,7 +7118,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F9430>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[git status && pytest-test] _
@@ -7132,7 +7132,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FA0F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[set -e; pytest-test] _
@@ -7146,7 +7146,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FB3B0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[(cd api; pytest)-test] _
@@ -7160,7 +7160,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B7350>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[ruff check . && pytest -q-test] _
@@ -7174,7 +7174,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F134E90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[pytest -q || true-test] _
@@ -7188,7 +7188,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F134FB0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[make lint\nmake test-test] _
@@ -7202,7 +7202,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B4200>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[ruff check . && npm run build-lint] _
@@ -7216,7 +7216,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C72C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[env FOO=1 pytest-test] _
@@ -7230,7 +7230,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C4E90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[env -u HOME pytest-test] _
@@ -7244,7 +7244,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A3A10>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[timeout 60 pytest-test] _
@@ -7258,7 +7258,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18F710>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[timeout -s KILL 5m npm test-test] _
@@ -7272,7 +7272,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18C920>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[time pytest-test] __
@@ -7286,7 +7286,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18E960>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[nice -n 10 cargo test-test] _
@@ -7300,7 +7300,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6BD940>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[exec pytest-test] __
@@ -7314,7 +7314,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C4650>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[command pytest-test] _
@@ -7328,7 +7328,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B4440>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[npm run test-test] _
@@ -7342,7 +7342,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F136C90>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[npm run test:unit-test] _
@@ -7356,7 +7356,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9EB14AA0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[pnpm run test-test] _
@@ -7370,7 +7370,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0B7FB0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[yarn run test-test] _
@@ -7384,7 +7384,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F82F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___ ERROR at setup of test_cmd_segments_wrappers_and_scripts[bun test-test] ___
@@ -7398,7 +7398,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18F830>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[bun run test-test] _
@@ -7412,7 +7412,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18CDD0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[npm run lint-lint] _
@@ -7426,7 +7426,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18F500>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __ ERROR at setup of test_cmd_segments_wrappers_and_scripts[pnpm lint-lint] ___
@@ -7440,7 +7440,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1116D0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 __ ERROR at setup of test_cmd_segments_wrappers_and_scripts[yarn lint-lint] ___
@@ -7454,7 +7454,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F112300>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[pnpm run build-build] _
@@ -7468,7 +7468,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18EC30>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[yarn build-build] __
@@ -7482,7 +7482,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F18F740>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[bun run build-build] _
@@ -7496,7 +7496,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0FB320>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[echo 'pytest && ruff'-other] _
@@ -7510,7 +7510,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0F8830>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[git commit -m "run pytest; fix"-other] _
@@ -7524,7 +7524,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F136DE0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[npm run testimony-other] _
@@ -7538,7 +7538,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6B4E00>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[cat <<EOF > notes.md\npytest\nEOF-other] _
@@ -7552,7 +7552,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F6A3230>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _ ERROR at setup of test_cmd_segments_wrappers_and_scripts[cat <<'EOF' > notes.md\npytest\nEOF\nruff check .-lint] _
@@ -7566,7 +7566,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C4BC0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ___________ ERROR at setup of test_every_write_text_is_utf8_and_lf ____________
@@ -7580,7 +7580,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1102C0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_every_read_text_is_utf8 ________________
@@ -7594,7 +7594,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1130E0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _________ ERROR at setup of test_every_text_mode_open_is_utf8_and_lf __________
@@ -7608,7 +7608,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F1138F0>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______________ ERROR at setup of test_every_os_open_is_binary ________________
@@ -7622,7 +7622,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F110920>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ______ ERROR at setup of test_g3_example_reproduces_vector_byte_for_byte ______
@@ -7636,7 +7636,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F0C6600>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 ____________ ERROR at setup of test_g3_flipside_reproduces_vector _____________
@@ -7650,7 +7650,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F112900>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_vector_disclosure_is_canonical_json_safe _______
@@ -7664,7 +7664,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000010E9F112870>
     ) -> Iterator[None]:
 >       home = tmp_path_factory.mktemp("home")
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 tests\seal\conftest.py:17: PermissionError
 _______ ERROR at setup of test_without_a_sign_your_own_login_is_hidden ________
@@ -7775,7 +7775,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -7783,7 +7783,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 ________ ERROR at setup of test_two_agents_on_one_login_see_each_other ________
@@ -7894,7 +7894,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -7902,7 +7902,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _________ ERROR at setup of test_post_must_carry_the_agents_own_sign __________
@@ -8013,7 +8013,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -8021,7 +8021,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 _______________ ERROR at setup of test_a_bad_handle_is_refused ________________
@@ -8132,7 +8132,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -8140,7 +8140,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 __________ ERROR at setup of test_flip_writes_utf8_to_a_piped_stderr __________
@@ -8246,7 +8246,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -8254,7 +8254,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 __ ERROR at setup of test_utf8_stdio_lets_a_piped_stdout_take_any_character ___
@@ -8360,7 +8360,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
                  ^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-root = WindowsPath('C:/Users/surya/AppData/Local/Temp/pytest-of-surya')
+root = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>')
 prefix = 'pytest-'
 
     def find_prefixed(root: Path, prefix: str) -> Iterator[os.DirEntry[str]]:
@@ -8368,7 +8368,7 @@ prefix = 'pytest-'
         l_prefix = prefix.lower()
 >       for x in os.scandir(root):
                  ^^^^^^^^^^^^^^^^
-E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\surya\\AppData\\Local\\Temp\\pytest-of-surya'
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>'
 
 .venv\Lib\site-packages\_pytest\pathlib.py:219: PermissionError
 =========================== short test summary info ===========================
