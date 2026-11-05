@@ -237,6 +237,8 @@ Only checks that pass are listed; the full table is in [docs/REFERENCE.md](docs/
 ## Team
 
 Built for Flip the Switch (4 to 7 Nov 2026 IST) by Pratyaksh ([@pratyakshrunsoncaffeine](https://github.com/pratyakshrunsoncaffeine)) and Aarav Mahajan ([@kadoo69](https://github.com/kadoo69)).
+This repository was built during the event; its history starts on 4 Nov 2026 at 20:29 IST.
+Switch, Mattermost and three.js are upstream projects, and four of the gap rules are ported from the team's earlier Ownership Gate prototype.
 
 ## License
 
