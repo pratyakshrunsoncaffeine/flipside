@@ -22,7 +22,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
-from collections.abc import Iterator
 from dataclasses import dataclass, field
 from http.cookiejar import CookieJar
 from pathlib import Path
@@ -385,13 +384,3 @@ class SwitchTransport:
             for o in rows
             if o.get("sessionId") == self.session_id and o.get("answer") is not None
         ]
-
-
-@contextlib.contextmanager
-def transports(*ts: SwitchTransport) -> Iterator[tuple[SwitchTransport, ...]]:
-    """Close every transport's event stream on exit."""
-    try:
-        yield ts
-    finally:
-        for t in ts:
-            t.close()
