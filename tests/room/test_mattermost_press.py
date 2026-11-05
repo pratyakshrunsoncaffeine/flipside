@@ -11,7 +11,6 @@ from typing import Any
 
 import pytest
 
-from flipside.room import mattermost
 from flipside.room.mattermost import MattermostError, MattermostHumans
 
 CARD = "e4f30fb0-0000-0000-0000-000000000000"
@@ -78,7 +77,7 @@ def humans(lands_on: int | None) -> tuple[MattermostHumans, FakeMM, list[str]]:
 
 @pytest.fixture(autouse=True)
 def no_sleep(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(mattermost.time, "sleep", lambda s: None)
+    monkeypatch.setattr("flipside.room.mattermost.time.sleep", lambda s: None)
 
 
 def test_one_press_when_switch_records_it() -> None:
