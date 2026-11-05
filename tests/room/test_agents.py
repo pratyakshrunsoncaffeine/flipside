@@ -298,3 +298,16 @@ def test_only_the_whole_local_part_of_a_slack_id_matches() -> None:
     assert not cfg_ok.answered_by_author(SLACK_PRIYA + "x:localhost")
     assert not cfg_ok.answered_by_author("user:" + SLACK_PRIYA)
     assert not cfg_ok.answered_by_author("@switch-slack-b1-omar:localhost")
+
+
+def test_the_questions_line_says_each_question_in_words(tmp_path: Path) -> None:
+    """The author reads the question in the room's human line, not in the JSON (issue #65)."""
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    s["author"]().step()
+    s["reviewer"]().step()
+    msgs = s["hub"].messages
+    body = next(m.body for m in msgs if (o := decode(m.body)) and o["t"] == "questions")
+    line, q1 = body.split("\n", 1)[0], decode(body)["qs"][0]  # type: ignore[index]
+    assert f"Q1 {q1['text']}" in line
+    assert line.endswith("answer each as Q<k>: in your own words")
