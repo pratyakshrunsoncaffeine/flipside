@@ -172,6 +172,7 @@ async function checkPage(cdp, origin, page, width, height) {
       screenOrientation: { type: width > height ? "landscapePrimary" : "portraitPrimary", angle: width > height ? 90 : 0 },
     });
     await call("Emulation.setTouchEmulationEnabled", { enabled: true });
+    await call("Emulation.setFocusEmulationEnabled", { enabled: true });
     const url = `${origin}/${page}`;
     const { errorText } = await call("Page.navigate", { url });
     if (errorText) throw new Error(`${page}: ${errorText}`);
@@ -186,14 +187,21 @@ async function checkPage(cdp, origin, page, width, height) {
       () => evaluate(`location.href === ${JSON.stringify(url)} && document.readyState === "complete"`),
       `${page} to load`,
     );
-    const frame = "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))";
+    // Chromium can suspend animation frames for a background target.
+    const frame = `new Promise(resolve => {
+      const timeout = setTimeout(resolve, 75);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        clearTimeout(timeout);
+        resolve();
+      }));
+    })`;
     const settled = `(async () => {
       const deadline = performance.now() + 1000;
       do {
         await ${frame};
       } while (performance.now() < deadline && document.getAnimations().some(a => a.playState === "running"));
     })()`;
-    await evaluate(`document.fonts.ready.then(() => ${frame})`);
+    await evaluate(`Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 1500))]).then(() => ${frame})`);
     await evaluate(`(async () => {
       for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight) {
         scrollTo({ top: y, behavior: "instant" });
@@ -221,6 +229,8 @@ async function checkPage(cdp, origin, page, width, height) {
     return [...issues, ...[...errors].map((message) => ({
       area: "page", kind: "console", selector: "document", message,
     }))];
+  } catch (error) {
+    throw new Error(`${page} ${width}x${height}: ${error.message}`, { cause: error });
   } finally {
     if (sessionId) cdp.listen(sessionId);
     await cdp.call("Target.closeTarget", { targetId });
