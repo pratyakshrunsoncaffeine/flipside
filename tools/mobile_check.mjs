@@ -101,7 +101,7 @@ function inspectPage(width) {
   if (innerWidth !== width || scrollWidth > innerWidth) {
     const dimensions = `expected width ${width}px, innerWidth ${innerWidth}px, scrollWidth ${scrollWidth}px`;
     const overflowing = [...document.body.querySelectorAll("*")]
-      .filter((el) => visible(el) && el.getBoundingClientRect().right > Math.min(innerWidth, width) + 1);
+      .filter((el) => rendered(el) && el.getBoundingClientRect().right > Math.min(innerWidth, width) + 1);
     if (overflowing.length) {
       for (const el of overflowing) report(el, "overflow", dimensions);
     } else {
@@ -110,7 +110,9 @@ function inspectPage(width) {
   }
 
   function visible(el) {
-    if (el.closest("[hidden], [inert], [aria-hidden='true']")) return false;
+    return !el.closest("[hidden], [inert], [aria-hidden='true']") && rendered(el);
+  }
+  function rendered(el) {
     const css = getComputedStyle(el);
     const rect = el.getBoundingClientRect();
     return css.visibility === "visible" && el.getClientRects().length > 0
