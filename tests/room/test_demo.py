@@ -229,6 +229,35 @@ def test_a_run_archives_review_channels_no_room_bridges_any_more() -> None:
     assert mm.deleted == ["/channels/shared", "/channels/old"]
 
 
+def test_stale_channels_past_the_first_page_are_archived_too() -> None:
+    """Mattermost lists channels a page at a time; an orphan on page 1 stayed (#64 review)."""
+    public = [{"id": f"c{k}", "display_name": f"team-{k}", "delete_at": 0} for k in range(200)]
+    public.append({"id": "late", "display_name": "pr-7", "delete_at": 0})
+
+    class FakeMM:
+        def __init__(self) -> None:
+            self.deleted: list[str] = []
+
+        def call(self, method: str, path: str, body: object = None) -> object:
+            if method == "GET" and path == f"/teams/name/{demo.TEAM}":
+                return {"id": "team1"}
+            if method == "GET" and path.startswith("/teams/team1/channels"):
+                query = dict(kv.split("=") for kv in path.split("?", 1)[1].split("&"))
+                page, per_page = int(query.get("page", "0")), int(query["per_page"])
+                rows = [] if "/private" in path else public
+                # Archiving mid-listing shifts later rows down a page in the real server.
+                rows = [r for r in rows if f"/channels/{r['id']}" not in self.deleted]
+                return rows[page * per_page : (page + 1) * per_page]
+            if method == "DELETE":
+                self.deleted.append(path)
+                return {}
+            raise AssertionError(f"unexpected {method} {path}")
+
+    mm = FakeMM()
+    assert demo.archive_stale_channels(mm) == 1  # type: ignore[arg-type]
+    assert mm.deleted == ["/channels/late"]
+
+
 def test_a_run_turns_off_mattermosts_email_preview_banner() -> None:
     """The demo sends no email, so Mattermost's "Preview Mode" banner is only noise (issue #63)."""
     calls: list[tuple[str, str, object]] = []
