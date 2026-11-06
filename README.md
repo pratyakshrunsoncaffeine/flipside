@@ -21,6 +21,19 @@ Flipside lets your reviewer ask for the one step that explains a change and veri
 
 It is for teams that review code written by another team's agents: platform and security owners, and maintainers of shared services.
 
+### For judges
+
+| | |
+|---|---|
+| **Watch** | [The 78-second film](site/media/flipside-film.mp4): the idea and the review in Mattermost. |
+| **Try it, no install** | [The recorded run, step by step](https://pratyakshrunsoncaffeine.github.io/gateplus/), and [a disclosed quote checked in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html). |
+| **Check every claim** | `uv sync --frozen && make judge`: 11 PASS/FAIL checks, offline, in under a minute. [JUDGING.md](JUDGING.md) maps each one to its command, expected line and code. |
+| **Re-run it live** | `make judge-live`: the whole review on real Switch 0.31.0 and Mattermost in Docker. CI runs it on Ubuntu. |
+| **The recorded run** | 6 Nov 2026, 16:56 IST, Switch 0.31.0 and Mattermost: `RESULT PASS`, four refusals enforced live, 0 agent step errors, 14 Switch message ids ([log](evidence/demo-mattermost-csv-export-20261106T165620.log)). |
+| **What was shared** | 1 of 10 session steps, approved by the author on a card only she can answer. The forged copy got `PROOF_FAIL`. |
+| **What is new** | Tests, CI and model reviewers check the result. Flipside proves *why* a change was made, across two owners, while the author keeps the session ([compared](#why-not-just-ask-the-author)). |
+| **Limits** | [Stated plainly](#limits), including what the seal cannot catch. |
+
 ### One review, start to finish
 
 1. Priya's coding agent writes PR #142, "Add CSV export to the reports page".
