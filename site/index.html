@@ -410,7 +410,7 @@ footer { padding-block: 120px 40px; }
   .plate .playfilm { padding: 16px; }
   .plate .playfilm span { width: 52px; height: 52px; border-radius: 16px; }
   .plate .playfilm svg { width: 18px; height: 18px; margin-left: 3px; }
-  .mark .word { font-size: 18vw; }
+  .mark .word { font-size: min(18vw, 64px); min-width: 0; white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
