@@ -30,27 +30,7 @@ class Case(TypedDict):
     issues: list[Issue]
 
 
-class KnownLayoutFailure(AssertionError):
-    """A failure recorded before the responsive changes."""
-
-
-# Exact failures from the checked-in baseline. Remove a row when its issue is fixed.
-KNOWN = {
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 1: seal"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 2: question"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 3: answer"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 4: refuse"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 5: approve"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 6: proof"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 7: forgery"]'),
-    ("index.html", "replay", "tap", 'button[aria-label="Chapter 8: brief"]'),
-    ("index.html", "replay", "text", "code.sw"),
-    ("index.html", "replay", "text", "p#privempty"),
-}
-
-
-@pytest.fixture(scope="module")
-def mobile_cases() -> list[Case]:
+def test_mobile_layouts() -> None:
     required = os.environ.get("FLIP_REQUIRE_CHROME") == "1"
     if not required and os.environ.get("FLIP_MOBILE") != "1":
         pytest.skip("The reference platform is Ubuntu CI. Set FLIP_MOBILE=1 to opt in.")
@@ -88,46 +68,11 @@ def mobile_cases() -> list[Case]:
         for page in ("index.html", "verify.html")
         for width, height in VIEWPORTS
     }
-    assert (run.returncode == 1) == any(case["issues"] for case in cases)
-    return cases
-
-
-def test_no_unexpected_mobile_failures(mobile_cases: list[Case]) -> None:
-    unexpected = [
+    issues = [
         f"{case['page']} {case['width']}x{case['height']} "
         f"[{issue['area']}/{issue['kind']}] {issue['selector']}: {issue['message']}"
-        for case in mobile_cases
+        for case in cases
         for issue in case["issues"]
-        if (case["page"], issue["area"], issue["kind"], issue["selector"]) not in KNOWN
     ]
-    assert not unexpected, "\n".join(unexpected)
-
-
-@pytest.mark.parametrize(
-    ("page", "area", "kind", "selector"),
-    [
-        pytest.param(
-            page,
-            area,
-            kind,
-            selector,
-            id=f"{page}-{area}-{kind}-{selector}",
-            marks=pytest.mark.xfail(
-                strict=True, raises=KnownLayoutFailure, reason="Recorded mobile baseline"
-            ),
-        )
-        for page, area, kind, selector in sorted(KNOWN)
-    ],
-)
-def test_known_mobile_failures(
-    mobile_cases: list[Case], page: str, area: str, kind: str, selector: str
-) -> None:
-    failures = [
-        f"{case['width']}x{case['height']} {issue['message']}"
-        for case in mobile_cases
-        for issue in case["issues"]
-        if (case["page"], issue["area"], issue["kind"], issue["selector"])
-        == (page, area, kind, selector)
-    ]
-    if failures:
-        raise KnownLayoutFailure("\n".join(failures))
+    assert not issues, "\n".join(issues)
+    assert run.returncode == 0, run.stdout + run.stderr

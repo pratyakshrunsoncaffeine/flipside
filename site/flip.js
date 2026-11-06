@@ -114,7 +114,10 @@
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let renderer;
     try {
-      renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+      const mobile = matchMedia("(max-width: 720px)").matches;
+      renderer = new T.WebGLRenderer({
+        canvas, antialias: !mobile, alpha: true, powerPreference: mobile ? "low-power" : "high-performance"
+      });
     } catch (e) {
       canvas.dataset.fallback = "1"; // the page shows its static image instead
       return null;
