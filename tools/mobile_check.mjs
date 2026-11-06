@@ -149,9 +149,14 @@ function inspectPage(width) {
 }
 
 async function checkPage(cdp, origin, page, width, height) {
-  const { targetId } = await cdp.call("Target.createTarget", { url: "about:blank" });
+  let targetId;
   let sessionId;
+  let step = "create window";
   try {
+    ({ targetId } = await cdp.call("Target.createTarget", {
+      url: "about:blank", newWindow: true, background: false,
+    }));
+    step = "configure emulation";
     ({ sessionId } = await cdp.call("Target.attachToTarget", { targetId, flatten: true }));
     const call = (method, params) => cdp.call(method, params, sessionId);
     const errors = new Set();
@@ -173,6 +178,7 @@ async function checkPage(cdp, origin, page, width, height) {
     });
     await call("Emulation.setTouchEmulationEnabled", { enabled: true });
     await call("Emulation.setFocusEmulationEnabled", { enabled: true });
+    step = "load";
     const url = `${origin}/${page}`;
     const { errorText } = await call("Page.navigate", { url });
     if (errorText) throw new Error(`${page}: ${errorText}`);
@@ -189,7 +195,7 @@ async function checkPage(cdp, origin, page, width, height) {
     );
     // Chromium can suspend animation frames for a background target.
     const frame = `new Promise(resolve => {
-      const timeout = setTimeout(resolve, 75);
+      const timeout = setTimeout(resolve, 100);
       requestAnimationFrame(() => requestAnimationFrame(() => {
         clearTimeout(timeout);
         resolve();
@@ -201,20 +207,24 @@ async function checkPage(cdp, origin, page, width, height) {
         await ${frame};
       } while (performance.now() < deadline && document.getAnimations().some(a => a.playState === "running"));
     })()`;
+    step = "fonts";
     await evaluate(`Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 1500))]).then(() => ${frame})`);
-    await evaluate(`(async () => {
-      for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight) {
-        scrollTo({ top: y, behavior: "instant" });
-        await ${frame};
-      }
-      scrollTo({ top: 0, behavior: "instant" });
-      await ${frame};
-    })()`);
+    step = "scroll";
+    const { scrollHeight, innerHeight } = await evaluate(
+      "({ scrollHeight: document.documentElement.scrollHeight, innerHeight })",
+    );
+    for (let y = 0; y < scrollHeight; y += innerHeight) {
+      await evaluate(`scrollTo({ top: ${y}, behavior: "instant" }); ${frame}`);
+    }
+    await evaluate(`scrollTo({ top: 0, behavior: "instant" }); ${frame}`);
+    step = "settle";
     await evaluate(settled);
+    step = "inspect";
     const issues = await evaluate(`(${inspectPage})(${width})`);
     if (screenshots) {
       const sections = await evaluate("Array.from(document.querySelectorAll('header[id], section[id], footer[id]'), el => el.id)");
       for (const id of ["viewport", ...sections]) {
+        step = `screenshot ${id}`;
         await evaluate(`(async () => {
           const el = document.getElementById(${JSON.stringify(id)});
           if (el) el.scrollIntoView({ behavior: "instant" });
@@ -230,10 +240,10 @@ async function checkPage(cdp, origin, page, width, height) {
       area: "page", kind: "console", selector: "document", message,
     }))];
   } catch (error) {
-    throw new Error(`${page} ${width}x${height}: ${error.message}`, { cause: error });
+    throw new Error(`${page} ${width}x${height} (${step}): ${error.message}`, { cause: error });
   } finally {
     if (sessionId) cdp.listen(sessionId);
-    await cdp.call("Target.closeTarget", { targetId });
+    if (targetId) await cdp.call("Target.closeTarget", { targetId });
   }
 }
 
