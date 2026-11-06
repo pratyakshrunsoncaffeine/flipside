@@ -112,11 +112,12 @@ function inspectPage(width) {
         report(el, "overflow", `${dimensions}; content reaches x=${right.toFixed(1)}px`);
       }
     } else {
-      const widest = boxes.sort((a, b) => b.width - a.width).slice(0, 5)
-        .map(({ el, width: boxWidth, right }) => `${selector(el)} ${boxWidth.toFixed(1)}px (right x=${right.toFixed(1)}px)`);
+      const furthestRight = boxes.filter(({ el }) => rendered(el))
+        .toSorted((a, b) => b.right - a.right).slice(0, 5)
+        .map(({ el, width: boxWidth, right }) => `${selector(el)} right x=${right.toFixed(1)}px (box ${boxWidth.toFixed(1)}px)`);
       issues.push({
         area: "page", kind: "overflow", selector: "html",
-        message: `${dimensions}; widest elements: ${widest.join(", ")}`,
+        message: `${dimensions}; furthest-right elements: ${furthestRight.join(", ")}`,
       });
     }
   }
@@ -336,6 +337,9 @@ async function run() {
     const passed = cases.filter((entry) => !entry.issues.length).length;
     const expected = pages.length * viewports.length;
     const allPassed = passed === expected && cases.length === expected;
+    if (cases.length !== expected) {
+      lines.push(`MISSING ${expected - cases.length} page-viewports (ran ${cases.length} of ${expected})`);
+    }
     lines.push(`RESULT ${allPassed ? "PASS" : "FAIL"} ${passed}/${expected} page-viewports`);
     process.exitCode = allPassed ? 0 : 1;
   } catch (error) {
