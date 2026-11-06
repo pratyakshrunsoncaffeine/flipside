@@ -182,6 +182,7 @@ def wait_ready(conf: dict[str, str], timeout: float = 600.0) -> str:
 
 
 _REVIEW_ROOM = re.compile(r"^pr-\d+(-author)?$")
+_PAGE = 200  # Mattermost's largest page size
 
 
 def clear_rooms(conf: dict[str, str]) -> int:
@@ -202,13 +203,25 @@ def archive_stale_channels(mma: MM) -> int:
     ``pr-<n>-author`` channel left in the demo team then belongs to an earlier run whose room
     was removed without retiring its channel. Archiving is reversible. Returns how many."""
     team = mma.call("GET", f"/teams/name/{TEAM}")
-    gone = 0
+    stale: list[str] = []
     for kind in ("", "/private"):
-        for ch in mma.call("GET", f"/teams/{team['id']}/channels{kind}?per_page=200") or []:
-            if not ch.get("delete_at") and _REVIEW_ROOM.match(str(ch.get("display_name"))):
-                mma.call("DELETE", f"/channels/{ch['id']}")
-                gone += 1
-    return gone
+        # Mattermost lists a page at a time. Collect every page before archiving anything:
+        # archiving while paging shifts later channels down a page, so some would be skipped.
+        page = 0
+        while True:
+            path = f"/teams/{team['id']}/channels{kind}?page={page}&per_page={_PAGE}"
+            rows = mma.call("GET", path) or []
+            stale += [
+                str(ch["id"])
+                for ch in rows
+                if not ch.get("delete_at") and _REVIEW_ROOM.match(str(ch.get("display_name")))
+            ]
+            if len(rows) < _PAGE:
+                break
+            page += 1
+    for cid in stale:
+        mma.call("DELETE", f"/channels/{cid}")
+    return len(stale)
 
 
 def allow_printed_origin(mma: MM) -> None:
