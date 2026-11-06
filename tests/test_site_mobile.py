@@ -65,21 +65,9 @@ KNOWN = {
     ("index.html", "replay", "tap", 'button[aria-label="Chapter 8: brief"]'),
     ("index.html", "replay", "text", "code.sw"),
     ("index.html", "replay", "text", "p#privempty"),
-    ("index.html", "run", "overflow", "code.want"),
-    ("index.html", "run", "text", "p.judgelink.rise"),
     ("index.html", "top", "tap", 'a.textlink[href="#film"]'),
     ("index.html", "top", "tap", "button#herobtn"),
     ("index.html", "top", "text", "li"),
-    ("verify.html", "nav", "tap", 'a.back[href="index.html"]'),
-    ("verify.html", "nav", "tap", 'a.brand[href="index.html"]'),
-    ("verify.html", "page", "tap", "input#disclosure-file"),
-    ("verify.html", "page", "tap", "input#manifest-file"),
-    ("verify.html", "page", "text", "input#disclosure-file"),
-    ("verify.html", "page", "text", "input#manifest-file"),
-    ("verify.html", "page", "text", "p.hint"),
-    ("verify.html", "page", "text", "textarea#disclosure"),
-    ("verify.html", "page", "text", "textarea#manifest"),
-    ("verify.html", "page", "text", "textarea#trailer"),
 }
 
 
