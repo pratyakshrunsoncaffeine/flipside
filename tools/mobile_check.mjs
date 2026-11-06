@@ -320,8 +320,9 @@ async function run() {
       }
     }
     const passed = cases.filter((entry) => !entry.issues.length).length;
-    lines.push(`RESULT ${passed === matrix.length ? "PASS" : "FAIL"} ${passed}/${matrix.length} page-viewports`);
-    process.exitCode = passed === matrix.length ? 0 : 1;
+    const allPassed = passed === cases.length;
+    lines.push(`RESULT ${allPassed ? "PASS" : "FAIL"} ${passed}/${cases.length} page-viewports`);
+    process.exitCode = allPassed ? 0 : 1;
   } catch (error) {
     lines.push(`ERROR ${error.message}`);
     process.exitCode = 2;
