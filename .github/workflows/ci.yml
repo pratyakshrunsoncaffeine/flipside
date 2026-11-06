@@ -25,6 +25,7 @@ jobs:
         shell: bash
     env:
       FLIP_REQUIRE_NODE: "1"
+      FLIP_REQUIRE_CHROME: ${{ matrix.os == 'ubuntu-latest' && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -38,8 +39,21 @@ jobs:
         run: uv sync --frozen
       - name: Lint
         run: make lint
+      - name: Allow Chrome sandbox namespaces
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Test
         run: make test
+        env:
+          PYTEST_ADDOPTS: "--durations=8"
+          MOBILE_SCREENSHOTS: "1"
+      - name: Upload mobile checker screenshots
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-check-screenshots
+          path: mobile-check-screenshots/
+          if-no-files-found: warn
       - name: G8 offline verify
         run: make g8
       - name: Offline replay and fixtures
