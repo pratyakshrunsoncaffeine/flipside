@@ -92,7 +92,7 @@ nav.top .links a:hover { color: var(--amber-ink); }
 .hbot .act { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px 28px; }
 .beatwrap { position: absolute; left: 50%; bottom: 7vh; width: min(560px, calc(100% - 32px)); translate: -50% 0; display: grid; gap: 16px; opacity: 0; pointer-events: none; will-change: transform, opacity; }
 .beats { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-.beats li { display: grid; gap: 8px; font-size: 13px; font-weight: 600; color: #8b8780; transition: color .4s ease; }
+.beats li { display: grid; gap: 8px; font-size: 13px; font-weight: 600; color: #6e6a63; transition: color .4s ease; }
 .beats li.on, .beats li.done { color: var(--ink); }
 .beats i { display: block; height: 4px; border-radius: 4px; background: #d5d1c9; overflow: hidden; }
 .beats i::after { content: ""; display: block; height: 100%; width: var(--fill, 0%); background: var(--ink); border-radius: inherit; }
@@ -532,7 +532,7 @@ footer { padding-block: 120px 40px; }
   #how .record dd { min-width: 0; overflow-wrap: anywhere; }
   #how .record dd span { filter: none; transition-property: opacity, transform; }
   #how .moves li { min-height: 56svh; padding-block: 20px; }
-  #how .moves li:not(.on) h3, #how .moves li:not(.on) p { opacity: .55; transform: none; }
+  #how .moves li:not(.on) h3, #how .moves li:not(.on) p { opacity: .7; transform: none; }
   #how .moves h3 { font-size: clamp(28px, 6vw, 46px); }
   #film .in { gap: 24px; }
   #film .copy { gap: 24px; }
@@ -750,7 +750,7 @@ footer { padding-block: 120px 40px; }
 <footer class="g" id="footer">
   <div class="in">
     <div class="mark">
-      <div class="endbot"><canvas id="endbot"></canvas></div>
+      <div class="endbot"><canvas id="endbot" aria-hidden="true"></canvas></div>
       <div class="word" aria-hidden="true">Flipside</div>
     </div>
     <div class="foot">
