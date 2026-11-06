@@ -138,6 +138,7 @@ Four refusals live, 0 duplicate agent posts, verdict `OK` on the real disclosure
 ## Demo video
 
 On YouTube (unlisted): https://youtu.be/NAbsKlQAi_c
+Uncut recording of the same run, both windows side by side in real time (67.6 s, nothing cut): https://youtu.be/4QNVMzo3yEI
 
 `flipside-film-v15.mp4`: 130.5 s, 1920x1080, 52,431,164 bytes, SHA-256 `84699eb196be855b19fb68ac5b0cd3b7b628f9edef97ff51f14ff321b55a19ff`.
 From 1:11 it shows a real `make demo` run on pinned Switch 0.31.0 and Mattermost, recorded on 6 Nov 2026 at 16:56 IST in two browser windows, one per person's own account.

@@ -2,13 +2,13 @@
 
 Prove what your coding agent did, without handing over the session.
 
-[![CI](https://github.com/pratyakshrunsoncaffeine/gateplus/actions/workflows/ci.yml/badge.svg)](https://github.com/pratyakshrunsoncaffeine/gateplus/actions/workflows/ci.yml)
+[![CI](https://github.com/pratyakshrunsoncaffeine/flipside/actions/workflows/ci.yml/badge.svg)](https://github.com/pratyakshrunsoncaffeine/flipside/actions/workflows/ci.yml)
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776ab)
 ![Runtime: standard library only](https://img.shields.io/badge/runtime-stdlib%20only-555)
 ![Switch 0.31.0](https://img.shields.io/badge/Switch-0.31.0-8a5a06)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**[Demo video](https://youtu.be/NAbsKlQAi_c)** · **[Live site](https://pratyakshrunsoncaffeine.github.io/gateplus/)** · **[Film](site/media/flipside-film.mp4)** · **[Check a quote in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html)** · **[Judging guide](JUDGING.md)**
+**[Demo video](https://youtu.be/NAbsKlQAi_c)** · **[Live site](https://pratyakshrunsoncaffeine.github.io/flipside/)** · **[Film](site/media/flipside-film.mp4)** · **[Check a quote in your browser](https://pratyakshrunsoncaffeine.github.io/flipside/verify.html)** · **[Judging guide](JUDGING.md)**
 
 [![Flipside, the 78 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
 
@@ -26,7 +26,7 @@ It is for teams that review code written by another team's agents: platform and 
 | | |
 |---|---|
 | **Watch** | [The 2:11 demo video](https://youtu.be/NAbsKlQAi_c): the idea, then the real recorded run in two browser windows. The [78-second film](site/media/flipside-film.mp4) is the short version. |
-| **Try it, no install** | [The recorded run, step by step](https://pratyakshrunsoncaffeine.github.io/gateplus/), and [a disclosed quote checked in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html). |
+| **Try it, no install** | [The recorded run, step by step](https://pratyakshrunsoncaffeine.github.io/flipside/), and [a disclosed quote checked in your browser](https://pratyakshrunsoncaffeine.github.io/flipside/verify.html). |
 | **Check every claim** | `uv sync --frozen && make judge`: 11 PASS/FAIL checks, offline, in under a minute. [JUDGING.md](JUDGING.md) maps each one to its command, expected line and code. |
 | **Re-run it live** | `make judge-live`: the whole review on real Switch 0.31.0 and Mattermost in Docker. CI runs it on Ubuntu. |
 | **The recorded run** | 6 Nov 2026, 16:56 IST, Switch 0.31.0 and Mattermost: `RESULT PASS`, four refusals enforced live, 0 agent step errors, 14 Switch message ids ([log](evidence/demo-mattermost-csv-export-20261106T165620.log)). |
@@ -63,8 +63,8 @@ make demo             # Switch 0.31.0 and Mattermost in Docker; both people act 
 
 Judging, or asking an agent to judge? [JUDGING.md](JUDGING.md) maps each claim to a command, the line it prints and the code; `make judge-live` re-runs the review on real Switch in Docker.
 `make demo` is checked on macOS and `make judge-live` runs in CI on Ubuntu; on Windows PowerShell the judge, the G8 proof check and both replays run without make ([commands](docs/RUNNING.md#without-make-windows-powershell)).
-To watch the recorded run play back step by step, open the [site](https://pratyakshrunsoncaffeine.github.io/gateplus/) (or `site/index.html` locally).
-To check a disclosed quote without installing anything, open [verify.html](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html) (or `site/verify.html`).
+To watch the recorded run play back step by step, open the [site](https://pratyakshrunsoncaffeine.github.io/flipside/) (or `site/index.html` locally).
+To check a disclosed quote without installing anything, open [verify.html](https://pratyakshrunsoncaffeine.github.io/flipside/verify.html) (or `site/verify.html`).
 
 ## What the reviewer sees
 
