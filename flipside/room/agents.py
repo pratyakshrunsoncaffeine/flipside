@@ -503,7 +503,11 @@ class ReviewerAgent:
                 if r is not None and r[0] == rnd.commit:
                     answers.setdefault(r[1], r[2])
         verdicted = {o.get("ref") for o in mine if o["t"] == "verdict"}
-        verdicts: list[dict[str, Any]] = [o for o in mine if o["t"] == "verdict"]
+        # Like questions, requests, withheld and the brief, a verdict counts only for this
+        # round's seal: a room reused after a re-seal still holds the earlier round's verdicts.
+        verdicts: list[dict[str, Any]] = [
+            o for o in mine if o["t"] == "verdict" and o.get("commit") == rnd.commit
+        ]
         withheld: list[dict[str, Any]] = []
         for m in msgs:
             o = accept(m, self.roles())

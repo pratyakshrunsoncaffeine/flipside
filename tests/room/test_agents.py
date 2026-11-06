@@ -6,7 +6,7 @@ from typing import Any
 
 from flipside.room import replay
 from flipside.room.agents import AuthorAgent, AuthorConfig, ReviewerAgent, ReviewerConfig
-from flipside.room.protocol import decode
+from flipside.room.protocol import decode, encode
 from flipside.room.scenario import World, load_case, materialize, reseal
 from flipside.room.transport import FakeSwitch, FakeTransport, Rule
 
@@ -311,3 +311,37 @@ def test_the_questions_line_says_each_question_in_words(tmp_path: Path) -> None:
     line, q1 = body.split("\n", 1)[0], decode(body)["qs"][0]  # type: ignore[index]
     assert f"Q1 {q1['text']}" in line
     assert line.endswith("answer each as Q<k>: in your own words")
+
+
+def _stale_verdicts(hub: FakeSwitch, ra: str, commit: str) -> None:
+    """reviewer-agent's OK verdicts for every requested leaf, from an earlier seal (``commit``)
+    in the same room, as a room reused after a re-seal holds them."""
+    req = next(o for m in hub.messages if (o := decode(m.body)) and o["t"] == "request")
+    for i in req["leaves"]:
+        obj = {"t": "verdict", "v": 1, "commit": commit, "i": i, "q": req["q"], "code": "OK"}
+        FakeTransport(hub, ra).post(
+            "pr", encode(f"Q{req['q']} · leaf {i} · OK (earlier seal)", obj)
+        )
+
+
+def test_verdicts_from_an_earlier_seal_do_not_settle_this_round(tmp_path: Path) -> None:
+    # Every other piece of round state (questions, requests, withheld, brief) is read for the
+    # round's seal commit only; verdicts were read for any commit, so an OK verdict left in a
+    # reused room by an earlier seal made the brief go out before this seal's leaf was checked.
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    hub = s["hub"]
+    a, r = s["author"](), s["reviewer"]()
+    a.step()
+    r.step()
+    _stale_verdicts(hub, s["ra"], "f" * 40)
+    hub.post(s["au"], "pr", "Q1: the export test needed a longer session")
+    r.step()
+    assert "brief" not in types(hub)
+    a.step()
+    hub.answer(s["au"], next(iter(hub.cards)), "approve")
+    a.step()
+    r.step()
+    brief = next(o for m in hub.messages if (o := decode(m.body)) and o["t"] == "brief")
+    assert types(hub).count("verdict") == 1 + len(_decided(hub, "disclosure"))
+    assert brief["commit"] == world.commit

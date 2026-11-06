@@ -25,7 +25,10 @@ CHAPTERS = [
     ("question", "The reviewer's agent asks about one step."),
     ("answer", "The author replies in their own words, straight from Mattermost."),
     ("refuse", "Anyone else who asks the author's agent is turned away by Switch."),
-    ("approve", "The step goes to the author first. It reaches the reviewer only after they approve."),
+    (
+        "approve",
+        "The step goes to the author first. It reaches the reviewer only after they approve.",
+    ),
     ("proof", "The reviewer's agent checks the step against the seal. It matches."),
     ("forgery", "Change one word and the check fails."),
     ("brief", "The reviewer gets a short brief, not the session."),
