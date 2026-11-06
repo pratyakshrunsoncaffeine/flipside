@@ -100,12 +100,24 @@ function inspectPage(width) {
   }
   if (innerWidth !== width || scrollWidth > innerWidth) {
     const dimensions = `expected width ${width}px, innerWidth ${innerWidth}px, scrollWidth ${scrollWidth}px`;
-    const overflowing = [...document.body.querySelectorAll("*")]
-      .filter((el) => rendered(el) && el.getBoundingClientRect().right > Math.min(innerWidth, width) + 1);
+    const limit = Math.min(innerWidth, width) + 1;
+    const boxes = [...document.body.querySelectorAll("*")].map((el) => {
+      const rect = el.getBoundingClientRect();
+      const excess = getComputedStyle(el).overflowX === "visible" ? el.scrollWidth - el.clientWidth : 0;
+      return { el, right: rect.right + (excess > 1 ? excess : 0), width: Math.max(rect.width, el.scrollWidth) };
+    });
+    const overflowing = boxes.filter(({ el, right }) => right > limit && rendered(el));
     if (overflowing.length) {
-      for (const el of overflowing) report(el, "overflow", dimensions);
+      for (const { el, right } of overflowing) {
+        report(el, "overflow", `${dimensions}; content reaches x=${right.toFixed(1)}px`);
+      }
     } else {
-      issues.push({ area: "page", kind: "overflow", selector: "html", message: dimensions });
+      const widest = boxes.sort((a, b) => b.width - a.width).slice(0, 5)
+        .map(({ el, width: boxWidth, right }) => `${selector(el)} ${boxWidth.toFixed(1)}px (right x=${right.toFixed(1)}px)`);
+      issues.push({
+        area: "page", kind: "overflow", selector: "html",
+        message: `${dimensions}; widest elements: ${widest.join(", ")}`,
+      });
     }
   }
 
@@ -322,8 +334,9 @@ async function run() {
       }
     }
     const passed = cases.filter((entry) => !entry.issues.length).length;
-    const allPassed = passed === cases.length;
-    lines.push(`RESULT ${allPassed ? "PASS" : "FAIL"} ${passed}/${cases.length} page-viewports`);
+    const expected = pages.length * viewports.length;
+    const allPassed = passed === expected && cases.length === expected;
+    lines.push(`RESULT ${allPassed ? "PASS" : "FAIL"} ${passed}/${expected} page-viewports`);
     process.exitCode = allPassed ? 0 : 1;
   } catch (error) {
     lines.push(`ERROR ${error.message}`);
