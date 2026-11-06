@@ -8,18 +8,31 @@ Prove what your coding agent did, without handing over the session.
 ![Switch 0.31.0](https://img.shields.io/badge/Switch-0.31.0-8a5a06)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**[Live site](https://pratyakshrunsoncaffeine.github.io/gateplus/)** · **[Film](site/media/flipside-film.mp4)** · **[Check a quote in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html)** · **[Judging guide](JUDGING.md)**
+**[Demo video](https://youtu.be/NAbsKlQAi_c)** · **[Live site](https://pratyakshrunsoncaffeine.github.io/gateplus/)** · **[Film](site/media/flipside-film.mp4)** · **[Check a quote in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html)** · **[Judging guide](JUDGING.md)**
 
 [![Flipside, the 78 second film](site/media/flipside-film-poster.jpg)](site/media/flipside-film.mp4)
 
 **Flip the Switch · Track 01: Business workflow**
 
 When another team's coding agent opens a pull request in code you own, the reason behind each change sits in that agent's private session.
-Flipside lets your reviewer ask for the one step that explains a change and check that it is genuine, while the author keeps the rest of the session to themselves.
+Flipside lets your reviewer ask for the one step that explains a change and verify that the approved excerpt appears in the session sealed before review, while the author keeps the rest of the session to themselves.
 
-**The reviewer gets the why, with proof. The author shares one step, not the session. Switch decides who may ask and who may approve.**
+**The reviewer gets the step behind the change, with proof it is in the sealed session. The author shares one step, not the session. Switch decides who may ask and who may approve.**
 
 It is for teams that review code written by another team's agents: platform and security owners, and maintainers of shared services.
+
+### For judges
+
+| | |
+|---|---|
+| **Watch** | [The 2:11 demo video](https://youtu.be/NAbsKlQAi_c): the idea, then the real recorded run in two browser windows. The [78-second film](site/media/flipside-film.mp4) is the short version. |
+| **Try it, no install** | [The recorded run, step by step](https://pratyakshrunsoncaffeine.github.io/gateplus/), and [a disclosed quote checked in your browser](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html). |
+| **Check every claim** | `uv sync --frozen && make judge`: 11 PASS/FAIL checks, offline, in under a minute. [JUDGING.md](JUDGING.md) maps each one to its command, expected line and code. |
+| **Re-run it live** | `make judge-live`: the whole review on real Switch 0.31.0 and Mattermost in Docker. CI runs it on Ubuntu. |
+| **The recorded run** | 6 Nov 2026, 16:56 IST, Switch 0.31.0 and Mattermost: `RESULT PASS`, four refusals enforced live, 0 agent step errors, 14 Switch message ids ([log](evidence/demo-mattermost-csv-export-20261106T165620.log)). |
+| **What was shared** | 1 of 10 session steps, approved by the author on a card only she can answer. The forged copy got `PROOF_FAIL`. |
+| **What is new** | Tests, CI and model reviewers check the result. Flipside proves *why* a change was made, across two owners, while the author keeps the session ([compared](#why-not-just-ask-the-author)). |
+| **Limits** | [Stated plainly](#limits), including what the seal cannot catch. |
 
 ### One review, start to finish
 
@@ -49,7 +62,7 @@ make demo             # Switch 0.31.0 and Mattermost in Docker; both people act 
 ```
 
 Judging, or asking an agent to judge? [JUDGING.md](JUDGING.md) maps each claim to a command, the line it prints and the code; `make judge-live` re-runs the review on real Switch in Docker.
-`make demo` is checked on macOS and in CI on Ubuntu; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
+`make demo` is checked on macOS and `make judge-live` runs in CI on Ubuntu; on Windows PowerShell the judge, the G8 proof check and both replays run without make ([commands](docs/RUNNING.md#without-make-windows-powershell)).
 To watch the recorded run play back step by step, open the [site](https://pratyakshrunsoncaffeine.github.io/gateplus/) (or `site/index.html` locally).
 To check a disclosed quote without installing anything, open [verify.html](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html) (or `site/verify.html`).
 
