@@ -137,7 +137,12 @@ Four refusals live, 0 duplicate agent posts, verdict `OK` on the real disclosure
 
 ## Demo video
 
-Not recorded yet; its SHA-256 goes here.
+`flipside-film-v15.mp4`: 130.5 s, 1920x1080, 54,015,992 bytes, SHA-256 `6461e2abd65974d3c93722bc6d81c4589397a1b6e4a9da48851ef218160ed156`.
+From 1:11 it shows a real `make demo` run on pinned Switch 0.31.0 and Mattermost, recorded on 6 Nov 2026 at 16:56 IST in two browser windows, one per person's own account.
+That run's log is `evidence/demo-mattermost-csv-export-20261106T165620.log`: RESULT PASS, four refusals live, 14 Switch message ids.
+The edit adds freeze-frames, camera moves and captions; the review plays at real speed, and only the idle wait before the browser check is cut.
+After the run it shows `verify.html` checking the sample step (OK) and an edited copy (PROOF_FAIL), then `make judge` from `evidence/judge-20261106T170642.log` (RESULT PASS 11/11).
+The first 1:11 and the end card are the launch film below.
 
 ## Launch film on the site
 

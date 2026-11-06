@@ -47,9 +47,11 @@ uv run --frozen python -m flipside.cli verify --bundle examples/seal.bundle --co
 uv run --frozen python -m flipside.cli verify --bundle examples/seal.bundle --commit $c --manifest examples/manifest.json examples/q2-forged.json; $LASTEXITCODE
 uv run --frozen python -m flipside.cli replay --offline
 uv run --frozen python -m flipside.cli replay --fixtures
+uv run --frozen python -m flipside.judge
 ```
 
 The first verify prints `OK`; the forged one prints `PROOF_FAIL` and `$LASTEXITCODE` is 2.
+The judge ends `RESULT PASS 11/11 checks`.
 On Windows, give pytest a short temporary folder if a path is too long: `uv run --frozen pytest --basetemp=C:/t/run1`.
 
 Live, point the tools at the Console's local server first.

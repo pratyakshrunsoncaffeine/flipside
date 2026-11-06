@@ -15,9 +15,9 @@ Prove what your coding agent did, without handing over the session.
 **Flip the Switch · Track 01: Business workflow**
 
 When another team's coding agent opens a pull request in code you own, the reason behind each change sits in that agent's private session.
-Flipside lets your reviewer ask for the one step that explains a change and check that it is genuine, while the author keeps the rest of the session to themselves.
+Flipside lets your reviewer ask for the one step that explains a change and verify that the approved excerpt appears in the session sealed before review, while the author keeps the rest of the session to themselves.
 
-**The reviewer gets the why, with proof. The author shares one step, not the session. Switch decides who may ask and who may approve.**
+**The reviewer gets the step behind the change, with proof it is in the sealed session. The author shares one step, not the session. Switch decides who may ask and who may approve.**
 
 It is for teams that review code written by another team's agents: platform and security owners, and maintainers of shared services.
 
@@ -49,7 +49,7 @@ make demo             # Switch 0.31.0 and Mattermost in Docker; both people act 
 ```
 
 Judging, or asking an agent to judge? [JUDGING.md](JUDGING.md) maps each claim to a command, the line it prints and the code; `make judge-live` re-runs the review on real Switch in Docker.
-`make demo` is checked on macOS and in CI on Ubuntu; everything else also runs on Windows ([commands](docs/RUNNING.md#without-make-windows-powershell)).
+`make demo` is checked on macOS and `make judge-live` runs in CI on Ubuntu; on Windows PowerShell the judge, the G8 proof check and both replays run without make ([commands](docs/RUNNING.md#without-make-windows-powershell)).
 To watch the recorded run play back step by step, open the [site](https://pratyakshrunsoncaffeine.github.io/gateplus/) (or `site/index.html` locally).
 To check a disclosed quote without installing anything, open [verify.html](https://pratyakshrunsoncaffeine.github.io/gateplus/verify.html) (or `site/verify.html`).
 
