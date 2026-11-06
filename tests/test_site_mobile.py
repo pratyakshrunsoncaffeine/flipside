@@ -36,25 +36,6 @@ class KnownLayoutFailure(AssertionError):
 
 # Exact failures from the checked-in baseline. Remove a row when its issue is fixed.
 KNOWN = {
-    (
-        "index.html",
-        "footer",
-        "tap",
-        'a[href="https://github.com/pratyakshrunsoncaffeine/gateplus"]',
-    ),
-    (
-        "index.html",
-        "footer",
-        "tap",
-        'a[href="https://github.com/pratyakshrunsoncaffeine/gateplus/blob/main/VERIFICATION.md"]',
-    ),
-    ("index.html", "footer", "tap", 'a[href="https://github.com/sandbox-quantum/switch"]'),
-    ("index.html", "footer", "tap", 'a[href="verify.html"]'),
-    ("index.html", "nav", "tap", 'a.brand[href="#top"]'),
-    ("index.html", "nav", "tap", 'a[href="#film"]'),
-    ("index.html", "nav", "tap", 'a[href="#how"]'),
-    ("index.html", "nav", "tap", 'a[href="#player"]'),
-    ("index.html", "nav", "tap", 'a[href="#run"]'),
     ("index.html", "replay", "tap", 'button[aria-label="Chapter 1: seal"]'),
     ("index.html", "replay", "tap", 'button[aria-label="Chapter 2: question"]'),
     ("index.html", "replay", "tap", 'button[aria-label="Chapter 3: answer"]'),
@@ -65,9 +46,6 @@ KNOWN = {
     ("index.html", "replay", "tap", 'button[aria-label="Chapter 8: brief"]'),
     ("index.html", "replay", "text", "code.sw"),
     ("index.html", "replay", "text", "p#privempty"),
-    ("index.html", "top", "tap", 'a.textlink[href="#film"]'),
-    ("index.html", "top", "tap", "button#herobtn"),
-    ("index.html", "top", "text", "li"),
 }
 
 
