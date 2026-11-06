@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { platform, release, tmpdir } from "node:os";
 import { delimiter, join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
@@ -11,6 +11,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const stamp = new Date().toISOString().replace(/[:.]/g, "-");
 const evidence = resolve(process.env.MOBILE_EVIDENCE_DIR ?? join(root, "evidence"));
 const output = resolve(process.env.MOBILE_ARTIFACTS ?? join(root, "mobile-check-screenshots", stamp));
+const screenshots = process.env.MOBILE_SCREENSHOTS === "1";
 
 function browserPath() {
   if (process.env.CHROME) return process.env.CHROME;
@@ -187,7 +188,7 @@ async function checkPage(cdp, origin, page, width, height) {
     );
     const frame = "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))";
     const settled = `(async () => {
-      const deadline = performance.now() + 3000;
+      const deadline = performance.now() + 1000;
       do {
         await ${frame};
       } while (performance.now() < deadline && document.getAnimations().some(a => a.playState === "running"));
@@ -203,17 +204,19 @@ async function checkPage(cdp, origin, page, width, height) {
     })()`);
     await evaluate(settled);
     const issues = await evaluate(`(${inspectPage})(${width})`);
-    const sections = await evaluate("Array.from(document.querySelectorAll('header[id], section[id], footer[id]'), el => el.id)");
-    for (const id of ["viewport", ...sections]) {
-      await evaluate(`(async () => {
-        const el = document.getElementById(${JSON.stringify(id)});
-        if (el) el.scrollIntoView({ behavior: "instant" });
-        else scrollTo({ top: 0, behavior: "instant" });
-        await ${frame};
-      })()`);
-      await evaluate(settled);
-      const { data } = await call("Page.captureScreenshot", { format: "png", optimizeForSpeed: true });
-      await writeFile(join(output, `${page.slice(0, -5)}-${width}x${height}-${id}.png`), Buffer.from(data, "base64"));
+    if (screenshots) {
+      const sections = await evaluate("Array.from(document.querySelectorAll('header[id], section[id], footer[id]'), el => el.id)");
+      for (const id of ["viewport", ...sections]) {
+        await evaluate(`(async () => {
+          const el = document.getElementById(${JSON.stringify(id)});
+          if (el) el.scrollIntoView({ behavior: "instant" });
+          else scrollTo({ top: 0, behavior: "instant" });
+          await ${frame};
+        })()`);
+        await evaluate(settled);
+        const { data } = await call("Page.captureScreenshot", { format: "png", optimizeForSpeed: true });
+        await writeFile(join(output, `${page.slice(0, -5)}-${width}x${height}-${id}.png`), Buffer.from(data, "base64"));
+      }
     }
     return [...issues, ...[...errors].map((message) => ({
       area: "page", kind: "console", selector: "document", message,
@@ -252,6 +255,8 @@ async function run() {
     let browserStderr = "";
     child = spawn(executable, [
       "--headless=new", "--no-first-run", "--disable-background-networking", "--disable-dev-shm-usage",
+      "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
       "--enable-unsafe-swiftshader",
       "--remote-debugging-address=127.0.0.1", "--remote-debugging-port=0",
       `--user-data-dir=${profile}`, "about:blank",
@@ -276,13 +281,19 @@ async function run() {
     });
     cdp = await connect(`ws://127.0.0.1:${port}${path}`);
     const { product } = await cdp.call("Browser.getVersion");
-    lines.push(`${product} | touch emulation | DPR 2 | CSS pixels | offline font fallback`);
-    let failed = 0;
-    for (const page of ["index.html", "verify.html"]) {
-      for (const [width, height] of viewports) {
-        const issues = await checkPage(cdp, `http://127.0.0.1:${httpPort}`, page, width, height);
-        cases.push({ page, width, height, issues });
-        if (issues.length) failed++;
+    lines.push(`${product} | ${platform()} ${release()} | touch emulation | DPR 2 | CSS pixels | offline font fallback`);
+    const matrix = ["index.html", "verify.html"].flatMap((page) =>
+      viewports.map(([width, height]) => ({ page, width, height }))
+    );
+    for (let start = 0; start < matrix.length; start += 4) {
+      const group = await Promise.allSettled(matrix.slice(start, start + 4).map(async (entry) => ({
+        ...entry,
+        issues: await checkPage(cdp, `http://127.0.0.1:${httpPort}`, entry.page, entry.width, entry.height),
+      })));
+      for (const result of group) {
+        if (result.status === "rejected") throw result.reason;
+        const { page, width, height, issues } = result.value;
+        cases.push(result.value);
         const label = `${issues.length ? "FAIL" : "PASS"} ${page} ${width}x${height} (${issues.length} issues)`;
         lines.push(label, ...issues.map(({ area, kind, selector, message }) => (
           `  [${area}/${kind}] ${selector}: ${message}`
@@ -290,8 +301,9 @@ async function run() {
         console.log(label);
       }
     }
-    lines.push(`RESULT ${failed ? "FAIL" : "PASS"} ${12 - failed}/12 page-viewports`);
-    process.exitCode = failed ? 1 : 0;
+    const passed = cases.filter((entry) => !entry.issues.length).length;
+    lines.push(`RESULT ${passed === matrix.length ? "PASS" : "FAIL"} ${passed}/${matrix.length} page-viewports`);
+    process.exitCode = passed === matrix.length ? 0 : 1;
   } catch (error) {
     lines.push(`ERROR ${error.message}`);
     process.exitCode = 2;
@@ -312,7 +324,7 @@ async function run() {
     const log = join(evidence, `mobile-check-${stamp}.log`);
     await writeFile(log, `${lines.join("\n")}\n`);
     await writeFile(join(output, "report.json"), JSON.stringify(cases, null, 2));
-    console.log(`${lines.at(-1)}\nEvidence: ${log}\nScreenshots: ${output}`);
+    console.log(`${lines.at(-1)}\nEvidence: ${log}\nArtifacts: ${output}`);
   }
 }
 

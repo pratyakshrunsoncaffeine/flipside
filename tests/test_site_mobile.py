@@ -65,6 +65,7 @@ KNOWN = {
     ("index.html", "replay", "tap", 'button[aria-label="Chapter 8: brief"]'),
     ("index.html", "replay", "text", "code.sw"),
     ("index.html", "replay", "text", "p#privempty"),
+    ("index.html", "run", "overflow", "code.want"),
     ("index.html", "run", "text", "p.judgelink.rise"),
     ("index.html", "top", "tap", 'a.textlink[href="#film"]'),
     ("index.html", "top", "tap", "button#herobtn"),
@@ -85,6 +86,8 @@ KNOWN = {
 @pytest.fixture(scope="module")
 def mobile_cases() -> list[Case]:
     required = os.environ.get("FLIP_REQUIRE_CHROME") == "1"
+    if not required and os.environ.get("FLIP_MOBILE") != "1":
+        pytest.skip("The reference platform is Ubuntu CI. Set FLIP_MOBILE=1 to opt in.")
     node = shutil.which("node")
     if node is None:
         if required:

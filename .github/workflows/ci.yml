@@ -46,6 +46,7 @@ jobs:
         run: make test
         env:
           PYTEST_ADDOPTS: "--durations=8"
+          MOBILE_SCREENSHOTS: "1"
       - name: Upload mobile checker screenshots
         if: always() && runner.os == 'Linux'
         uses: actions/upload-artifact@v4
