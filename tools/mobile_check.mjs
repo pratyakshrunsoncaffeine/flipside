@@ -302,13 +302,11 @@ async function run() {
     cdp = await connect(`ws://127.0.0.1:${port}${path}`);
     const { product } = await cdp.call("Browser.getVersion");
     lines.push(`${product} | ${platform()} ${release()} | touch emulation | DPR 2 | CSS pixels | offline font fallback`);
-    const matrix = ["index.html", "verify.html"].flatMap((page) =>
-      viewports.map(([width, height]) => ({ page, width, height }))
-    );
-    for (let start = 0; start < matrix.length; start += 4) {
-      const group = await Promise.allSettled(matrix.slice(start, start + 4).map(async (entry) => ({
-        ...entry,
-        issues: await checkPage(cdp, `http://127.0.0.1:${httpPort}`, entry.page, entry.width, entry.height),
+    const pages = ["index.html", "verify.html"];
+    for (const [width, height] of viewports) {
+      const group = await Promise.allSettled(pages.map(async (page) => ({
+        page, width, height,
+        issues: await checkPage(cdp, `http://127.0.0.1:${httpPort}`, page, width, height),
       })));
       for (const result of group) {
         if (result.status === "rejected") throw result.reason;
