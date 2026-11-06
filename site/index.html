@@ -437,7 +437,8 @@ footer { padding-block: 120px 40px; }
   #run .paths li { min-width: 0; }
   #run .paths b, #run .paths .want { overflow-wrap: anywhere; }
   #run .paths .want { white-space: normal; max-width: 100%; min-width: 0; line-height: 1.45; }
-  #run .term pre { font-size: 14px; white-space: pre-wrap; overflow-wrap: break-word; }
+  #run .term, #run .term pre { min-width: 0; max-width: 100%; }
+  #run .term pre { font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
 }
 </style>
 <script>document.documentElement.classList.add("js");</script>
