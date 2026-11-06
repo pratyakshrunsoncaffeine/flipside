@@ -443,6 +443,62 @@ footer { padding-block: 120px 40px; }
   #run .term, #run .term pre { min-width: 0; max-width: 100%; }
   #run .term pre { font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
 }
+/* mobile: hero */
+.scene h1 { will-change: transform, opacity; }
+.beats i::after { width: 100%; transform: scaleX(var(--fill, 0)); transform-origin: left; }
+@media (max-width: 980px) {
+  nav.top .in { gap: 12px; height: 68px; }
+  nav.top .links { gap: 8px; font-size: 16px; }
+  nav.top a, #top .act a, #footer nav a {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; min-height: 44px;
+  }
+  nav.top .brand { gap: 8px; }
+  nav.top .links a, #footer nav a { padding-inline: 8px; }
+  #top { margin-top: -68px; height: 300svh; }
+  #top .pin { padding-top: 84px; padding-bottom: clamp(12px, 3svh, 28px); }
+  #top h1 { font-size: clamp(36px, 12vw, 66px); }
+  #top .botwrap { height: clamp(44px, min(100% - 12px, 46svh, 74vw), 460px); }
+  #top .hbot { gap: 12px; }
+  #top .hbot p { font-size: clamp(16px, 4.2vw, 19px); }
+  #top .act { gap: 8px 16px; }
+  #top .act .btn { height: auto; padding-block: 10px; }
+  #top .beatwrap { bottom: 3svh; }
+  #top .beats { grid-template-columns: .8fr .7fr 1fr 1.25fr 1fr; gap: 4px; }
+  #top .beats li { font-size: 12px; min-width: 0; overflow-wrap: anywhere; transition: none; }
+  #top .beatcard { padding: 12px; min-height: 150px; }
+  #top .beatcard .who { flex-wrap: wrap; }
+  #top .beatcard .btns { margin-left: 0; flex-wrap: wrap; }
+
+  #link, #shots { padding-top: clamp(52px, 10vw, 96px); }
+  #link .lead { margin-bottom: 24px; }
+  #link .node, #link .talk { min-width: 0; overflow-wrap: anywhere; }
+  #link .node small, #link .hub, #link .chatroom .text, #shots figcaption { font-size: 16px; }
+  #link .talk header { flex-wrap: wrap; }
+  #link .chatroom .msgs { overflow: auto; justify-content: start; }
+  #link .chatroom .msgs .msg { flex: none; }
+  #link .chatroom .msgs .text { display: block; }
+  #shots .grid { margin-top: 24px; }
+  #footer { padding-block: 64px max(24px, env(safe-area-inset-bottom, 0px)); }
+  #footer .foot { margin-top: 24px; font-size: 16px; }
+  #footer nav { gap: 8px; }
+}
+@media (max-width: 980px) and (max-height: 500px) and (orientation: landscape) {
+  #top .pin {
+    grid-template: "title bot" auto "actions bot" minmax(0, 1fr) / minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: center; column-gap: 16px; padding-top: 72px;
+  }
+  #top h1 { grid-area: title; font-size: clamp(36px, 7vw, 56px); }
+  #top .hbot { grid-area: actions; }
+  #top .botwrap { grid-area: bot; height: clamp(44px, 56svh, 240px); transform: none !important; }
+  #top .beatwrap { left: 27%; width: calc(54% - 32px); }
+}
+@media (max-width: 980px) and (prefers-reduced-motion: reduce) {
+  #top { height: auto; }
+  #top .pin { grid-template: none; display: flex; flex-direction: column; gap: 20px; }
+  #top .botwrap { height: clamp(44px, 36svh, 240px); width: auto; }
+  #top .beatwrap { left: auto; bottom: auto; width: min(100%, 560px); }
+}
 </style>
 <script>document.documentElement.classList.add("js");</script>
 </head>
@@ -471,7 +527,7 @@ footer { padding-block: 120px 40px; }
       </div>
     </div>
     <div class="beatwrap" id="beatwrap" aria-live="polite">
-      <ol class="beats" id="beats"></ol>
+      <ol class="beats" id="beats" data-mobile="labels"></ol>
       <div class="beatcard" id="beatcard"></div>
     </div>
   </div>
@@ -639,7 +695,7 @@ footer { padding-block: 120px 40px; }
   </div>
 </section>
 
-<footer class="g">
+<footer class="g" id="footer">
   <div class="in">
     <div class="mark">
       <div class="endbot"><canvas id="endbot"></canvas></div>
@@ -809,7 +865,6 @@ footer { padding-block: 120px 40px; }
     const a = ss(0.02, 0.2, now), w = ss(0.12, 0.24, now);
     htop.style.opacity = 1 - a;
     htop.style.transform = `translateY(${-48 * a}px) scale(${1 - 0.06 * a})`;
-    htop.style.filter = a ? `blur(${10 * a}px)` : "";
     hbot.style.opacity = 1 - ss(0.02, 0.14, now);
     hbot.style.transform = `translateY(${36 * a}px)`;
     hbot.style.visibility = a > 0.98 ? "hidden" : "";
@@ -818,7 +873,7 @@ footer { padding-block: 120px 40px; }
     wrap.style.transform = `translateY(${28 * (1 - w)}px)`;
     const bp = clamp((now - 0.24) / 0.68, 0, 1) * BEATS.length;
     const i = Math.min(BEATS.length - 1, Math.floor(bp));
-    lis.forEach((li, k) => { li.firstElementChild.style.setProperty("--fill", `${clamp(bp - k, 0, 1) * 100}%`); li.classList.toggle("on", w > 0.5 && k === i); li.classList.toggle("done", k < i); });
+    lis.forEach((li, k) => { li.firstElementChild.style.setProperty("--fill", clamp(bp - k, 0, 1)); li.classList.toggle("on", w > 0.5 && k === i); li.classList.toggle("done", k < i); });
     if (w > 0.05) show(i);
     else if (shown >= 0) { shown = -1; if (hero) hero.set({ side: 0, mood: "neutral" }); }
     const yes = card.querySelector(".yes");
@@ -826,7 +881,7 @@ footer { padding-block: 120px 40px; }
     raf = now !== target ? requestAnimationFrame(render) : 0;
   }
   const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(render); };
-  if (reduce) { show(BEATS.length - 1); lis.forEach((li) => { li.classList.add("done"); li.firstElementChild.style.setProperty("--fill", "100%"); }); }
+  if (reduce) { show(BEATS.length - 1); lis.forEach((li) => { li.classList.add("done"); li.firstElementChild.style.setProperty("--fill", "1"); }); }
   else { addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); kick(); }
 
   // Flip's eyes follow the pointer, whichever Flip is on screen.
