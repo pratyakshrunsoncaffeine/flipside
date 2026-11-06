@@ -11,6 +11,7 @@
       --paper: #f3f2ef; --ivory: #fafaf8; --stone: #e7e4de; --line: #d9d5cd; --ink: #121316; --muted: #4f535a;
       --amber: #f2b544; --amber-ink: #8a5a06; --night: #16181b; --p-1: #1d2024; --p-2: #262a30;
       --p-ink: #ebe9e4; --p-ink-2: #9a9ea6; --p-green: #3fb950; --p-red: #ff7b72;
+      --ok-ink: #1a7037; --ok-wash: #e6efe6; --ok-line: #b9d3bc; --bad-ink: #a8321f; --bad-wash: #f5e6e1; --bad-line: #e2bfb6;
       --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
       --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
       --ease: cubic-bezier(.2,.7,.2,1);
@@ -49,15 +50,19 @@
     button:active:not(:disabled) { transform: scale(.97); }
     button:disabled { opacity: .55; cursor: wait; }
     :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
-    #result { background: var(--night); color: var(--p-ink); border-radius: 26px; padding: 26px 28px; border-left: 6px solid var(--p-2); }
-    #result[data-code=OK] { border-left-color: var(--p-green); }
-    #result[data-code=fail] { border-left-color: var(--p-red); }
-    #status { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
-    #result[data-code=OK] #status { color: var(--p-green); }
-    #result[data-code=fail] #status { color: var(--p-red); }
-    #detail { margin-bottom: 0; color: var(--p-ink); overflow-wrap: anywhere; }
+    /* The verdict card is a panel like the inputs above it; only the dot, heading and border carry the verdict. */
+    #result { --tone: var(--muted); --tone-wash: var(--stone); --tone-line: var(--line);
+      background: linear-gradient(var(--tone-wash), var(--ivory) 96px); color: var(--ink);
+      border: 1px solid var(--tone-line); border-radius: 26px; padding: 26px 28px;
+      transition: border-color .25s ease; }
+    #result[data-code=OK] { --tone: var(--ok-ink); --tone-wash: var(--ok-wash); --tone-line: var(--ok-line); }
+    #result[data-code=fail] { --tone: var(--bad-ink); --tone-wash: var(--bad-wash); --tone-line: var(--bad-line); }
+    #status { display: flex; align-items: flex-start; gap: 14px; margin: 0; color: var(--tone); font-size: 22px; font-weight: 650; line-height: 1.25; letter-spacing: -.02em; overflow-wrap: anywhere; }
+    #status::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: .4em; border-radius: 50%; background: var(--tone); box-shadow: 0 0 0 5px var(--tone-wash); }
+    #result:not([data-code=OK]):not([data-code=fail]) #status { color: var(--ink); }
+    #detail { margin: 10px 0 0 24px; color: var(--muted); overflow-wrap: anywhere; }
     pre { margin: 16px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.7 var(--mono); }
-    #quote { padding: 16px 18px; border-radius: 14px; background: var(--p-1); color: var(--p-ink); }
+    #quote { margin-left: 24px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); color: var(--ink); }
     .scope { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line); }
     .scope pre { padding: 18px 22px; border-radius: 18px; background: var(--p-1); color: var(--p-ink); }
     .scope .hint { margin-top: 20px; }
@@ -96,6 +101,7 @@
       .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
       .actions button { padding-inline: 10px; }
       #check { grid-column: 1 / -1; }
+      #detail, #quote { margin-left: 0; }
     }
   </style>
 </head>
