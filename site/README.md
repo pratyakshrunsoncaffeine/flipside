@@ -33,6 +33,7 @@ The checker serves `site/` on loopback and opens both pages at 320, 360, 390, 41
 It uses the site's system font fallback so results do not depend on Google Fonts.
 It scrolls through each page and checks document overflow, visible tap targets of at least 44×44 CSS pixels, text size, and script errors.
 Body and form text need 16 CSS pixels, and labels, captions and code need 12.
+List items in a `data-mobile="labels"` group use the label minimum.
 Inline links in paragraphs and lists follow the inline target exception.
 It writes `evidence/mobile-check-*.log` and saves screenshots and a JSON report under the ignored `mobile-check-screenshots/` directory.
 Exit codes are 0 for a pass, 1 for layout failures and 2 for a checker error.

@@ -39,8 +39,13 @@ jobs:
         run: uv sync --frozen
       - name: Lint
         run: make lint
+      - name: Allow Chrome sandbox namespaces
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Test
         run: make test
+        env:
+          PYTEST_ADDOPTS: "--durations=8"
       - name: Upload mobile checker screenshots
         if: always() && runner.os == 'Linux'
         uses: actions/upload-artifact@v4

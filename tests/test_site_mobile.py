@@ -18,6 +18,8 @@ VIEWPORTS = {(320, 640), (360, 780), (390, 844), (414, 896), (768, 1024), (844, 
 
 class Issue(TypedDict):
     area: str
+    kind: str
+    selector: str
     message: str
 
 
@@ -32,15 +34,51 @@ class KnownLayoutFailure(AssertionError):
     """A failure recorded before the responsive changes."""
 
 
-# Remove each exception in the PR that fixes the affected section.
+# Exact failures from the checked-in baseline. Remove a row when its issue is fixed.
 KNOWN = {
-    ("index.html", "nav"),
-    ("index.html", "top"),
-    ("index.html", "replay"),
-    ("index.html", "run"),
-    ("index.html", "footer"),
-    ("verify.html", "nav"),
-    ("verify.html", "page"),
+    (
+        "index.html",
+        "footer",
+        "tap",
+        'a[href="https://github.com/pratyakshrunsoncaffeine/gateplus"]',
+    ),
+    (
+        "index.html",
+        "footer",
+        "tap",
+        'a[href="https://github.com/pratyakshrunsoncaffeine/gateplus/blob/main/VERIFICATION.md"]',
+    ),
+    ("index.html", "footer", "tap", 'a[href="https://github.com/sandbox-quantum/switch"]'),
+    ("index.html", "footer", "tap", 'a[href="verify.html"]'),
+    ("index.html", "nav", "tap", 'a.brand[href="#top"]'),
+    ("index.html", "nav", "tap", 'a[href="#film"]'),
+    ("index.html", "nav", "tap", 'a[href="#how"]'),
+    ("index.html", "nav", "tap", 'a[href="#player"]'),
+    ("index.html", "nav", "tap", 'a[href="#run"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 1: seal"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 2: question"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 3: answer"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 4: refuse"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 5: approve"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 6: proof"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 7: forgery"]'),
+    ("index.html", "replay", "tap", 'button[aria-label="Chapter 8: brief"]'),
+    ("index.html", "replay", "text", "code.sw"),
+    ("index.html", "replay", "text", "p#privempty"),
+    ("index.html", "run", "text", "p.judgelink.rise"),
+    ("index.html", "top", "tap", 'a.textlink[href="#film"]'),
+    ("index.html", "top", "tap", "button#herobtn"),
+    ("index.html", "top", "text", "li"),
+    ("verify.html", "nav", "tap", 'a.back[href="index.html"]'),
+    ("verify.html", "nav", "tap", 'a.brand[href="index.html"]'),
+    ("verify.html", "page", "tap", "input#disclosure-file"),
+    ("verify.html", "page", "tap", "input#manifest-file"),
+    ("verify.html", "page", "text", "input#disclosure-file"),
+    ("verify.html", "page", "text", "input#manifest-file"),
+    ("verify.html", "page", "text", "p.hint"),
+    ("verify.html", "page", "text", "textarea#disclosure"),
+    ("verify.html", "page", "text", "textarea#manifest"),
+    ("verify.html", "page", "text", "textarea#trailer"),
 }
 
 
@@ -87,34 +125,40 @@ def mobile_cases() -> list[Case]:
 
 def test_no_unexpected_mobile_failures(mobile_cases: list[Case]) -> None:
     unexpected = [
-        f"{case['page']} {case['width']}x{case['height']} [{issue['area']}] {issue['message']}"
+        f"{case['page']} {case['width']}x{case['height']} "
+        f"[{issue['area']}/{issue['kind']}] {issue['selector']}: {issue['message']}"
         for case in mobile_cases
         for issue in case["issues"]
-        if (case["page"], issue["area"]) not in KNOWN
+        if (case["page"], issue["area"], issue["kind"], issue["selector"]) not in KNOWN
     ]
     assert not unexpected, "\n".join(unexpected)
 
 
 @pytest.mark.parametrize(
-    ("page", "area"),
+    ("page", "area", "kind", "selector"),
     [
         pytest.param(
             page,
             area,
-            id=f"{page}-{area}",
+            kind,
+            selector,
+            id=f"{page}-{area}-{kind}-{selector}",
             marks=pytest.mark.xfail(
                 strict=True, raises=KnownLayoutFailure, reason="Recorded mobile baseline"
             ),
         )
-        for page, area in sorted(KNOWN)
+        for page, area, kind, selector in sorted(KNOWN)
     ],
 )
-def test_known_mobile_failures(mobile_cases: list[Case], page: str, area: str) -> None:
+def test_known_mobile_failures(
+    mobile_cases: list[Case], page: str, area: str, kind: str, selector: str
+) -> None:
     failures = [
         f"{case['width']}x{case['height']} {issue['message']}"
         for case in mobile_cases
         for issue in case["issues"]
-        if case["page"] == page and issue["area"] == area
+        if (case["page"], issue["area"], issue["kind"], issue["selector"])
+        == (page, area, kind, selector)
     ]
     if failures:
         raise KnownLayoutFailure("\n".join(failures))

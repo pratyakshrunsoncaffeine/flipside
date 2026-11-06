@@ -91,30 +91,36 @@ function inspectPage(width) {
   const issues = [];
   const scrollWidth = document.documentElement.scrollWidth;
   function selector(el) {
-    return el.localName + (el.id ? `#${el.id}` : "") + [...el.classList].map((item) => `.${item}`).join("");
+    if (el.id) return `${el.localName}#${el.id}`;
+    const classes = [...el.classList].filter((item) => !["on", "now", "done", "shown"].includes(item));
+    const attribute = el.matches("a[href]") ? "href" : el.hasAttribute("aria-label") ? "aria-label" : null;
+    const suffix = attribute ? `[${attribute}=${JSON.stringify(el.getAttribute(attribute))}]` : "";
+    return el.localName + classes.map((item) => `.${item}`).join("") + suffix;
   }
   if (innerWidth !== width || scrollWidth > innerWidth) {
+    const dimensions = `expected width ${width}px, innerWidth ${innerWidth}px, scrollWidth ${scrollWidth}px`;
     const overflowing = [...document.body.querySelectorAll("*")]
-      .filter((el) => el.getBoundingClientRect().right > Math.min(innerWidth, width) + 1)
-      .slice(0, 5);
-    issues.push({
-      area: overflowing[0]?.closest("section[id], header[id]")?.id ?? "overflow",
-      message: `expected width ${width}px, innerWidth ${innerWidth}px, scrollWidth ${scrollWidth}px; first offenders: ${overflowing.map(selector).join(", ") || "none"}`,
-    });
+      .filter((el) => visible(el) && el.getBoundingClientRect().right > Math.min(innerWidth, width) + 1);
+    if (overflowing.length) {
+      for (const el of overflowing) report(el, "overflow", dimensions);
+    } else {
+      issues.push({ area: "page", kind: "overflow", selector: "html", message: dimensions });
+    }
   }
 
   function visible(el) {
     if (el.closest("[hidden], [inert], [aria-hidden='true']")) return false;
     const css = getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
     return css.visibility === "visible" && el.getClientRects().length > 0
-      && css.clipPath === "none";
+      && css.clipPath === "none" && css.clip === "auto" && (rect.width > 1 || rect.height > 1);
   }
-  function report(el, message) {
+  function report(el, kind, message) {
     const label = el.getAttribute("aria-label") ?? el.textContent.trim();
     const section = el.closest("section[id], header[id]");
     const area = section?.id ?? (el.closest("footer") ? "footer" : el.closest("nav") ? "nav" : "page");
-    const name = `${selector(el)}${label ? ` (${label.replace(/\s+/g, " ").slice(0, 72)})` : ""}`;
-    issues.push({ area, message: `${name}: ${message}` });
+    const name = label ? `(${label.replace(/\s+/g, " ").slice(0, 72)}) ` : "";
+    issues.push({ area, kind, selector: selector(el), message: `${name}${message}` });
   }
 
   const targets = document.querySelectorAll(
@@ -126,16 +132,17 @@ function inspectPage(width) {
     const rects = [...el.getClientRects()];
     if (rects.some((rect) => rect.width >= 44 && rect.height >= 44)) continue;
     const rect = el.getBoundingClientRect();
-    report(el, `tap target ${rect.width.toFixed(1)}x${rect.height.toFixed(1)}px (44x44 minimum)`);
+    report(el, "tap", `${rect.width.toFixed(1)}x${rect.height.toFixed(1)}px (44x44 minimum)`);
   }
 
   const text = "main p, main li, section p, section li, header p, header li, "
     + "label, figcaption, caption, code, pre, input, select, textarea";
   for (const el of document.querySelectorAll(text)) {
     if (!visible(el)) continue;
-    const min = el.matches("p, li, input, select, textarea") ? 16 : 12;
+    const isLabel = el.matches('li') && el.closest('[data-mobile="labels"]');
+    const min = !isLabel && el.matches("p, li, input, select, textarea") ? 16 : 12;
     const size = parseFloat(getComputedStyle(el).fontSize);
-    if (size < min) report(el, `text ${size}px (${min} minimum)`);
+    if (size < min) report(el, "text", `${size}px (${min} minimum)`);
   }
   return issues;
 }
@@ -179,6 +186,12 @@ async function checkPage(cdp, origin, page, width, height) {
       `${page} to load`,
     );
     const frame = "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))";
+    const settled = `(async () => {
+      const deadline = performance.now() + 3000;
+      do {
+        await ${frame};
+      } while (performance.now() < deadline && document.getAnimations().some(a => a.playState === "running"));
+    })()`;
     await evaluate(`document.fonts.ready.then(() => ${frame})`);
     await evaluate(`(async () => {
       for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight) {
@@ -188,6 +201,7 @@ async function checkPage(cdp, origin, page, width, height) {
       scrollTo({ top: 0, behavior: "instant" });
       await ${frame};
     })()`);
+    await evaluate(settled);
     const issues = await evaluate(`(${inspectPage})(${width})`);
     const sections = await evaluate("Array.from(document.querySelectorAll('header[id], section[id], footer[id]'), el => el.id)");
     for (const id of ["viewport", ...sections]) {
@@ -197,10 +211,13 @@ async function checkPage(cdp, origin, page, width, height) {
         else scrollTo({ top: 0, behavior: "instant" });
         await ${frame};
       })()`);
+      await evaluate(settled);
       const { data } = await call("Page.captureScreenshot", { format: "png", optimizeForSpeed: true });
       await writeFile(join(output, `${page.slice(0, -5)}-${width}x${height}-${id}.png`), Buffer.from(data, "base64"));
     }
-    return [...issues, ...[...errors].map((message) => ({ area: "console", message }))];
+    return [...issues, ...[...errors].map((message) => ({
+      area: "page", kind: "console", selector: "document", message,
+    }))];
   } finally {
     if (sessionId) cdp.listen(sessionId);
     await cdp.call("Target.closeTarget", { targetId });
@@ -221,7 +238,7 @@ async function run() {
     if (!executable) throw new Error("Set CHROME to an installed Chromium or Chrome binary.");
     let serverOutput = "";
     let serverError;
-    server = spawn(process.env.PYTHON ?? "python", [
+    server = spawn(process.env.PYTHON ?? (process.platform === "win32" ? "python" : "python3"), [
       "-u", "-m", "http.server", "0", "--bind", "127.0.0.1", "--directory", join(root, "site"),
     ], { stdio: ["ignore", "pipe", "ignore"], windowsHide: true });
     server.on("error", (error) => { serverError = error; });
@@ -232,13 +249,17 @@ async function run() {
       return /Serving HTTP on 127\.0\.0\.1 port (\d+)/.exec(serverOutput)?.[1];
     }, "loopback HTTP server");
     let launchError;
+    let browserStderr = "";
     child = spawn(executable, [
       "--headless=new", "--no-first-run", "--disable-background-networking", "--disable-dev-shm-usage",
       "--enable-unsafe-swiftshader",
       "--remote-debugging-address=127.0.0.1", "--remote-debugging-port=0",
       `--user-data-dir=${profile}`, "about:blank",
-    ], { stdio: "ignore", windowsHide: true });
+    ], { stdio: ["ignore", "ignore", "pipe"], windowsHide: true });
     child.on("error", (error) => { launchError = error; });
+    child.stderr.setEncoding("utf8").on("data", (text) => {
+      browserStderr = (browserStderr + text).split(/\r?\n/).slice(-31).join("\n");
+    });
     const [port, path] = await waitFor(async () => {
       if (launchError) throw launchError;
       if (child.exitCode !== null) {
@@ -250,7 +271,9 @@ async function run() {
       });
       const fields = ready.trim().split(/\r?\n/);
       return fields.length === 2 ? fields : null;
-    }, "browser startup");
+    }, "browser startup", 30000).catch((error) => {
+      throw new Error(`${error.message}\n${browserStderr.trim()}`.trim());
+    });
     cdp = await connect(`ws://127.0.0.1:${port}${path}`);
     const { product } = await cdp.call("Browser.getVersion");
     lines.push(`${product} | touch emulation | DPR 2 | CSS pixels | offline font fallback`);
@@ -261,7 +284,9 @@ async function run() {
         cases.push({ page, width, height, issues });
         if (issues.length) failed++;
         const label = `${issues.length ? "FAIL" : "PASS"} ${page} ${width}x${height} (${issues.length} issues)`;
-        lines.push(label, ...issues.map(({ area, message }) => `  [${area}] ${message}`));
+        lines.push(label, ...issues.map(({ area, kind, selector, message }) => (
+          `  [${area}/${kind}] ${selector}: ${message}`
+        )));
         console.log(label);
       }
     }
