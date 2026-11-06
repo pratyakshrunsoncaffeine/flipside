@@ -25,6 +25,7 @@ jobs:
         shell: bash
     env:
       FLIP_REQUIRE_NODE: "1"
+      FLIP_REQUIRE_CHROME: ${{ runner.os == 'Linux' && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -40,6 +41,13 @@ jobs:
         run: make lint
       - name: Test
         run: make test
+      - name: Upload mobile checker screenshots
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-check-screenshots
+          path: mobile-check-screenshots/
+          if-no-files-found: warn
       - name: G8 offline verify
         run: make g8
       - name: Offline replay and fixtures

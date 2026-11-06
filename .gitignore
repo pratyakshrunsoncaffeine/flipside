@@ -16,3 +16,5 @@ __pycache__/
 *.egg-info/
 .pytest-tmp/
 .flip-judge/
+# local mobile checker screenshots and reports
+mobile-check-screenshots/

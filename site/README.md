@@ -26,3 +26,13 @@ Both work offline, except the Inter and JetBrains Mono fonts, which fall back to
 ## Checks
 
 `uv run pytest tests/test_site.py`: links resolve, `run.js` matches its log, three.js is pinned, the film stays under 15 MB.
+
+Run `node tools/mobile_check.mjs` from the repo with Node 22, Python 3.12, and Chrome or Chromium installed.
+Set `CHROME` to the browser binary if it is not found automatically.
+The checker serves `site/` on loopback and opens both pages at 320, 360, 390, 414 and 768 CSS pixels wide, plus 844×390 landscape, with touch emulation at DPR 2.
+It uses the site's system font fallback so results do not depend on Google Fonts.
+It scrolls through each page and checks document overflow, visible tap targets of at least 44×44 CSS pixels, text size, and script errors.
+Body and form text need 16 CSS pixels, and labels, captions and code need 12.
+Inline links in paragraphs and lists follow the inline target exception.
+It writes `evidence/mobile-check-*.log` and saves screenshots and a JSON report under the ignored `mobile-check-screenshots/` directory.
+Exit codes are 0 for a pass, 1 for layout failures and 2 for a checker error.
