@@ -494,9 +494,27 @@ class ReviewerAgent:
             if s.leaves and k not in requested and not briefed:
                 self.post_request(rnd, k, s)
                 acts += 1
+        # A relayed answer names its seal commit; a plain `Q<k>:` answer does not, so it counts
+        # only when posted after this round's questions (a reused room holds earlier answers).
+        asked_seq = next(
+            (
+                m.seq
+                for m in msgs
+                if m.sender == self.t.me
+                and (o := accept(m, self.roles()))
+                and o["t"] == "questions"
+                and o.get("commit") == rnd.commit
+            ),
+            None,
+        )
         answers: dict[int, str] = {}
         for m in msgs:
-            if m.sender == self.cfg.pr_author and (a := parse_answer(m.body)):
+            if (
+                m.sender == self.cfg.pr_author
+                and asked_seq is not None
+                and m.seq > asked_seq
+                and (a := parse_answer(m.body))
+            ):
                 answers.setdefault(a[0], a[1])
             elif (o := accept(m, self.roles())) and o["t"] == "answer":
                 r = parse_relayed_answer(o)

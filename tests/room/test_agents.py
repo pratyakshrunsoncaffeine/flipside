@@ -345,3 +345,26 @@ def test_verdicts_from_an_earlier_seal_do_not_settle_this_round(tmp_path: Path) 
     brief = next(o for m in hub.messages if (o := decode(m.body)) and o["t"] == "brief")
     assert types(hub).count("verdict") == 1 + len(_decided(hub, "disclosure"))
     assert brief["commit"] == world.commit
+
+
+def test_a_plain_answer_from_before_this_rounds_questions_does_not_count(tmp_path: Path) -> None:
+    # Relayed answers carry the seal commit; a plain `Q<k>:` answer has none, so it was counted
+    # for any round. In a room reused after a re-seal, the author's answer to the earlier
+    # round's Q1 then answered this round's Q1, about different code.
+    world = materialize(load_case(CSV), tmp_path / "w")
+    s = setup(world, tmp_path, Clock())
+    hub = s["hub"]
+    a, r = s["author"](), s["reviewer"]()
+    a.step()
+    hub.post(s["au"], "pr", "Q1: stale answer to the earlier seal's question")
+    r.step()
+    a.step()
+    hub.answer(s["au"], next(iter(hub.cards)), "approve")
+    a.step()
+    r.step()
+    assert "brief" not in types(hub)
+    hub.post(s["au"], "pr", "Q1: the export test needed a longer session")
+    r.step()
+    brief = next(m.body for m in hub.messages if (o := decode(m.body)) and o["t"] == "brief")
+    assert "longer session" in brief
+    assert "stale answer" not in brief
